@@ -1,0 +1,11 @@
+"top.left.square","top.middle.square","top.right.square","middle.left.square","middle.middle.square","middle.right.square","bottom.left.square","bottom.middle.square","bottom.right.square","row_ids"
+"o","x","o","x","o","x","o","x","b",461
+"x","x","o","x","x","o","o","b","o",192
+"o","o","x","x","o","b","x","x","o",372
+"x","x","x","o","b","o","b","x","o",660
+"x","x","x","x","o","o","x","o","o",953
+"o","x","x","x","o","x","b","o","o",309
+"x","o","x","o","o","o","x","x","b",117
+"x","o","x","o","x","o","o","x","x",859
+"x","o","x","x","o","x","b","o","o",136
+"x","x","o","o","o","o","b","x","x",263

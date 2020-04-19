@@ -1,0 +1,7 @@
+venv-dice
+venv-recourse
+actionable-recourse
+DiCE/build/
+DiCE/dist/
+DiCE/
+../../saved_objects/data/*/cf-dice-*-*.csv

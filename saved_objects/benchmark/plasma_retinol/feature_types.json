@@ -1,0 +1,1 @@
+{"AGE":"numeric","SEX":"factor","SMOKSTAT":"factor","QUETELET":"numeric","VITUSE":"factor","CALORIES":"numeric","FAT":"numeric","FIBER":"numeric","ALCOHOL":"numeric","CHOLESTEROL":"numeric","BETADIET":"numeric","RETDIET":"numeric","BETAPLASMA":"numeric","target":"binaryClass"}
