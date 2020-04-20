@@ -16,7 +16,7 @@ folder = args[[8]]
 PARALLEL = TRUE
 cpus = 20L
 current_dir = getwd()
-data_dir = file.path(current_dir, "..", "saved_objects", folder)
+data_dir = file.path(current_dir, folder)
 dir.create(path = data_dir, showWarnings = FALSE)
 names_models = c("randomforest", "xgboost", "svm", "logreg", "neuralnet")
 

@@ -8,10 +8,9 @@
 
 #--- Setup ----
 source("../helpers/libs_mlr.R")
-source("helpers_evaluate.R")
+source("../helpers/helpers_evaluate.R")
 instances = readRDS("../saved_objects/benchmark/models_benchmark.rds")
-data.dir = "benchmark"
-data.path = file.path("..", "saved_objects", data.dir)
+data.path = "../saved_objects/benchmark"
 obj.nams = c("dist.target", "dist.x.interest", "nr.changed", "dist.train")
 task_ids = readRDS("../helpers/benchmark_task_ids.rds")
 task.names = list.dirs(path = data.path, full.names = FALSE, recursive = FALSE)
@@ -102,7 +101,8 @@ others.cf = lapply(task.names, function(task.nam) {
         # Evaluate counterfactuals / calculate objective values
         if (method.nam %in% c("recourse", "dice", "pair")) {
             instance = subset_instances(instances, task = task.nam, learner = lrn.nam)[[1]]
-            cf = evaluate_cfexp(cf = cf, instance = instance, id = method.nam, remove.dom = TRUE)
+            cf = evaluate_cfexp(cf = cf, instance = instance, id = method.nam, remove.dom = TRUE, 
+              data.dir = data.path)
             cf$method = method.nam
         }
         if (method.nam %in% c("tweaking")) { 

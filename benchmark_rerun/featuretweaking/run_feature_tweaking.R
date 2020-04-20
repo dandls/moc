@@ -4,16 +4,16 @@
 source("featuretweaking/libs_featuretweaking.R")
 args = commandArgs(trailingOnly=TRUE)
 instances = readRDS(args[2])
-data.dir = args[4]
-data.path = file.path("..", "saved_objects", data.dir)
+data.path = args[4]
 best.config = readRDS(args[6])
 
-ktree = NULL
+ktree = NULL ###TODO
 obj.nams = c("dist.target", "dist.x.interest", "nr.changed", "dist.train")
 rf.id = unlist(lapply(instances, function(mod) mod$learner.id == "randomforest"))
+mu = 1L
 
 message(paste("mu is:", mu))
-message(paste("ktree is:", ktree))
+message(paste("ktree is:", ktree)) 
 
 #--- Calculate cfexps ----
 feature_tweaking = function(pred, mu) {
@@ -31,7 +31,7 @@ feature_tweaking = function(pred, mu) {
   center = jsonlite::read_json(file.path(path, "feature_center.json"))
   scale = jsonlite::read_json(file.path(path, "feature_scale.json"))
   x.interests = df[row.ids, ]
-  
+  browser()
   # Get model
   mod = pred$predictor$model$learner.model$next.model$learner.model
   class(mod) = "randomForest"
@@ -41,7 +41,7 @@ feature_tweaking = function(pred, mu) {
   target.class = mod$classes
   rules = getRules(mod, ktree = ktree, resample = TRUE)
   class(rules)
-  es.rf <- set.eSatisfactory(rules, epsiron = 0.5)
+  es.rf <- set.eSatisfactory(rules, epsiron = 0.6)
   class1.id = which(targets == target.class[1])
   class2.id = which(targets == target.class[2])
 
@@ -55,7 +55,7 @@ feature_tweaking = function(pred, mu) {
   
   if (length(class2.id) > 0) {
     res.sug.class2 = tweak(es.rf, mod, newdata = x.interests[class2.id,], 
-      label.from = target.class[2], label.to = target.class[2], .dopar = TRUE)$suggest
+      label.from = target.class[2], label.to = target.class[1], .dopar = TRUE)$suggest
     res.sug.class2$row_ids = row.names(res.sug.class2)
   } else {
     res.sug.class2 = NULL
@@ -72,7 +72,7 @@ feature_tweaking = function(pred, mu) {
   }
   
   # evaluate cfexp and revert dummy encoding
-  cf = evaluate_cfexp(cf, pred, id = "tweaking", remove.dom = FALSE)
+  cf = evaluate_cfexp(cf, pred, id = "tweaking", remove.dom = FALSE, data.dir = data.path)
   # Save results
   name.file = paste("cf", "tweaking", pred$learner.id, sep = "-")
   pathtofile = file.path(path, paste(name.file, ".csv", sep = ""))

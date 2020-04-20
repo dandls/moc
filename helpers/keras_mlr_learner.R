@@ -88,12 +88,12 @@ predictLearner.classif.keraslogreg = function(.learner, .model, .newdata) {
 }
 
 #--- Load keras model from h5 format and initalize it ----
-# weights saved as h5 should be in folder code/saved_objects/[data.dir]
+# weights saved as h5 should be in folder [data.dir]
 
 # Only load model and initialize predictor: 
 load_keras_model = function(instance, data.dir) {
     instance$predictor$model$learner.model$next.model$learner.model$model = 
-        load_model_hdf5(file.path("../saved_objects", data.dir, instance$task.id, paste(instance$learner.id, ".h5", sep = "")))
+        load_model_hdf5(file.path(data.dir, instance$task.id, paste(instance$learner.id, ".h5", sep = "")))
     newpred = Predictor$new(model = instance$predictor$model, data = data.frame(instance$predictor$data$get.xy()),
         y = instance$predictor$data$y.names, class = instance$predictor$class)
     instance$predictor = newpred

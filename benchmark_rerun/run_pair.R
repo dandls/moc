@@ -18,7 +18,7 @@ cfexps = lapply(instances, function(inst) {
     dt = inst$predictor$data$get.x()
     
     # Get xinterest/xorig as list
-    path = file.path("../saved_objects", save.dir, inst$task.id)
+    path = file.path(save.dir, inst$task.id)
     sampled.rows = read.delim(file.path(path, "sampled_ids.txt"), header = FALSE)[,1]
     dt.x.interests = dt[sampled.rows,]
     list.x.interests = split(as.data.frame(dt.x.interests), seq(length(sampled.rows)))
