@@ -7,16 +7,14 @@ instances = readRDS(args[2])
 data.path = args[4]
 best.config = readRDS(args[6])
 
-ktree = NULL ###TODO
+ktree = NULL 
 obj.nams = c("dist.target", "dist.x.interest", "nr.changed", "dist.train")
 rf.id = unlist(lapply(instances, function(mod) mod$learner.id == "randomforest"))
-mu = 1L
 
-message(paste("mu is:", mu))
 message(paste("ktree is:", ktree)) 
 
 #--- Calculate cfexps ----
-feature_tweaking = function(pred, mu) {
+feature_tweaking = function(pred) {
   message(pred$task.id)
   assert_true(pred$learner.id == "randomforest")
   
@@ -31,7 +29,7 @@ feature_tweaking = function(pred, mu) {
   center = jsonlite::read_json(file.path(path, "feature_center.json"))
   scale = jsonlite::read_json(file.path(path, "feature_scale.json"))
   x.interests = df[row.ids, ]
-  browser()
+  
   # Get model
   mod = pred$predictor$model$learner.model$next.model$learner.model
   class(mod) = "randomForest"
@@ -41,7 +39,7 @@ feature_tweaking = function(pred, mu) {
   target.class = mod$classes
   rules = getRules(mod, ktree = ktree, resample = TRUE)
   class(rules)
-  es.rf <- set.eSatisfactory(rules, epsiron = 0.6)
+  es.rf <- set.eSatisfactory(rules, epsiron = 0.5)
   class1.id = which(targets == target.class[1])
   class2.id = which(targets == target.class[2])
 
@@ -79,6 +77,6 @@ feature_tweaking = function(pred, mu) {
   write.csv(cf, pathtofile, row.names = FALSE)
 }
 
-res = mapply(function(pred){feature_tweaking(pred, mu)}, 
+res = mapply(function(pred){feature_tweaking(pred)}, 
   instances[rf.id])
 

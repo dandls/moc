@@ -66,8 +66,6 @@ moc.cf = lapply(task.names, function(task.nam) {
         cf = do.call(rbind, subset)
         rownames(cf) = NULL
         cf$learner = lrn.nam
-        cf$method = stringr::str_replace(cf$method, "nsga2", "moc")
-        cf$method = stringr::str_replace(cf$method, "condice", "mod")
         return(cf)
     })
     res.df = do.call(rbind, res.list)
@@ -214,8 +212,6 @@ res.log = lapply(task.names, function(task.nam) {
   res.df = do.call(rbind, res.list)
   res.df$task = paste(task.nam, " (", task.desc[[task.nam]], ")", sep = "")
   # rename ngsa2 to moc
-  names(res.df) = stringr::str_replace(names(res.df), "nsga2", "moc")
-  names(res.df) = stringr::str_replace(names(res.df), "condice", "mod")
   return(res.df)
 })
 
