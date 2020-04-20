@@ -1,12 +1,13 @@
-model_dir = ../saved_objects/models_irace.rds
-irace_result_dir = ../saved_objects/irace_results.rds
+data_dir = ../saved_objects/irace
+model_dir = ../saved_objects/irace/models_irace.rds
+irace_result_dir = ../saved_objects/irace/irace_results.rds
 config_dir = ../saved_objects/best_configs.rds
-nr_evals_dir = ../saved_objects/max_eval.rds
+nr_evals_dir = ../saved_objects/irace/max_eval.rds
 
 all : train-models get-evals run-irace tune-evals
 
 train-models : 
-	Rscript ../helpers/train_models.R --savekeras TRUE --task_ids task_ids.rds --savedir $(model_dir) --data_dir data_irace
+	Rscript ../helpers/train_models.R --savekeras TRUE --task_ids task_ids.rds --savedir $(model_dir) --data_dir $(data_dir)
 
 get-evals : 
 	Rscript get_evals.R --readdir $(model_dir) --savedir $(nr_evals_dir)

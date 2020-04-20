@@ -79,16 +79,6 @@ credit.cf = Counterfactuals$new(predictor = pred,
 credit.cf$calculate_frequency()
 
 ###---- Plots ----
-
 plots_extra(credit.cf, type = "parallel", features = c("duration", "credit.amount", "age"))
-
 plots_extra(credit.cf, type = "icearea", features = c("duration", "credit.amount"))
-
-# c = ggarrange(a, b,
-#   ncol = 2, nrow = 1)
-# ggsave("../../ppsn2020/figures/credit_cfexps.pdf", width= 7, height = 3)
-# ggsave("../../ppsn2020/figures/credit_parallel.pdf", plot = a, width= 3.5, height = 3)
-# ggsave("../../ppsn2020/figures/credit_heat.pdf", plot = b, width= 3.5, height = 3)
-
 plot_hv(credit.cf, ylim = c(0.65, 0.75))
-ggsave("../../ppsn2020/figures/credit_hv.pdf", plot = c, width= 3.5, height = 2)

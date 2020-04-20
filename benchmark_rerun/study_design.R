@@ -9,7 +9,7 @@ study_design = function(inst, best.config, save.dir = NULL) {
   dt = inst$predictor$data$get.x()
   
   # Get xinterest/xorig as list
-  path = file.path("../saved_objects", save.dir, inst$task.id)
+  path = file.path(save.dir, inst$task.id)
   sampled.rows = read.delim(file.path(path, "sampled_ids.txt"), header = FALSE)[,1]
   dt.x.interests = dt[sampled.rows,]
   list.x.interests = split(as.data.frame(dt.x.interests), seq(length(sampled.rows)))
@@ -22,7 +22,7 @@ study_design = function(inst, best.config, save.dir = NULL) {
   # Define predictor with conditional (load from save.dir)
   pred = inst$predictor
   pred.con = pred$clone()
-  pred.con$conditional = readRDS(file.path(path, "conditional.rds"))
+  pred.con$conditional = readRDS(file.path(path, "conditional.rds")) 
   
   # Define targets 
   targets = ifelse(inst$predictor$predict(newdata = as.data.frame(dt.x.interests)) < 0.5, 1, 0)[,1]
@@ -65,10 +65,10 @@ study_design = function(inst, best.config, save.dir = NULL) {
     } else {
         res$method = character()
     }
-    res = add_rows(res, cf.irace$results$counterfactuals, "nsga2")
+    res = add_rows(res, cf.irace$results$counterfactuals, "moc")
     
     df = cf.irace$log[, c("generation", "evals")]
-    df = add_columns(df, cf.irace, "nsga2")
+    df = add_columns(df, cf.irace, "moc")
     df = cbind(df, random$log)
     
     rm(cf.irace)
@@ -86,8 +86,8 @@ study_design = function(inst, best.config, save.dir = NULL) {
       p.rec.use.orig = best.config$p.rec.use.orig,
       use.ice.curve.var = TRUE)
 
-    res = add_rows(res, cf.irace.ice$results$counterfactuals, "nsga2ice")
-    df = add_columns(df, cf.irace.ice, "nsga2ice")
+    res = add_rows(res, cf.irace.ice$results$counterfactuals, "mocice")
+    df = add_columns(df, cf.irace.ice, "mocice")
     
     rm(cf.irace.ice)
     gc()
@@ -103,9 +103,9 @@ study_design = function(inst, best.config, save.dir = NULL) {
         p.rec.use.orig = best.config$p.rec.use.orig,
         use.ice.curve.var = FALSE)
       
-      df = add_columns(df, cf.irace.con, "nsga2cond")
+      df = add_columns(df, cf.irace.con, "moccond")
       res = add_rows(res, cf.irace.con$results$counterfactuals, 
-          "nsga2cond")
+          "moccond")
       
       rm(cf.irace.con)
       gc()
@@ -121,9 +121,9 @@ study_design = function(inst, best.config, save.dir = NULL) {
         p.rec.use.orig = best.config$p.rec.use.orig,
         use.ice.curve.var = TRUE)
       
-      df = add_columns(df, cf.irace.con.ice, "nsga2condice")
+      df = add_columns(df, cf.irace.con.ice, "mocmod")
       res = add_rows(res, cf.irace.con.ice$results$counterfactuals, 
-          "nsga2condice")
+          "mocmod")
       
       rm(cf.irace.con.ice)
       gc()
@@ -139,8 +139,8 @@ study_design = function(inst, best.config, save.dir = NULL) {
   
   # Save results as .csv
   for (nam in c("cf", "log")) {
-    name.file = paste(nam, "nsga2", inst$learner.id, sep = "-")
-    pathtofile = file.path(path, "nsga2", paste(name.file, ".csv", sep = ""))
+    name.file = paste(nam, "moc", inst$learner.id, sep = "-")
+    pathtofile = file.path(path, "moc", paste(name.file, ".csv", sep = ""))
     if (nam == "cf") {
       write.csv(res.cf, pathtofile, row.names = FALSE)
     } else {
