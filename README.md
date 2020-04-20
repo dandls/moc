@@ -3,6 +3,8 @@
 This repository provides code and examples for generating multi-objective counterfactuals for the following paper:      
 Dandl, S., Molnar, C., Binder, M., Bischl, B. (2020): Multi-Objective Counterfactual Expalantions. 
 
+For all computations, we used either the statistical software R (version ≥ 3.4.4)or Python (version 3.6.9)
+
 ## Overview 
 
 * *appendix_irace_rerun*: Code to rerun the iterated F-racing to tune the hyperparameters of MOC. Includes a `Makefile`. 
