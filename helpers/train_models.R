@@ -12,6 +12,7 @@ SAVE_KERAS = as.logical(args[[2]])
 task_ids = readRDS(args[[4]])
 save_dir = args[[6]]
 folder = args[[8]]
+dir.create(path = "../saved_objects_rerun", showWarnings = FALSE)
 
 PARALLEL = TRUE
 cpus = 20L
