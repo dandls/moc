@@ -3,8 +3,19 @@
 ############################################
 
 #--- Setup ----
-CREDIT = TRUE
-source("../helpers/libs_mlr.R")
+# To run MOC 
+library(devtools)
+library(ParamHelpers)
+library(GGally)
+load_all("../iml/")
+library("mosmafs")
+
+# For plotting
+library(ggplot2)
+library(GGally)
+library(metR)
+library(ggExtra)
+
 source("plot_helpers.R")
 best.params = readRDS("../saved_objects/best_configs.rds")
 USE_TRAINED_MODEL = TRUE
@@ -82,3 +93,4 @@ credit.cf$calculate_frequency()
 plots_extra(credit.cf, type = "parallel", features = c("duration", "credit.amount", "age"))
 plots_extra(credit.cf, type = "icearea", features = c("duration", "credit.amount"))
 plot_hv(credit.cf, ylim = c(0.65, 0.75))
+  

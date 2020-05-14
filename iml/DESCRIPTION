@@ -39,7 +39,11 @@ Imports: R6,
          partykit,
 	 variables, 
 	 basefun,
-	 mlt
+	 mlt, 
+	 mosmafs, 
+	 ggExtra,
+	 GGally, 
+	 metR
 Suggests: randomForest,
           gower, 
           glmnet, 
@@ -59,9 +63,7 @@ Suggests: randomForest,
           ranger,
           keras,
           h2o,
-          mlr3
-Remotes:
-    compstat-lmu/mosmafs@mosmafs-package
+          mlr3 
 License: MIT + file LICENSE
 Encoding: UTF-8
 RoxygenNote: 6.1.1

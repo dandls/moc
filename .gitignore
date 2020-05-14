@@ -1,0 +1,24 @@
+# Latex computation files
+*.aux
+*.bbl
+*.log
+*.out
+*.synctex.gz
+*.toc
+*.blg
+*.nav
+*.snm
+*.lof
+*.lot
+*.loa
+*.tmp
+*.bst
+
+# R 
+*.Rhistory
+*.Rproj
+*.Rproj.user
+
+# Editor
+*.swp
+
