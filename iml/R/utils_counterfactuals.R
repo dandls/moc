@@ -27,10 +27,17 @@ make_paramlist = function(input.data, lower = NULL, upper = NULL, use.orig = TRU
   
   l = lapply(colnames(input.data), function(colnam) { 
     col = input.data[[colnam]]
-    l = ifelse(colnam %in% names(lower), 
-      lower[[colnam]], tryCatch(min(col, na.rm = TRUE), error = function(err) NA))
-    u = ifelse(colnam %in% names(upper), 
-      upper[[colnam]], tryCatch(max(col, na.rm = TRUE), error = function(err) NA))
+    if (colnam %in% names(lower)) { 
+      l = lower[[colnam]] 
+    } else {
+      l =  tryCatch(min(col, na.rm = TRUE), error = function(err) NA)
+    }
+    if (colnam %in% names(upper)) {
+      u = upper[[colnam]]
+    }
+    else {
+      u = tryCatch(max(col, na.rm = TRUE), error = function(err) NA)
+    }
     
     if (is.double(col)) {
       ParamHelpers::makeNumericParam(colnam, lower = l, upper = u) 
@@ -49,10 +56,10 @@ make_paramlist = function(input.data, lower = NULL, upper = NULL, use.orig = TRU
       ParamHelpers::makeDiscreteParam(colnam, values = values) 
     } 
   })
-  if (use.orig) {
-    l[[length(l)+1]] = ParamHelpers::makeLogicalVectorParam("use.orig", len = ncol)
-  }
-  return(l)
+if (use.orig) {
+  l[[length(l)+1]] = ParamHelpers::makeLogicalVectorParam("use.orig", len = ncol)
+}
+return(l)
 }
 
 #' Create a list with named vectors of standard deviation 

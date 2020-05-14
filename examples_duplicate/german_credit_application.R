@@ -83,14 +83,14 @@ credit.cf = Counterfactuals$new(predictor = pred,
     p.mut = best.params$p.mut, p.rec = best.params$p.rec, 
     p.mut.gen = best.params$p.mut.gen, 
     p.mut.use.orig = best.params$p.mut.use.orig, 
-    p.rec.gen = best.params$p.rec.gen, use.ice.curve.var = TRUE,
+    p.rec.gen = best.params$p.rec.gen, initialization = "icecurve",
     p.rec.use.orig = best.params$p.rec.use.orig, track.infeas = TRUE)
 
 # Get relative frequency of feature changes
-credit.cf$calculate_frequency()
+credit.cf$get_frequency()
 
 ###---- Plots ----
-plots_extra(credit.cf, type = "parallel", features = c("duration", "credit.amount", "age"))
-plots_extra(credit.cf, type = "icearea", features = c("duration", "credit.amount"))
+credit.cf$plot_parallel(features = c("duration", "credit.amount", "age"))
+credit.cf$plot_surface(features = c("duration", "credit.amount"))
 plot_hv(credit.cf, ylim = c(0.65, 0.75))
-  
+    

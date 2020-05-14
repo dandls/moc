@@ -360,8 +360,7 @@ FeatureEffect = R6::R6Class("FeatureEffect",
       }
       
       if (self$conditional) {
-        densities = self$predictor$conditional$cdens(private$dataSample,
-                                                     feature = self$feature.name, xgrid = grid.dt[[1]])
+        densities = self$predictor$conditionals[[self$feature.name]]$cdens(private$dataSample, xgrid = grid.dt[[1]])
         results.ice = results.ice[densities, on = c(self$feature.name, ".id.dist")]
       } else {
         results.ice$.dens = 1
@@ -387,7 +386,7 @@ FeatureEffect = R6::R6Class("FeatureEffect",
             by = c(self$feature.name)]
         }
         results.aggregated$.type = "pdp"
-        results = rbind(results, results.aggregated)
+        results = results.aggregated 
       }
       if (!private$multiClass) { 
         results.ice$.class = NULL

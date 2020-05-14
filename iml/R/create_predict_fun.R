@@ -37,7 +37,7 @@ create_predict_fun.Learner = function(model, task, predict.fun = NULL, type = NU
         pred = predict(model, newdata = newdata)
         factor_to_dataframe(pred)
       } else {
-        data.frame(predict(model, newdata = newdata, predict_type = "prob"), check.names = FALSE)
+        data.frame(predict(model, newdata = newdata, predict_type = "prob"))
       }
     }
   } else if (task == "regression") {      

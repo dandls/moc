@@ -115,10 +115,6 @@ fitness_fun = function(x, x.interest, target, predictor, train.data, range = NUL
 #' distance between their prediction and target exceeds epsilon, are penalized.}
 #'\item{extract.duplicate}{(logical(1)) Whether to penalize duplicates and 
 #'move them to the last front in nondominated sorting. Default TRUE.}
-#'\item{vers}{(numeric(1))\cr  Which crowding distance version to 
-#' use. The default 1 corresponds to the version of Avila et. al.. 2 corresponds 
-#' to a modified version of Avila et. originally used for reducing the number
-#' of returned solutions. 3 corresponds to the originally version of Deb et. al.}
 #' \item{candidates}{(data.frame)\cr Data frame from which `n.select` best and most 
 #' diverse ones are chosen.}
 #'} 
@@ -149,8 +145,8 @@ select_diverse = function (control, population, offspring, fitness,
 #' @rdname select_diverse
 select_nondom = ecr::makeSelector(
   selector = function(fitness, n.select, candidates, 
-    epsilon = .Machine$double.xmax,
-    extract.duplicates = TRUE, vers = 1) {
+    epsilon = Inf,
+    extract.duplicates = TRUE) {
     
     assert_number(n.select)
     if (n.select > ncol(fitness)-1) {
@@ -159,7 +155,6 @@ select_nondom = ecr::makeSelector(
     assert_matrix(fitness, ncols = nrow(candidates))
     assert_numeric(epsilon, null.ok = TRUE)
     assert_logical(extract.duplicates)
-    assert_true(vers %in% c(1, 2, 3))
     
     infeasible.idx = which(fitness[1,] > epsilon)
     order.infeasible = order(fitness[1, infeasible.idx])
@@ -223,17 +218,13 @@ select_nondom = ecr::makeSelector(
     
     if (n.diff > 0L) {
       idxs.first.nonfit = which(ranks == front.first.nonfit)
-      if (vers == 1) {
-        cds = computeCrowdingDistanceR_ver1(as.matrix(fitness[, idxs.first.nonfit]), 
+      #if (vers == 1) {
+        cds = computeCrowdingDistanceR(as.matrix(fitness[, idxs.first.nonfit]), 
           candidates[idxs.first.nonfit,]) 
-      }
-      if (vers == 2) {
-        cds = computeCrowdingDistanceR_ver2(as.matrix(fitness[, idxs.first.nonfit]), 
-          candidates[idxs.first.nonfit,])
-      }
-      if (vers == 3) {
-        cds = ecr::computeCrowdingDistance(as.matrix(fitness[, idxs.first.nonfit]))
-      }
+      #}
+      # if (vers == 3) {
+      #   cds = ecr::computeCrowdingDistance(as.matrix(fitness[, idxs.first.nonfit]))
+      # }
       idxs2 = order(cds, decreasing = TRUE)[1:n.diff]
       new.pop.idxs = c(new.pop.idxs, idxs.first.nonfit[idxs2])
     }
@@ -243,7 +234,7 @@ select_nondom = ecr::makeSelector(
   supported.objectives = "multi-objective")
 
 #' @rdname select_diverse
-computeCrowdingDistanceR_ver1 = function(fitness, candidates) {
+computeCrowdingDistanceR = function(fitness, candidates) {
   assertMatrix(fitness, mode = "numeric", any.missing = FALSE, all.missing = FALSE)
   assertDataFrame(candidates, nrows = ncol(fitness))
   
@@ -303,7 +294,7 @@ computeCrowdingDistanceR_ver1 = function(fitness, candidates) {
 #' @return (numeric(1)/character(1))
 mutConDens = ecr::makeMutator(function(ind, X, pred, param.set,...) {
   a = names(ind)
-  val = suppressWarnings(pred$conditional$csample(X = X, feature = a, size = 1)[[1]]) 
+  val = suppressWarnings(pred$conditionals[[a]]$csample(X = X, size = 1, type = "data")[[1]]) 
   # Warning if ordinal feature is defined as numeric, because> ties occur in datasets
   # https://stackoverflow.com/questions/56861001/how-to-suppress-warnings-from-statsregularize-values
   if (param.set$pars[[a]]$type == "discrete") {
