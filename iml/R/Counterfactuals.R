@@ -398,7 +398,6 @@ Counterfactuals = R6::R6Class("Counterfactuals",
       } else {
         cf = self$subset_results(nr.solutions)$counterfactuals
       }
-      browser()
       
       if (!is.null(row.ids)) {
         cf = cf[row.ids,]
