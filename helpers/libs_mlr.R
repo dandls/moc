@@ -16,4 +16,4 @@ if(length(new.packages)) install.packages(new.packages)
 sapply(packages, require, character.only = TRUE)
 
 # #--- Load respositories iml ----
-load_all(file.path("../iml_modified/"))
+load_all(file.path("../iml"))

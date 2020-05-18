@@ -18,22 +18,40 @@ Conditional = R6Class(
       private$fit_conditional()
     },
     csample_data = function(X, size){
-      cmodel = self$models[[self$feature]]
-      data_nodes = self$cnode(self$data$X)
+      cmodel = self$model
       X_nodes = self$cnode(X)
+      ## SD added
+      if (is.null(private$data_nodes)) {
+        private$data_nodes = self$cnode(self$data$X)
+      }
+      ####
       xj_samples = lapply(1:nrow(X), function(i) {
         node = X_nodes[i, "node"]
-        data_ids = which(data_nodes$node == node)
-        data_ids = setdiff(data_ids, i)
-        data_ids_sample = sample(data_ids, size = size, replace = TRUE)
-        xj = self$data$X[data_ids_sample, self$feature, with = FALSE]
-        data.frame(t(xj))
+        data_ids = which(private$data_nodes$node == node)
+        # data_ids = setdiff(data_ids, i) #SD removed
+        
+        ## SD added
+        vec = data.frame(self$data$X)[data_ids, self$feature]
+        if (self$data$feature.types[[self$feature]] == "numerical") {
+          dens = density(vec)
+          xj = data.frame(sample(dens$x, size = size, prob=dens$y))
+        } else {
+          tab = prop.table(table(vec))
+          xj = data.frame(sample(names(tab), size = size, replace = TRUE, prob = tab))
+        }
+        ####
+        ## SD removed ##
+        # data_ids_sample = sample(data_ids, size = size, replace = TRUE)
+        # xj = self$data$X[data_ids_sample, self$feature, with = FALSE]
+        return(data.frame(t(xj)))
+        #####
+        #### return(xj)
       })
       rbindlist(xj_samples)
 
     },
     csample_parametric = function(X, size){
-      cmodel = self$models[[self$feature]]
+      cmodel = self$model
       if (self$data$feature.types[[self$feature]] == "categorical") {
         xgrid = unique(self$data$X[[self$feature]])
       } else {
@@ -51,7 +69,6 @@ Conditional = R6Class(
     csample = function(X, size, type = "parametric"){
       assert_number(size, lower = 1)
       assert_character(self$feature)
-      assert_data_table(X)
       assert_choice(type, c("data", "parametric"))
       if (type == 'parametric') {
         self$csample_parametric(X, size)
@@ -105,6 +122,7 @@ Conditional = R6Class(
   }
   ), 
   private = list(
+  data_nodes = NULL,
   fit_conditional = function() {
     require("trtf")
     y = self$data$X[[self$feature]]

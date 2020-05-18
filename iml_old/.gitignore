@@ -1,0 +1,14 @@
+Meta
+doc
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+*.swp
+iml.Rcheck
+..Rcheck
+README.html
+notes.md
+notebooks/.ipynb_checkpoints
+*.html
+*.pdf

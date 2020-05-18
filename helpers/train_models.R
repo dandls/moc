@@ -74,10 +74,8 @@ sampled.rows = lapply(task_list, function(onetask) {
     write(center, file = paste(dir_name, "/feature_center.json", sep = ""))
     write(scale, file = paste(dir_name, "/feature_scale.json", sep = ""))
     # Conditional
-    lrn = makeLearner("classif.logreg", predict.type = "prob")
-    mod = train(lrn, onetask)
-    pred = Predictor$new(mod, data = getTaskData(onetask), y = getTaskTargetNames(onetask), conditional = TRUE)
-    con = pred$conditional
+    ctr = ctree_control(maxdepth = 5L)
+    con = fit_conditionals(getTaskData(onetask), ctrl = ctr)
     saveRDS(object = con, file = paste(dir_name, "/conditional.rds", sep = ""))
   }
   return(sampled.rows)
@@ -95,7 +93,7 @@ names(lrn.list) = names_models
 
 hyper.pars = list(
     randomforest = pSS(
-        ntree : numeric[0, log(1000)]  [[trafo = function(x) round(exp(x))]]), 
+        ntree : numeric[0, log(1000)]  [[trafo = function(x) round(exp(x))]]),
       xgboost = pSS(
         nrounds: numeric[0, log(1000)] [[trafo = function(x) round(exp(x))]]
       ),
@@ -133,15 +131,15 @@ models_trained = lapply(seq_row(grid), function(i) {
   test.set = seq(1, n)[-train.set]
   train.task = subsetTask(task, subset = train.set)
   test.task = subsetTask(task, subset = test.set)
-  
+
   if (task.nam %in% c("tic-tac-toe", "diabetes")) {
-      train.task= mlr::oversample(train.task, rate = 2L)   
+      train.task= mlr::oversample(train.task, rate = 2L)
   } else if (task.nam %in% c("ilpd", "kc2")) {
-      train.task= mlr::oversample(train.task, rate = 3L)  
+      train.task= mlr::oversample(train.task, rate = 3L)
   } else if (task.nam %in% c("pc1")) {
-      train.task= mlr::oversample(train.task, rate = 5L)  
+      train.task= mlr::oversample(train.task, rate = 5L)
   }
-  
+
   # Train the learner
   dir_name = file.path(data_dir, task$task.desc$id)
   lrn.id = grid$lrn.ind[i]
@@ -176,7 +174,7 @@ models_trained = lapply(seq_row(grid), function(i) {
     save_model_hdf5(keras.mod, filepath = paste(dir_name, "/neuralnet.h5", sep = ""))
   }
   return(list(predictor = pred, task.id = task.nam,
-    learner.id = lrn.id, sampled.rows = sampled.rows[[as.character(task.id)]], 
+    learner.id = lrn.id, sampled.rows = sampled.rows[[as.character(task.id)]],
       performance = perf))
   })
 if (PARALLEL) {
