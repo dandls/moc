@@ -815,6 +815,12 @@ Counterfactuals = R6::R6Class("Counterfactuals",
       names(fit) = private$obj.names
       finalpop = mosmafs::listToDf(finalpop, private$param.set)
       finalpop[, grepl("use.orig", names(finalpop))] = NULL
+      
+      # Delete duplicates
+      select.id = which(!duplicated(finalpop))
+      fit = fit[select.id,]
+      finalpop = finalpop[select.id, ]
+
       result = cbind(finalpop, fit)
       if (!is.null(self$epsilon)) {
         result = result[result$dist.target <= self$epsilon,]
@@ -830,11 +836,11 @@ Counterfactuals = R6::R6Class("Counterfactuals",
       pred = data.frame(private$qResults)
       names(pred) = "pred"
       
-      pareto.set.pf = cbind(private$dataDesign, pred)
+      pareto.set.pf = cbind(private$dataDesign, pred = pred)
       pareto.set.pf = pareto.set.pf[order(pareto.set.pf$dist.target, pareto.set.pf$nr.changed, 
         pareto.set.pf$dist.x.interest),]
       rownames(pareto.set.pf) = NULL
-      pareto.set.diff.pf = cbind(pareto.set.diff, pareto.front, pred) 
+      pareto.set.diff.pf = cbind(pareto.set.diff, pareto.front, pred = pred) 
       pareto.set.diff.pf = pareto.set.diff.pf[order(pareto.set.diff.pf$dist.target, pareto.set.diff.pf$nr.changed, 
         pareto.set.diff.pf$dist.x.interest),]
       rownames(pareto.set.diff.pf) = NULL
