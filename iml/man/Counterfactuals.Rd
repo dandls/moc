@@ -124,23 +124,26 @@ Default 10L.}
 \section{Methods}{
 
 \describe{
-\item{\code{explain(x.interest, target)}}{Method to set a new data point which to explain.}
-\item{\code{plot()}}{Method to plot the Pareto front in 2-D. See \link{plot.Counterfactuals.}}
-\item{\code{plotStatistics()}}{Method to plot information of Counterfactuals$log 
-for evaluation of algorithm.}
-\item{\code{continue_search(generations)}}{Method to continue search 
-after run was already finished. Results are automatically updated in 
-Counterfactuals$results.}
-\item{\code{calculate_hv()}}{Calculate dominated hypervolume of Counterfactual set 
-equal to fitness.dominatedHV of last row in Counterfactuals$log, .}
-\item{\code{calculate_diversity()}}{Calculate diversity of Counterfactual set
-equal to population.div of last row in Counterfactuals$log.}
-\item{\code{calculate_frequency()}}{Calculate frequency a feature got changed 
-over the returned set of Counterfactuals.}
 \item{\code{clone()}}{[internal] Method to clone the R6 object.}
 \item{\code{initialize()}}{[internal] Method to initialize the R6 object.}
 \item{\code{subset_results(nr.solutions)}}{Returns a subset of Counterfactuals 
 as in Counterfactuals$results of the size of nr. solutions.}
+\item{\code{explain(x.interest, target)}}{Method to set a new data point which to explain.}
+\item{\code{plot()}}{Method to plot the Pareto front in 2-D. See \link{plot.Counterfactuals.}}
+\item{\code{continue_search(generations)}}{Method to continue search 
+after run was already finished. Results are automatically updated in 
+Counterfactuals$results.}
+\item{\code{get_hv()}}{Get dominated hypervolume of Counterfactual set 
+equal to fitness.dominatedHV of last row in cf$log.}
+\item{\code{get_frequency()}}{Calculate frequency a feature got changed 
+over the returned set of Counterfactuals.}
+\item{\code{plot_statistics()}}{Method to plot information of Counterfactuals$log 
+for evaluation of algorithm.}
+\item{\code{plot_surface(features, row.ids)}}{Method to plot prediction surface given two features and
+mark \code{x.interest} and its corresponding counterfactuals on the plot. If row.ids is NULL all 
+counterfactuals are plotted.}
+\item{\code{plot_parallel(features, row.ids)}}{Method to plot a parallel plot of the feature changes.
+If features is NULL all features are plotted and if row.ids is NULL all counterfactuals are plotted.}
 }
 }
 

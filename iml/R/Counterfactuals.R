@@ -23,7 +23,7 @@
 #' cfs$continue_search(generations)
 #' cf$plot_search()
 #' cf$plot_parallel(features, row.ids)
-#' cf$plot_surface(features, row.ids, grid.size)
+#' cf$plot_surface(features, grid.size)
 #' cf$plot_hv()
 #' cf$plot_statistics()
 #' cf$get_hv()
@@ -317,21 +317,21 @@ Counterfactuals = R6::R6Class("Counterfactuals",
       return(self)
     },
     subset_results = function(nr.solutions = 10L) {
-        cfexps = self$results$counterfactuals
-        if (nr.solutions >= nrow(cfexps)) {
-          warning("nr.solutions out of range, it was set to the number of solutions in self$results")
-          return(cfexps)
-        }
-        assert_integerish(nr.solutions, lower = 1)
-        ods = computeCrowdingDistanceR(fitness = t(cfexps[, private$obj.names]), 
-          candidates = cfexps[, names(cfexps[, self$predictor$data$feature.names])])
-        idx = order(ods, decreasing = TRUE)[1:nr.solutions]
-        results.subset = self$results
-        results.subset$counterfactuals = results.subset$counterfactuals[idx, ]
-        rownames(results.subset$counterfactuals) = NULL
-        results.subset$counterfactuals.diff = results.subset$counterfactuals.diff[idx,]
-        rownames(results.subset$counterfactuals.diff) = NULL
-        return(results.subset)
+      cfexps = self$results$counterfactuals
+      if (nr.solutions >= nrow(cfexps)) {
+        warning("nr.solutions out of range, it was set to the number of solutions in self$results")
+        return(cfexps)
+      }
+      assert_integerish(nr.solutions, lower = 1)
+      ods = computeCrowdingDistanceR(fitness = t(cfexps[, private$obj.names]), 
+        candidates = cfexps[, names(cfexps[, self$predictor$data$feature.names])])
+      idx = order(ods, decreasing = TRUE)[1:nr.solutions]
+      results.subset = self$results
+      results.subset$counterfactuals = results.subset$counterfactuals[idx, ]
+      rownames(results.subset$counterfactuals) = NULL
+      results.subset$counterfactuals.diff = results.subset$counterfactuals.diff[idx,]
+      rownames(results.subset$counterfactuals.diff) = NULL
+      return(results.subset)
     },
     plot_statistics = function() {
       min.obj = c("generation", paste(private$obj.names, "min", sep = "."))    
@@ -448,9 +448,8 @@ Counterfactuals = R6::R6Class("Counterfactuals",
       }
       return(p) 
     },
-    plot_surface = function (features = NULL, row.ids = NULL, grid.size = 50L) {
+    plot_surface = function (features = NULL, grid.size = 50L) {
       assert_character(features, null.ok = TRUE, min.len = 2L)
-      assert_numeric(row.ids, null.ok = TRUE)
       
       if (is.null(features)) {
         features = self$predictor$data$feature.names
@@ -461,31 +460,14 @@ Counterfactuals = R6::R6Class("Counterfactuals",
       
       cf = self$results$counterfactuals
       
-      if (!is.null(row.ids)) {
-        plots = lapply(row.ids, function(i) {
-          res = get_ice_curve_area(instance = cf[i, ], features = features, 
-            predictor = self$predictor, param.set = self$.__enclos_env__$private$param.set, 
-            grid.size = grid.size)
-          p = plot_ice_curve_area(res, predictor = self$predictor, cf[i, ])
-        })
-        if (length(plots) > 1) {
-          layout = get_layout(length(row.ids), NULL, NULL)
-          # Fill gtable with graphics
-          p =  marrangeGrob(grobs = plots, nrow = layout$nrows, ncol = layout$ncols, 
-            top = NULL) 
-        } else {
-          p = plots[[1]]
-        }
-      } else {
-        change.id = which(rowSums(self$results$counterfactuals.diff[, features] != 0) == cf$nr.changed)
-        instances = cf[change.id, ]
-        res = get_ice_curve_area(instance = self$x.interest, features = features, 
-          predictor = self$predictor, param.set = private$param.set, 
-          grid.size = grid.size)
-        x.interest = cbind(self$x.interest, pred = self$y.hat.interest)
-        p = plot_ice_curve_area(res, predictor = self$predictor, instances, 
-          x.interest = x.interest)
-      }
+      change.id = which(rowSums(self$results$counterfactuals.diff[, features] != 0) == cf$nr.changed)
+      instances = cf[change.id, ]
+      res = get_ice_curve_area(instance = self$x.interest, features = features, 
+        predictor = self$predictor, param.set = private$param.set, 
+        grid.size = grid.size)
+      x.interest = cbind(self$x.interest, pred = self$y.hat.interest)
+      p = plot_ice_curve_area(res, predictor = self$predictor, instances, 
+        x.interest = x.interest)
       return(p)
     },
     continue_search = function(generations) {
@@ -611,7 +593,7 @@ Counterfactuals = R6::R6Class("Counterfactuals",
           train.sub = train.data
         }
         # Initialize also a use.orig vector 
-        init.df = cbind(train.sub, use.orig = train.sub != self$x.interest[rep(row.names(self$x.interest), 
+        init.df = cbind(train.sub, use.orig = train.sub == self$x.interest[rep(row.names(self$x.interest), 
           nrow(train.sub)),])
         init.df = convertDataFrameCols(init.df, factors.as.char = TRUE)
         initial.pop = ParamHelpers::dfRowsToList(init.df, par.set = private$param.set.init)
@@ -820,7 +802,7 @@ Counterfactuals = R6::R6Class("Counterfactuals",
       select.id = which(!duplicated(finalpop))
       fit = fit[select.id,]
       finalpop = finalpop[select.id, ]
-
+      
       result = cbind(finalpop, fit)
       if (!is.null(self$epsilon)) {
         result = result[result$dist.target <= self$epsilon,]
@@ -1000,7 +982,7 @@ calculate_frequency_wrapper = function(counterfactual, target = NULL, obs = NULL
   df = as.data.frame(df)
   freq = by(df, 1:nrow(df), function(row) {
     counterfactual = counterfactual$explain(row, target)
-    counterfactual$calculate_frequency()
+    counterfactual$get_frequency()
   })
   freq = do.call(rbind, freq)
   
@@ -1063,11 +1045,11 @@ plot_ice_curve_area = function(grid, predictor, instance = NULL, x.interest) {
       stat_contour(mapping = aes_string(x = nams[1], y = nams[2], z = "pred"), data = grid, colour = "white") + 
       geom_text_contour(mapping = aes_string(x = nams[1], y = nams[2], z = "pred"), 
         data = grid, colour = "white") 
-      if (nrow(instance) > 0) {
-        p = p +  geom_point(data = instance, aes_string(x=nams[1], y=nams[2]), colour = "black") 
-      }
-      p = p + geom_point(data = x.interest, aes_string(x = nams[1], y = nams[2]), colour = "white") 
-      p = ggMarginal(p, type = "histogram")
+    if (nrow(instance) > 0) {
+      p = p +  geom_point(data = instance, aes_string(x=nams[1], y=nams[2]), colour = "black") 
+    }
+    p = p + geom_point(data = x.interest, aes_string(x = nams[1], y = nams[2]), colour = "white") 
+    p = ggMarginal(p, type = "histogram")
   } else {
     train.data$pred = predictor$predict(train.data)[,1]
     categorical.feature = nams[predictor$data$feature.types[nams] =="categorical"]
@@ -1082,7 +1064,7 @@ plot_ice_curve_area = function(grid, predictor, instance = NULL, x.interest) {
     if (nrow(instance) > 0) {
       p = p +  geom_point(data = instance, aes_string(x = numerical.feature, y = "pred"), colour = "black")
     }
-    p = p + geom_point(aes(x = x.interest[1,numerical.feature], y = x.interest$pred), colour = "gray") +
+    p = p + geom_point(aes(x = x.interest[1,numerical.feature], y = x.interest$pred), colour = "gray") 
     p = ggMarginal(p, type = "histogram", margins = "x")
   }
   return(p)
