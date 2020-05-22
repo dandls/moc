@@ -30,30 +30,29 @@ Conditional = R6Class(
       xj_samples = lapply(1:nrow(X), function(i) {
         node = X_nodes[i, "node"]
         data_ids = which(private$data_nodes$node == node)
-        # data_ids = setdiff(data_ids, i) #SD removed
+        data_ids = setdiff(data_ids, i) #SD removed
         
         ## SD added
-        vec = data.frame(self$data$X)[data_ids, self$feature]
-        if (self$data$feature.types[[self$feature]] == "numerical") {
-          dens = density(vec)
-          xj = data.frame(sample(dens$x, size = size, prob=dens$y))
-        } else {
-          tab = prop.table(table(vec))
-          xj = data.frame(sample(names(tab), size = size, replace = TRUE, prob = tab))
-        }
+        # vec = data.frame(self$data$X)[data_ids, self$feature]
+        # if (self$data$feature.types[[self$feature]] == "numerical") {
+        #   dens = density(vec)
+        #   xj = data.frame(sample(dens$x, size = size, prob=dens$y))
+        # } else {
+        #   tab = prop.table(table(vec))
+        #   xj = data.frame(sample(names(tab), size = size, replace = TRUE, prob = tab))
+        # }
         ####
         ## SD removed ##
-        # data_ids_sample = sample(data_ids, size = size, replace = TRUE)
-        # xj = self$data$X[data_ids_sample, self$feature, with = FALSE]
+        data_ids_sample = sample(data_ids, size = size, replace = TRUE)
+        xj = self$data$X[data_ids_sample, self$feature, with = FALSE]
         return(data.frame(t(xj)))
         #####
         #### return(xj)
       })
       rbindlist(xj_samples)
-
+      
     },
     csample_parametric = function(X, size){
-      browser()
       cmodel = self$model
       if (self$data$feature.types[[self$feature]] == "categorical") {
         xgrid = unique(self$data$X[[self$feature]])
@@ -78,67 +77,85 @@ Conditional = R6Class(
       } else {
         self$csample_data(X, size)
       }
-      },
+    },
     cdens = function(X, xgrid = NULL){
       cmodel = self$model
       if(inherits(cmodel, "trafotree")) {
-        conditionals = predict(cmodel, newdata = X, type = "density", q = xgrid)
-        densities = melt(conditionals)$value
-        densities = data.table(.dens = densities, .id.dist = rep(1:nrow(X), each = length(xgrid)), 
-                   feature = rep(xgrid, times = nrow(X)))
+        if (class(self$data$X[[self$feature]]) != "integer") {
+          conditionals = predict(cmodel, newdata = X, type = "density", q = xgrid)
+          densities = reshape2::melt(conditionals)$value
+          densities = data.table(.dens = densities, .id.dist = rep(1:nrow(X), each = length(xgrid)), 
+            feature = rep(xgrid, times = nrow(X)))
+        } else {
+          cmodel = self$model #SD
+          X_nodes = self$cnode(X)
+          if (is.null(private$data_nodes)) {
+            private$data_nodes = self$cnode(self$data$X)
+          }
+          probs = lapply(1:nrow(X), function(i) {
+            node = X_nodes[i, "node"]
+            data_ids = which(private$data_nodes$node == node)
+            vec = data.frame(self$data$X)[data_ids, self$feature]
+            prob = prop.table(table(vec))
+            prob.df = cbind(data.frame(prob), i)
+            names(prob.df) = c("feature", ".dens", ".id.dist")
+            prob.df[c(".dens", ".id.dist", "feature")]
+          })
+          densities = do.call("rbind", probs)
+        }
       } else if (self$data$feature.types[self$feature] == "categorical") {
         probs = predict(cmodel, newdata = X, type = "prob")
-        probs.m = melt(probs)$value
+        probs.m = reshape2::melt(probs)$value
         densities = data.table(.dens = probs.m, .id.dist = rep(1:nrow(X), each = ncol(probs)),
-                   feature = factor(rep(colnames(probs), times = nrow(X)), levels = levels(self$data$X[[self$feature]])))
+          feature = factor(rep(colnames(probs), times = nrow(X)), levels = levels(self$data$X[[self$feature]])))
       } else {
         pr = predict(cmodel, newdata = X, type = "density")
         at = unique(X[[self$feature]])
- 	res = sapply(pr, function(pr) pr(at) / sum(pr(at)))
+        res = sapply(pr, function(pr) pr(at) / sum(pr(at)))
         res = data.table(t(res))
-	colnames(res) = as.character(at)
-	res.m = melt(res, measure.vars = as.character(at))
-	densities = data.table(.dens = res.m$value, .id.dist = rep(1:nrow(X), times = ncol(X)), feature = rep(at, each = nrow(X)))
+        colnames(res) = as.character(at)
+        res.m = reshape2::melt(res, measure.vars = as.character(at))
+        densities = data.table(.dens = res.m$value, .id.dist = rep(1:nrow(X), times = ncol(X)), feature = rep(at, each = nrow(X)))
       }
       colnames(densities) = c(".dens", ".id.dist", self$feature)
       densities
-  },
-  cnode = function(X,  prob = c(0.05, 0.95)) {
-    cmodel = self$model
-    node = predict(cmodel, newdata = X, type = "node")
-    node_df = data.frame(node = (node), .id = names(node), .path = pathpred(cmodel, X))
-    if(inherits(cmodel, "trafotree")) {
-      # case of numerical feature
-      quants = predict(cmodel, newdata = X, type = "quantile", prob = prob)
-      quants = data.frame(t(quants))
-      colnames(quants) = paste0("q", prob)
-    } else if (self$data$feature.types[[self$feature]] == "numerical") {
-      # case of numerical features with few unique values
-      quants = predict(cmodel, newdata = X, type = "quantile", at = prob)
-      colnames(quants) = paste0("q", prob)
-    } else {
-      # case of categorical feature
-      quants = predict(cmodel, newdata = X, type = "prob")
-      names(quants) = levels(X[[self$feature]])
+    },
+    cnode = function(X,  prob = c(0.05, 0.95)) {
+      cmodel = self$model
+      node = predict(cmodel, newdata = X, type = "node")
+      node_df = data.frame(node = (node), .id = names(node), .path = pathpred(cmodel, X))
+      if(inherits(cmodel, "trafotree")) {
+        # case of numerical feature
+        quants = predict(cmodel, newdata = X, type = "quantile", prob = prob)
+        quants = data.frame(t(quants))
+        colnames(quants) = paste0("q", prob)
+      } else if (self$data$feature.types[[self$feature]] == "numerical") {
+        # case of numerical features with few unique values
+        quants = predict(cmodel, newdata = X, type = "quantile", at = prob)
+        colnames(quants) = paste0("q", prob)
+      } else {
+        # case of categorical feature
+        quants = predict(cmodel, newdata = X, type = "prob")
+        names(quants) = levels(X[[self$feature]])
+      }
+      cbind(node_df, quants)
     }
-    cbind(node_df, quants)
-  }
   ), 
   private = list(
-  data_nodes = NULL,
-  fit_conditional = function() {
-    require("trtf")
-    y = self$data$X[[self$feature]]
-    if ((self$data$feature.types[self$feature] == "numerical") & (length(unique(y)) > 2)) {
-      yvar = numeric_var(self$feature, support = c(min(y), max(y)))
-      By  =  Bernstein_basis(yvar, order = 5, ui = "incr")
-      m = ctm(response = By,  todistr = "Normal", data = self$data$X )
-      form = as.formula(sprintf("%s ~ 1 | .", self$feature))
-      part_cmod = trafotree(m, formula = form,  data = self$data$X, control = self$ctrl)
-    } else {
-      form = as.formula(sprintf("%s ~ .", self$feature))
-      part_cmod = ctree(form, data = self$data$X, control = self$ctrl)
-    }
+    data_nodes = NULL,
+    fit_conditional = function() {
+      require("trtf")
+      y = self$data$X[[self$feature]]
+      if ((self$data$feature.types[self$feature] == "numerical") & (length(unique(y)) > 5)) {
+        yvar = numeric_var(self$feature, support = c(min(y), max(y)))
+        By  =  Bernstein_basis(yvar, order = 5, ui = "incr")
+        m = ctm(response = By,  todistr = "Normal", data = self$data$X )
+        form = as.formula(sprintf("%s ~ 1 | .", self$feature))
+        part_cmod = trafotree(m, formula = form,  data = self$data$X, control = self$ctrl)
+      } else {
+        form = as.formula(sprintf("%s ~ .", self$feature))
+        part_cmod = ctree(form, data = self$data$X, control = self$ctrl)
+      }
       self$model = part_cmod
     }
   )
