@@ -294,7 +294,12 @@ computeCrowdingDistanceR = function(fitness, candidates) {
 #' @return (numeric(1)/character(1))
 mutConDens = ecr::makeMutator(function(ind, X, pred, param.set,...) {
   a = names(ind)
-  val = suppressWarnings(pred$conditionals[[a]]$csample(X = X, size = 1, type = "data")[[1]]) 
+  val = pred$conditionals[[a]]$csample(X = X, size = 1, type = "data")[[1]]
+  # num.feat = names(pred$data$feature.types)[pred$data$feature.types == "numerical"]
+  # for (col in num.feat) X[,col] = as.numeric(X[,col])
+  # X = X[, duration := as.numeric(duration)]
+  # sapply(dt, class)
+  # pred$conditionals[[a]]$csample_parametric(X = X, size = 1)
   # Warning if ordinal feature is defined as numeric, because> ties occur in datasets
   # https://stackoverflow.com/questions/56861001/how-to-suppress-warnings-from-statsregularize-values
   if (param.set$pars[[a]]$type == "discrete") {

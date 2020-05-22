@@ -22,7 +22,7 @@ get_dens = function(cfexp){
 
 #--- Run experiment ----
 if (USE_SAVED) {
-  cfexps = readRDS("counterfactuals_correlated_data.rds")
+  cfexps = readRDS("counterfactuals_correlated_own_conditionals.rds")
 } else {
   # Run experiment: 
   # Setup

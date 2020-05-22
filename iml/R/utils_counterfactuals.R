@@ -250,82 +250,82 @@ get_ice_curve = function(instance, feature, predictor, values,
   
 }
 
-#' Algorithm to remove solutions of final set 
-#' 
-#' @section Arguments: 
-#' \describe{
-#' \item{fitness: }{(data.frame)\cr Data frame of fitness values. Each column 
-#' represents one objective.}
-#' \item{pareto.set: }{(data.frame)\cr Corresponding Pareto set to 
-#' fitness.}
-#' \item{nr.solutions: }{(numeric(1))\cr Number of solutions that should
-#' be returned.} 
+#' #' Algorithm to remove solutions of final set 
+#' #' 
+#' #' @section Arguments: 
+#' #' \describe{
+#' #' \item{fitness: }{(data.frame)\cr Data frame of fitness values. Each column 
+#' #' represents one objective.}
+#' #' \item{pareto.set: }{(data.frame)\cr Corresponding Pareto set to 
+#' #' fitness.}
+#' #' \item{nr.solutions: }{(numeric(1))\cr Number of solutions that should
+#' #' be returned.} 
+#' #' }
+#' get_diverse_solutions = function(fitness, pareto.set, nr.solutions) {
+#'   
+#'   assert_data_frame(fitness, any.missing = FALSE, nrows = nrow(pareto.set))
+#'   assert_data_frame(pareto.set, any.missing = FALSE)
+#'   assert_number(nr.solutions)
+#'   
+#'   n = nrow(pareto.set)
+#'   max = apply(fitness, 2, max)
+#'   min = apply(fitness, 2, min)
+#'   g.dist = StatMatch::gower.dist(pareto.set, KR.corr = FALSE)
+#'   
+#'   dds = numeric(n)
+#'   ods = numeric(n)
+#'   
+#'   for (i in c(1, 2, 3, 4)) {
+#'     
+#'     ord = order(fitness[i, ])
+#'     
+#'     # set the extreme values to Inf
+#'     ods[ord[1]] = Inf
+#'     ods[ord[n]] = Inf
+#'     dds[ord[1]] = Inf
+#'     dds[ord[n]] = Inf
+#'     
+#'     # update the remaining crowding numbers
+#'     if (n > 2L) {
+#'       for (j in 2:(n - 1L)) {
+#'         
+#'         if (max[i] - min[i] != 0) {
+#'           ods[ord[j]] = ods[ord[j]] + 
+#'             (abs(fitness[ord[j + 1L], i] - fitness[ord[j - 1L], i])/(max[i]-min[i]))
+#'         }
+#'         dds[ord[j]] = dds[ord[j]] +
+#'           g.dist[ord[j], ord[j-1]] +
+#'           g.dist[ord[j], ord[j+1]]
+#'         
+#'       }
+#'     }
+#'   }
+#'   cds = rank(ods) + rank(dds)
+#'   cds = jitter(cds, factor = 1)
+#'   idx = order(cds, decreasing = TRUE)[1:nr.solutions]
+#'   return(idx)
 #' }
-get_diverse_solutions = function(fitness, pareto.set, nr.solutions) {
-  
-  assert_data_frame(fitness, any.missing = FALSE, nrows = nrow(pareto.set))
-  assert_data_frame(pareto.set, any.missing = FALSE)
-  assert_number(nr.solutions)
-  
-  n = nrow(pareto.set)
-  max = apply(fitness, 2, max)
-  min = apply(fitness, 2, min)
-  g.dist = StatMatch::gower.dist(pareto.set, KR.corr = FALSE)
-  
-  dds = numeric(n)
-  ods = numeric(n)
-  
-  for (i in c(1, 2, 3, 4)) {
-    
-    ord = order(fitness[i, ])
-    
-    # set the extreme values to Inf
-    ods[ord[1]] = Inf
-    ods[ord[n]] = Inf
-    dds[ord[1]] = Inf
-    dds[ord[n]] = Inf
-    
-    # update the remaining crowding numbers
-    if (n > 2L) {
-      for (j in 2:(n - 1L)) {
-        
-        if (max[i] - min[i] != 0) {
-          ods[ord[j]] = ods[ord[j]] + 
-            (abs(fitness[ord[j + 1L], i] - fitness[ord[j - 1L], i])/(max[i]-min[i]))
-        }
-        dds[ord[j]] = dds[ord[j]] +
-          g.dist[ord[j], ord[j-1]] +
-          g.dist[ord[j], ord[j+1]]
-        
-      }
-    }
-  }
-  cds = rank(ods) + rank(dds)
-  cds = jitter(cds, factor = 1)
-  idx = order(cds, decreasing = TRUE)[1:nr.solutions]
-  return(idx)
-}
 
-
-#' Calculate diversity
 #' 
-#' The diversity is equal to pair-wise mean of Gower distances.
-#' 
-#' @section Arguments: 
-#' \describe{
-#' \item{df: }{(data.frame)\cr Pareto set.}
-#' \item{range: }{(numeric)\cr Vector of ranges for numeric features. 
-#' Must have same ordering as columns in df.}
+#' #' Calculate diversity
+#' #' 
+#' #' The diversity is equal to pair-wise mean of Gower distances.
+#' #' 
+#' #' @section Arguments: 
+#' #' \describe{
+#' #' \item{df: }{(data.frame)\cr Pareto set.}
+#' #' \item{range: }{(numeric)\cr Vector of ranges for numeric features. 
+#' #' Must have same ordering as columns in df.}
+#' #' }
+#' #' @return (numeric(1))
+#' compute_diversity = function(df, range) {
+#'   dis = StatMatch::gower.dist(data.x = df, 
+#'     rngs = range, KR.corr = FALSE)
+#'   single.dist = dis[lower.tri(dis)]
+#'   mean.dist = mean(single.dist)
+#'   return(mean.dist)
 #' }
-#' @return (numeric(1))
-compute_diversity = function(df, range) {
-  dis = StatMatch::gower.dist(data.x = df, 
-    rngs = range, KR.corr = FALSE)
-  single.dist = dis[lower.tri(dis)]
-  mean.dist = mean(single.dist)
-  return(mean.dist)
-}
-
+#' 
 
 
 

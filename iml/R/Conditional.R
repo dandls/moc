@@ -4,6 +4,8 @@
 #            If n.sample.dist is not set, the whole cartesian product between grid.dat and dist.dat is built
 # grid.dat only needs to contain the columns which are fixed. Decide here which grid points should be used.
 # dist.dat needs to contain all columns
+
+#cmodel = self$models[[feature]]
 Conditional = R6Class(
   public = list(
     feature = NULL,
@@ -18,7 +20,7 @@ Conditional = R6Class(
       private$fit_conditional()
     },
     csample_data = function(X, size){
-      cmodel = self$model
+      cmodel = self$model #SD
       X_nodes = self$cnode(X)
       ## SD added
       if (is.null(private$data_nodes)) {
@@ -51,6 +53,7 @@ Conditional = R6Class(
 
     },
     csample_parametric = function(X, size){
+      browser()
       cmodel = self$model
       if (self$data$feature.types[[self$feature]] == "categorical") {
         xgrid = unique(self$data$X[[self$feature]])
@@ -87,7 +90,7 @@ Conditional = R6Class(
         probs = predict(cmodel, newdata = X, type = "prob")
         probs.m = melt(probs)$value
         densities = data.table(.dens = probs.m, .id.dist = rep(1:nrow(X), each = ncol(probs)),
-                   feature = factor(rep(colnames(probs), times = nrow(X)), levels = levels(self$data[[self$feature]])))
+                   feature = factor(rep(colnames(probs), times = nrow(X)), levels = levels(self$data$X[[self$feature]])))
       } else {
         pr = predict(cmodel, newdata = X, type = "density")
         at = unique(X[[self$feature]])
