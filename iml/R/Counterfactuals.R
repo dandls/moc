@@ -282,16 +282,16 @@ Counterfactuals = R6::R6Class("Counterfactuals",
       private$run()
       return(self)
     },
-    subset_results = function(nr.solutions) {
-      if (nr.solutions > nrow(self$results$counterfactuals)) {
-        warning("nr.solutions out of range, was set to 
-          number of solutions in self$results")
-        nr.solutions = nrow(self$results$counterfactuals)
+    subset_results = function(nr.solutions = 10L) {
+      cfexps = self$results$counterfactuals
+      if (nr.solutions >= nrow(cfexps)) {
+        warning("nr.solutions out of range, it was set to the number of solutions in self$results")
+        return(cfexps)
       }
       assert_integerish(nr.solutions, lower = 1)
-      idx = get_diverse_solutions(self$results$counterfactuals[, private$obj.names],
-        self$results$counterfactuals[, self$predictor$data$feature.names], 
-        nr.solutions)
+      ods = computeCrowdingDistanceR(fitness = t(cfexps[, private$obj.names]), 
+        candidates = cfexps[, names(cfexps[, self$predictor$data$feature.names])])
+      idx = order(ods, decreasing = TRUE)[1:nr.solutions]
       results.subset = self$results
       results.subset$counterfactuals = results.subset$counterfactuals[idx, ]
       rownames(results.subset$counterfactuals) = NULL
