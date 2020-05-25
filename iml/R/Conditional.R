@@ -84,24 +84,22 @@ Conditional = R6Class(
         if (class(self$data$X[[self$feature]]) != "integer") {
           conditionals = predict(cmodel, newdata = X, type = "density", q = xgrid)
           densities = reshape2::melt(conditionals)$value
-          densities = data.table(.dens = densities, .id.dist = rep(1:nrow(X), each = length(xgrid)), 
+          densities = data.table(.dens = densities, .id.dist = rep(1:nrow(X), each = length(xgrid)),
             feature = rep(xgrid, times = nrow(X)))
+          ## SD added
         } else {
-          cmodel = self$model #SD
-          X_nodes = self$cnode(X)
           if (is.null(private$data_nodes)) {
             private$data_nodes = self$cnode(self$data$X)
           }
-          probs = lapply(1:nrow(X), function(i) {
+          X_nodes = self$cnode(X)
+          probs.m = lapply(1:nrow(X), function(i) {
             node = X_nodes[i, "node"]
             data_ids = which(private$data_nodes$node == node)
             vec = data.frame(self$data$X)[data_ids, self$feature]
-            prob = prop.table(table(vec))
-            prob.df = cbind(data.frame(prob), i)
-            names(prob.df) = c("feature", ".dens", ".id.dist")
-            prob.df[c(".dens", ".id.dist", "feature")]
+            dens = density(vec, n = 100, from = min(xgrid), to = max(xgrid))
+            prob.df = data.frame(cbind(.dens = dens$y, .id.dist = i, feature = dens$x))
           })
-          densities = do.call("rbind", probs)
+          densities = do.call("rbind", probs.m)
         }
       } else if (self$data$feature.types[self$feature] == "categorical") {
         probs = predict(cmodel, newdata = X, type = "prob")
@@ -110,12 +108,12 @@ Conditional = R6Class(
           feature = factor(rep(colnames(probs), times = nrow(X)), levels = levels(self$data$X[[self$feature]])))
       } else {
         pr = predict(cmodel, newdata = X, type = "density")
-        at = unique(X[[self$feature]])
+        at = unique(self$data$X[[self$feature]])
         res = sapply(pr, function(pr) pr(at) / sum(pr(at)))
         res = data.table(t(res))
         colnames(res) = as.character(at)
         res.m = reshape2::melt(res, measure.vars = as.character(at))
-        densities = data.table(.dens = res.m$value, .id.dist = rep(1:nrow(X), times = ncol(X)), feature = rep(at, each = nrow(X)))
+        densities = data.table(.dens = res.m$value, .id.dist = rep(1:nrow(X), times = length(at)), feature = rep(at, each = nrow(X)))
       }
       colnames(densities) = c(".dens", ".id.dist", self$feature)
       densities
@@ -146,7 +144,7 @@ Conditional = R6Class(
     fit_conditional = function() {
       require("trtf")
       y = self$data$X[[self$feature]]
-      if ((self$data$feature.types[self$feature] == "numerical") & (length(unique(y)) > 5)) {
+      if ((self$data$feature.types[self$feature] == "numerical") & (length(unique(y)) > 10)) {
         yvar = numeric_var(self$feature, support = c(min(y), max(y)))
         By  =  Bernstein_basis(yvar, order = 5, ui = "incr")
         m = ctm(response = By,  todistr = "Normal", data = self$data$X )
