@@ -5,7 +5,13 @@
 # grid.dat only needs to contain the columns which are fixed. Decide here which grid points should be used.
 # dist.dat needs to contain all columns
 
-#cmodel = self$models[[feature]]
+
+#### Documentation what Susanne resolved: ####
+# cmodel = self$models[[feature]] --> self$model
+# unique(self$X[[self$feature]]) --> unique(self$data$X[[self$features]])
+# added functions in cdens to process integers + save data_nodes as private$object
+# Set number of classes for trafotree to 10
+
 Conditional = R6Class(
   public = list(
     feature = NULL,
@@ -22,32 +28,16 @@ Conditional = R6Class(
     csample_data = function(X, size){
       cmodel = self$model #SD
       X_nodes = self$cnode(X)
-      ## SD added
       if (is.null(private$data_nodes)) {
         private$data_nodes = self$cnode(self$data$X)
       }
-      ####
       xj_samples = lapply(1:nrow(X), function(i) {
         node = X_nodes[i, "node"]
         data_ids = which(private$data_nodes$node == node)
-        data_ids = setdiff(data_ids, i) #SD removed
-        
-        ## SD added
-        # vec = data.frame(self$data$X)[data_ids, self$feature]
-        # if (self$data$feature.types[[self$feature]] == "numerical") {
-        #   dens = density(vec)
-        #   xj = data.frame(sample(dens$x, size = size, prob=dens$y))
-        # } else {
-        #   tab = prop.table(table(vec))
-        #   xj = data.frame(sample(names(tab), size = size, replace = TRUE, prob = tab))
-        # }
-        ####
-        ## SD removed ##
+        data_ids = setdiff(data_ids, i) 
         data_ids_sample = sample(data_ids, size = size, replace = TRUE)
         xj = self$data$X[data_ids_sample, self$feature, with = FALSE]
         return(data.frame(t(xj)))
-        #####
-        #### return(xj)
       })
       rbindlist(xj_samples)
       
@@ -86,7 +76,6 @@ Conditional = R6Class(
           densities = reshape2::melt(conditionals)$value
           densities = data.table(.dens = densities, .id.dist = rep(1:nrow(X), each = length(xgrid)),
             feature = rep(xgrid, times = nrow(X)))
-          ## SD added
         } else {
           if (is.null(private$data_nodes)) {
             private$data_nodes = self$cnode(self$data$X)
