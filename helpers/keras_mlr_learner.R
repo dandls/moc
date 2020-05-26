@@ -4,7 +4,7 @@
 #--- Definition of learner ----
 Sys.setenv('TF_CPP_MIN_LOG_LEVEL' = 2) #switch off messages
 
-get_keras_model = function(layer_size = 0, lr = 3*10^-4, input_shape) {
+get_keras_model = function(layer_size = 0, lr = 3*10^-4, units=20L, input_shape) {
     ffnet= keras_model_sequential()
     if (layer_size == 0) {
        
@@ -13,7 +13,7 @@ get_keras_model = function(layer_size = 0, lr = 3*10^-4, input_shape) {
                 activation = "sigmoid")
     } else {
         ffnet%>%
-            layer_dense(units = 2^layer_size, input_shape = input_shape, 
+            layer_dense(units = units, input_shape = input_shape, #2^layer_size
               activation = "relu") %>%
             #layer_dense(units = 2^layer_size, activation = "relu") %>%
             layer_dense(units = 1L, activation = "sigmoid")
@@ -32,8 +32,9 @@ makeRLearner.classif.keraslogreg = function() {
         makeIntegerLearnerParam(id = "layer_size", lower = 0, upper = 6, default = 0),
       makeNumericLearnerParam(id = "lr", lower = 10^-5, upper = 1, default = 0.001), 
       makeIntegerLearnerParam(id = "epochs", default = 30L, lower = 1L), 
-      makeIntegerLearnerParam(id = "batch_size", default = 32L, lower = 1L)),
-    par.vals = list(epochs = 30L, lr = 0.001, layer_size = 0, batch_size = 32L), 
+      makeIntegerLearnerParam(id = "batch_size", default = 32L, lower = 1L),
+      makeIntegerLearnerParam(id = "units", default = 20L, lower = 1L)),
+    par.vals = list(epochs = 30L, lr = 0.001, layer_size = 0, batch_size = 32L, units = 20L), 
     properties = c("twoclass", "numerics", "factors", "prob", 
       "ordered"),
     name = "Keras Logistic Regression",
@@ -58,7 +59,7 @@ trainLearner.classif.keraslogreg = function(.learner, .task, .subset, .weights =
   
  
   model = get_keras_model(layer_size = .learner$par.vals$layer_size, 
-    lr = .learner$par.vals$lr, input_shape = input_shape)
+    lr = .learner$par.vals$lr, input_shape = input_shape, units = .learner$par.vals$units)
   es = callback_early_stopping(monitor='val_loss', patience=5L)
   history = invoke(keras::fit,
     object = model,
