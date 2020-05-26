@@ -11,14 +11,13 @@ read_dir = args[[2]]
 save_dir = args[[4]]
 data_dir = args[[8]]
 evals = 200*50
-cpus = 5L 
+cpus = 20L 
 evals = max(evals)
 PARALLEL = TRUE
 Sys.setenv('TF_CPP_MIN_LOG_LEVEL' = 2)
 
 #--- Create tuning instances----
-models_irace = readRDS(read_dir)
-instances = rep(models_irace, 5)
+instances = readRDS(read_dir)
 
 # Check for NULL Entries
 detect_null = lapply(instances, function(inst) {
@@ -39,7 +38,6 @@ ps = pSS(
 )
 
 targetRunnerParallel = function(experiment, exec.target.runner, scenario, target.runner) {
-  browser()
   inst = experiment[[1]]$instance
   inst = initialize_instance(inst, data_dir)
   x.interest = inst$x.interest
@@ -47,12 +45,12 @@ targetRunnerParallel = function(experiment, exec.target.runner, scenario, target
   message(inst$learner.id)
   hv_auc = parallelMap(function(curexp) {
     if (inst$learner.id %in% c("logreg", "neuralnet")) {
-      inst = load_keras_model(inst, "../saved_objects_/data_irace")
+      inst = load_keras_model(inst, "../saved_objects_rerun/data_irace")
     }
     pars = curexp$configuration
     pred = inst$predictor
     if (as.logical(pars$conditional)) {
-      pred$conditional = readRDS(file.path("../saved_objects", inst$task.id, "conditional.rds")) 
+      pred$conditional = readRDS(file.path(data_dir, inst$task.id, "conditional.rds")) 
     }
     cf = Counterfactuals$new(predictor = pred, target = target, 
       mu = pars$mu, x.interest = x.interest, p.mut = pars$p.mut, 
@@ -79,12 +77,11 @@ tuner.config = c(list(targetRunnerParallel = targetRunnerParallel,
 library(parallel)
 if (PARALLEL) {
   parallelStartSocket(cpus = cpus) # ParallelStartMulticore does not work for xgboost
-  parallelExport("Counterfactuals", "Predictor",
+  parallelExport("Counterfactuals", "Predictor", "Conditional",
     "make_paramlist", "evals",
     "char_to_factor", "transform_to_orig",
     "sdev_to_list", "select_nondom", "select_diverse",
-    "fitness_fun", "computeCrowdingDistanceR_ver1", "get_diff",
-    "compute_diversity", "load_keras_model")
+    "fitness_fun", "computeCrowdingDistanceR", "get_diff", "load_keras_model")
   parallelLibrary("keras", "pracma")
   parallelExport("trainLearner.classif.keraslogreg", "predictLearner.classif.keraslogreg",
     "trans_target", "invoke", "get_keras_model", "predict_proba")

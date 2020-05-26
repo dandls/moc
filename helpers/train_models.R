@@ -29,6 +29,14 @@ task_list = lapply(task_ids, function(x) {
 names(task_list) = task_ids
 task_list = lapply(task_list, function(task.oml) {
   t = OpenML::convertOMLTaskToMlr(task.oml)$mlr.task
+  if (task.oml$task.id == 52945) {
+    df = getTaskData(t)
+    df$age = factor(str_replace(df$age, pattern = "-", "."))
+    df$inv.nodes = factor(str_replace(df$inv.nodes, pattern = "-", "."))
+    df$node.caps = factor(str_replace(df$node.caps, pattern = "-", "."))
+    df$tumor.size = factor(str_replace(df$tumor.size, pattern = "-", "."))
+    t = changeData(t, df)
+  }
   if (SAVE_KERAS) {
     dir.create(path = file.path(data_dir, t$task.desc$id), showWarnings = FALSE)
   }
@@ -40,45 +48,45 @@ task_list = lapply(task_list, function(task.oml) {
 sampled.rows = lapply(task_list, function(onetask) {
   task.id = onetask$task.desc$id
   sampled.rows = sample(seq_len(onetask$task.desc$size), size = 10, replace = FALSE)
-  # if (SAVE_KERAS) {
-  #   dir_name = file.path(data_dir, task.id)
-  #   # Save sampled rows
-  #   write(sampled.rows, file = paste(dir_name, "/sampled_ids.txt", sep = ""), ncolumns = 1)
-  #   # Save original data
-  #   dat = getTaskData(onetask)
-  #   dat[[getTaskTargetNames(onetask)]] = trans_target(dat[[getTaskTargetNames(onetask)]])
-  #   write.csv(dat, file = paste(dir_name, "/data_orig.csv", sep = ""), row.names = FALSE)
-  #   # Encode features with enc
-  #   # Different handling of binary features (due to recourse!)
-  #    map = mlrCPO::cpoScaleRange() %>>% mlrCPO::cpoDummyEncode()
-  #   nw.onetask = mlrCPO::applyCPO(map, onetask)
-  #   dat_encoded = getTaskData(nw.onetask)
-  #   dat_encoded[[getTaskTargetNames(nw.onetask)]] = trans_target(dat_encoded[[getTaskTargetNames(nw.onetask)]])
-  #   write.csv(dat_encoded, file = paste(dir_name, "/data_encoded.csv", sep = ""), row.names = FALSE)
-  #   if (!task.id %in% c("cmc", "tic-tac-toe", "plasma_retinol", "kr-vs-kp")) {
-  #       map = mlrCPO::cpoScaleRange() %>>% mlrCPO::cpoDummyEncode(reference.cat = TRUE)
-  #       nw.onetask = mlrCPO::applyCPO(map, onetask)
-  #       dat_encoded = getTaskData(nw.onetask)
-  #       dat_encoded[[getTaskTargetNames(nw.onetask)]] = trans_target(dat_encoded[[getTaskTargetNames(nw.onetask)]])
-  #       write.csv(dat_encoded, file = paste(dir_name, "/data_encoded_refcat.csv", sep = ""), row.names = FALSE)
-  #   }
-  #   # Save feature types
-  #   col_info = sapply(dat[,getTaskFeatureNames(onetask)], class)
-  #   col_info["target"] = getTaskTargetNames(onetask)
-  #   feature.types = rjson::toJSON(col_info)
-  #   write(feature.types, file = paste(dir_name, "/feature_types.json", sep = ""))
-  #   # Save scale and center
-  #   state = mlrCPO::getCPOTrainedState(retrafo(onetask %>>% cpoScale()))
-  #   center = toJSON(state$control$center)
-  #   scale = toJSON(state$control$scale)
-  #   write(center, file = paste(dir_name, "/feature_center.json", sep = ""))
-  #   write(scale, file = paste(dir_name, "/feature_scale.json", sep = ""))
-  #   # Conditional
-  #   ctr = ctree_control(maxdepth = 5L)
-  #   con = fit_conditionals(getTaskData(onetask), ctrl = ctr)
-  #   saveRDS(object = con, file = paste(dir_name, "/conditional.rds", sep = ""))
-  # }
-  # return(sampled.rows)
+  if (SAVE_KERAS) {
+    dir_name = file.path(data_dir, task.id)
+    # Save sampled rows
+    write(sampled.rows, file = paste(dir_name, "/sampled_ids.txt", sep = ""), ncolumns = 1)
+    # Save original data
+    dat = getTaskData(onetask)
+    dat[[getTaskTargetNames(onetask)]] = trans_target(dat[[getTaskTargetNames(onetask)]])
+    write.csv(dat, file = paste(dir_name, "/data_orig.csv", sep = ""), row.names = FALSE)
+    # Encode features with enc
+    # Different handling of binary features (due to recourse!)
+     map = mlrCPO::cpoScaleRange() %>>% mlrCPO::cpoDummyEncode()
+    nw.onetask = mlrCPO::applyCPO(map, onetask)
+    dat_encoded = getTaskData(nw.onetask)
+    dat_encoded[[getTaskTargetNames(nw.onetask)]] = trans_target(dat_encoded[[getTaskTargetNames(nw.onetask)]])
+    write.csv(dat_encoded, file = paste(dir_name, "/data_encoded.csv", sep = ""), row.names = FALSE)
+    if (!task.id %in% c("cmc", "tic-tac-toe", "plasma_retinol", "kr-vs-kp")) {
+        map = mlrCPO::cpoScaleRange() %>>% mlrCPO::cpoDummyEncode(reference.cat = TRUE)
+        nw.onetask = mlrCPO::applyCPO(map, onetask)
+        dat_encoded = getTaskData(nw.onetask)
+        dat_encoded[[getTaskTargetNames(nw.onetask)]] = trans_target(dat_encoded[[getTaskTargetNames(nw.onetask)]])
+        write.csv(dat_encoded, file = paste(dir_name, "/data_encoded_refcat.csv", sep = ""), row.names = FALSE)
+    }
+    # Save feature types
+    col_info = sapply(dat[,getTaskFeatureNames(onetask)], class)
+    col_info["target"] = getTaskTargetNames(onetask)
+    feature.types = rjson::toJSON(col_info)
+    write(feature.types, file = paste(dir_name, "/feature_types.json", sep = ""))
+    # Save scale and center
+    state = mlrCPO::getCPOTrainedState(retrafo(onetask %>>% cpoScale()))
+    center = toJSON(state$control$center)
+    scale = toJSON(state$control$scale)
+    write(center, file = paste(dir_name, "/feature_center.json", sep = ""))
+    write(scale, file = paste(dir_name, "/feature_scale.json", sep = ""))
+    # Conditional
+    ctr = ctree_control(maxdepth = 5L)
+    con = fit_conditionals(getTaskData(onetask), ctrl = ctr)
+    saveRDS(object = con, file = paste(dir_name, "/conditional.rds", sep = ""))
+  }
+  return(sampled.rows)
 })
 
 # --- Algorithm design ----
@@ -118,6 +126,7 @@ if (length(subset.id) > 0) {
 }
 
 print(nrow(grid))
+# grid = grid[c(1:5),]
 
 if (PARALLEL) {
   set.seed(123456, "L'Ecuyer-CMRG")
@@ -158,7 +167,7 @@ models_trained = lapply(seq_row(grid), function(i) {
   }
   par.set = hyper.pars[[grid$lrn.ind[i]]]
   ctrl = makeTuneControlRandom(maxit = 100L*length(par.set$pars))
-  if (!is.null(par.set)) {
+  if (!is.null(par.set) & FALSE) { #SDs
     res = tuneParams(lrn, train.task, cv5, par.set = par.set, control = ctrl,
       show.info = FALSE)
     lrn = setHyperPars2(lrn, res$x) # evtl exp
