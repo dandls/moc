@@ -289,7 +289,7 @@ Counterfactuals = R6::R6Class("Counterfactuals",
         return(cfexps)
       }
       assert_integerish(nr.solutions, lower = 1)
-      ods = computeCrowdingDistanceR(fitness = t(cfexps[, private$obj.names]), 
+      ods = computeCrowdingDistanceR_ver1(fitness = t(cfexps[, private$obj.names]), 
         candidates = cfexps[, names(cfexps[, self$predictor$data$feature.names])])
       idx = order(ods, decreasing = TRUE)[1:nr.solutions]
       results.subset = self$results
