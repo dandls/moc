@@ -9,6 +9,7 @@ library("irace")
 args = commandArgs(trailingOnly=TRUE)
 read_dir = args[[2]]
 save_dir = args[[4]]
+data_dir = args[[8]]
 evals = 200*50
 cpus = 5L 
 evals = max(evals)
@@ -32,27 +33,34 @@ ps = pSS(
   p.mut.gen : numeric[0.05, 0.8],
   p.mut.use.orig : numeric[0.05, 0.5], 
   p.rec.gen : numeric[0.3, 1], 
-  p.rec.use.orig : numeric[0.3, 1] 
+  p.rec.use.orig : numeric[0.3, 1], 
+  initialization : discrete[random, sd, icecurve, traindata], 
+  conditional : logical
 )
 
 targetRunnerParallel = function(experiment, exec.target.runner, scenario, target.runner) {
+  browser()
   inst = experiment[[1]]$instance
-  inst = initialize_instance(inst, "data_irace")
+  inst = initialize_instance(inst, data_dir)
   x.interest = inst$x.interest
   target = inst$target
   message(inst$learner.id)
   hv_auc = parallelMap(function(curexp) {
     if (inst$learner.id %in% c("logreg", "neuralnet")) {
-      inst = load_keras_model(inst, "data_irace")
+      inst = load_keras_model(inst, "../saved_objects_/data_irace")
     }
-    pred = inst$predictor
     pars = curexp$configuration
+    pred = inst$predictor
+    if (as.logical(pars$conditional)) {
+      pred$conditional = readRDS(file.path("../saved_objects", inst$task.id, "conditional.rds")) 
+    }
     cf = Counterfactuals$new(predictor = pred, target = target, 
       mu = pars$mu, x.interest = x.interest, p.mut = pars$p.mut, 
       p.rec = pars$p.rec, p.mut.gen = pars$p.mut.gen, 
       p.mut.use.orig = pars$p.mut.use.orig, 
       p.rec.gen = pars$p.rec.gen, 
       p.rec.use.orig = pars$p.rec.use.orig, 
+      initialization = pars$initialization,
       generations = list(mosmafsTermEvals(evals)))
     integral(approxfun(c(0, cf$log$evals), c(0, cf$log$fitness.domHV)), 
       xmin = 0, xmax = evals)

@@ -13,7 +13,7 @@ get-evals :
 	Rscript get_evals.R --readdir $(model_dir) --savedir $(nr_evals_dir)
 	
 run-irace : 
-	Rscript run_irace.R --readdir $(model_dir) --savedir $(irace_result_dir) --evaldir $(nr_evals_dir)
+	Rscript run_irace.R --readdir $(model_dir) --savedir $(irace_result_dir) --evaldir $(nr_evals_dir) --data_dir $(data_dir)
 
 get-generations : 
 	Rscript get_generations.R --readdir $(model_dir) --savedir $(config_dir) --iracedir $(irace_result_dir) --gendir "../saved_objects/max_generations.rds"
