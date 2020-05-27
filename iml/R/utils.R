@@ -143,14 +143,14 @@ cumsum_na = function(values) {
 }
 
 
-get.grid = function(dat, grid.size, anchor.value = NULL, type = "equidistant") {
+get.grid = function(dat, grid.size, anchor.value = NULL, type = "equidist") {
   assert_data_frame(dat, min.cols = 1)
   features = colnames(dat)
   feature.type = unlist(lapply(dat, function(x){get.feature.type(class(x))}))
   assert_character(features, min.len = 1, max.len = 2)
   assert_true(length(features) == length(feature.type))
   assert_numeric(grid.size, min.len = 1, max.len = length(features))
-  assert_choice(type, c("equidistant", "quantile"))
+  assert_choice(type, c("equidist", "quantile"))
   if (length(features) == 1) {
     grid = get.grid.1D(dat[[features[1]]], 
       feature.type = feature.type[1], grid.size = grid.size[1], type  = type)
@@ -169,11 +169,11 @@ get.grid = function(dat, grid.size, anchor.value = NULL, type = "equidistant") {
 }
 
 
-get.grid.1D = function(feature, grid.size,  feature.type = NULL, type = "equidistant") {
+get.grid.1D = function(feature, grid.size,  feature.type = NULL, type = "equidist") {
   checkmate::assert_vector(feature, all.missing = FALSE, min.len = 2)
   checkmate::assert_choice(feature.type, c("numerical", "categorical"), null.ok = TRUE)
   checkmate::assert_numeric(grid.size)
-  checkmate::assert_choice(type, c("equidistant", "quantile"))
+  checkmate::assert_choice(type, c("equidist", "quantile"))
   
   if(is.null(feature.type)) feature.type = get.feature.type(class(feature))
   
@@ -182,7 +182,7 @@ get.grid.1D = function(feature, grid.size,  feature.type = NULL, type = "equidis
     feature = feature[is.finite(feature)]
     if (length(feature) == 0) stop("Feature does not contain any finite values.")
     
-    if(type == "equidistant") {
+    if(type == "equidist") {
       grid = seq(from = min(feature), 
         to = max(feature), 
         length.out = grid.size)

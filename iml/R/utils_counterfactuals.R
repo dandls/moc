@@ -230,8 +230,8 @@ get_ice_curve = function(instance, feature, predictor, values,
   grid.size = 20) {
   
   # make grid of one feature
-  grid = iml:::get.grid.1D(feature = values, grid.size = grid.size, 
-    type = "equidistant")
+  grid = get.grid.1D(feature = values, grid.size = grid.size, 
+    type = "equidist")
   grid.size = length(grid)
   grid = as.data.frame(grid)
   colnames(grid) = feature

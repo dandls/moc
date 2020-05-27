@@ -18,6 +18,8 @@
 *.Rhistory
 *.Rproj
 *.Rproj.user
+*.Rout
+*.Rdata
 
 # Editor
 *.swp

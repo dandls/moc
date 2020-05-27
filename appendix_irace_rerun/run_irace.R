@@ -7,10 +7,10 @@ source("../helpers/libs_mlr.R")
 library("irace")
 
 args = commandArgs(trailingOnly=TRUE)
-read_dir = args[[2]]
-save_dir = args[[4]]
-data_dir = args[[8]]
-evals = 200*50
+read_dir = args[[1]]
+save_dir = args[[2]]
+data_dir = args[[4]]
+evals = 200*50 
 cpus = 20L 
 evals = max(evals)
 PARALLEL = TRUE
@@ -21,7 +21,7 @@ instances = readRDS(read_dir)
 
 # Check for NULL Entries
 detect_null = lapply(instances, function(inst) {
-    lapply(inst, function(el) {if (length(el) == 0) stop("")})
+  lapply(inst, function(el) {if (length(el) == 0) stop("")})
 })
 
 #--- Irace Setup ----
@@ -39,18 +39,25 @@ ps = pSS(
 
 targetRunnerParallel = function(experiment, exec.target.runner, scenario, target.runner) {
   inst = experiment[[1]]$instance
+  cond = any(unlist(lapply(experiment, function(exp) as.logical(exp$configuration$conditional))))
   inst = initialize_instance(inst, data_dir)
+  pred = inst$predictor
+  if (cond) {
+    conditional = readRDS(file.path(data_dir, inst$task.id, "conditional.rds"))
+  }
   x.interest = inst$x.interest
   target = inst$target
   message(inst$learner.id)
   hv_auc = parallelMap(function(curexp) {
-    if (inst$learner.id %in% c("logreg", "neuralnet")) {
-      inst = load_keras_model(inst, "../saved_objects_rerun/data_irace")
-    }
     pars = curexp$configuration
-    pred = inst$predictor
-    if (as.logical(pars$conditional)) {
-      pred$conditional = readRDS(file.path(data_dir, inst$task.id, "conditional.rds")) 
+    if (inst$learner.id %in% c("logreg", "neuralnet")) {
+      inst = load_keras_model(inst, data_dir)
+    }
+    if (is.logical(pars$conditional)) {
+      pred = inst$predictor$clone()
+      pred$conditionals = conditional
+    } else {
+      pred = inst$predictor
     }
     cf = Counterfactuals$new(predictor = pred, target = target, 
       mu = pars$mu, x.interest = x.interest, p.mut = pars$p.mut, 
@@ -77,11 +84,15 @@ tuner.config = c(list(targetRunnerParallel = targetRunnerParallel,
 library(parallel)
 if (PARALLEL) {
   parallelStartSocket(cpus = cpus) # ParallelStartMulticore does not work for xgboost
-  parallelExport("Counterfactuals", "Predictor", "Conditional",
-    "make_paramlist", "evals",
-    "char_to_factor", "transform_to_orig",
-    "sdev_to_list", "select_nondom", "select_diverse",
-    "fitness_fun", "computeCrowdingDistanceR", "get_diff", "load_keras_model")
+  parallelExport(
+  "Counterfactuals", "Predictor", "Conditional",
+  "make_paramlist",
+    "evals", "data_dir",
+  "char_to_factor",
+   "transform_to_orig",
+   "sdev_to_list", "select_nondom", "select_diverse", "get_ICE_var", "get_ice_curve",
+   "fitness_fun", "computeCrowdingDistanceR", "get_diff",
+    "load_keras_model", "get.grid.1D")
   parallelLibrary("keras", "pracma")
   parallelExport("trainLearner.classif.keraslogreg", "predictLearner.classif.keraslogreg",
     "trans_target", "invoke", "get_keras_model", "predict_proba")
