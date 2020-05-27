@@ -86,7 +86,7 @@ library(parallel)
 if (PARALLEL) {
   parallelStartSocket(cpus = cpus) # ParallelStartMulticore does not work for xgboost
   parallelExport(
-  "Counterfactuals", "Predictor", "Conditional",
+  "Counterfactuals", "Predictor", "Conditional", "InterpretationMethod",
   "make_paramlist",
     "evals", "data_dir",
   "char_to_factor",

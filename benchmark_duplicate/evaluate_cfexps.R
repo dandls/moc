@@ -14,7 +14,7 @@ data.path = "../saved_objects/benchmark"
 obj.nams = c("dist.target", "dist.x.interest", "nr.changed", "dist.train")
 task_ids = readRDS("../helpers/benchmark_task_ids.rds")
 task.names = list.dirs(path = data.path, full.names = FALSE, recursive = FALSE)
-
+set.seed = 1234
 # --- Data set description ----
 data.desc = mapply(function(inst, id) {
   rows = inst$predictor$data$n.rows
@@ -61,7 +61,7 @@ moc.cf = lapply(task.names, function(task.nam) {
         itlist = split(combis, seq(nrow(combis)))
         
         subset = lapply(itlist, function(it) {
-          return(subset_results(cf[cf$method == it$method & cf$row_ids == it$row_ids, ], 10))
+          return(subset_results(cf[cf$method == it$method & cf$row_ids == it$row_ids, ], 10, strategy = "random"))
         })
         cf = do.call(rbind, subset)
         rownames(cf) = NULL
