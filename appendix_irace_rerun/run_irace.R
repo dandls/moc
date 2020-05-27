@@ -94,7 +94,7 @@ if (PARALLEL) {
    "sdev_to_list", "select_nondom", "select_diverse", "get_ICE_var", "get_ice_curve",
    "fitness_fun", "computeCrowdingDistanceR", "get_diff",
     "load_keras_model", "get.grid.1D")
-  parallelLibrary("keras", "pracma")
+  parallelLibrary("keras", "pracma", "iml")
   parallelExport("trainLearner.classif.keraslogreg", "predictLearner.classif.keraslogreg",
     "trans_target", "invoke", "get_keras_model", "predict_proba")
   parallelLibrary("mosmafs", "ParamHelpers")
