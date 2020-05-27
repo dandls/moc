@@ -134,7 +134,7 @@ if (length(subset.id) > 0) {
 
 print(nrow(grid))
 #grid = grid[c(20:21),] #SD
-grid = grid[c(1:4), ] #SD
+grid = grid[c(1:4, 20), ] #SD
 
 if (PARALLEL) {
   set.seed(123456, "L'Ecuyer-CMRG")

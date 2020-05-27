@@ -208,14 +208,18 @@ plot_results = function(df, type = "hv", methods = NULL, subset.col = "learner",
 }
 
 # Subset number of solutions of MOC
-subset_results = function(cfexps, nr.solutions) {
+subset_results = function(cfexps, nr.solutions, strategy = "crowdingdist") {
   if (nr.solutions > nrow(cfexps)) {
     return(cfexps)
   }
   assert_integerish(nr.solutions, lower = 1)
-  idx = get_diverse_solutions(cfexps[, obj.nams],
-    cfexps[, names(cfexps[, !names(cfexps) %in% obj.nams])], 
-    nr.solutions)
+  if (strategy == "crowdingdist") {
+  ods = computeCrowdingDistanceR(fitness = t(cfexps[, obj.nams]), 
+    candidates = cfexps[, !names(cfexps) %in% c(obj.nams, "pred", "method", "row_ids")])
+  } else if (strategy == "random") {
+    ods = sample(seq_len(nrow(cfexps)), nr.solutions)
+  }
+  idx = order(ods, decreasing = TRUE)[1:nr.solutions]
   return(cfexps[idx,])
 }
 

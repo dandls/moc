@@ -1,5 +1,5 @@
 data_dir = ../saved_objects_rerun/irace
-model_dir = ../saved_objects_rerun/irace/models_irace_keras.rds
+model_dir = ../saved_objects_rerun/irace/models_irace.rds
 irace_result_dir = ../saved_objects_rerun/irace/irace_results.rds
 config_dir = ../saved_objects/best_configs.rds
 nr_evals_dir = ../saved_objects_rerun/irace/max_eval.rds
