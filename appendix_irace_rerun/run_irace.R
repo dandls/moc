@@ -11,7 +11,7 @@ read_dir = args[[1]]
 save_dir = args[[2]]
 data_dir = args[[4]]
 evals = 200*50
-evals = 2L #SD
+#evals = 2L #SD
 cpus = 20L 
 evals = max(evals)
 PARALLEL = TRUE
@@ -75,7 +75,7 @@ targetRunnerParallel = function(experiment, exec.target.runner, scenario, target
   return(res)
 }
 extra.args = list()
-extra.args$maxExperiments = 1000 #3000
+extra.args$maxExperiments = 3000 #SD 1000
 extra.args$firstTest = 15
 
 tuner.config = c(list(targetRunnerParallel = targetRunnerParallel, 
