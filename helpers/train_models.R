@@ -21,6 +21,13 @@ data_dir = file.path(current_dir, folder)
 dir.create(path = data_dir, showWarnings = FALSE)
 names_models = c("randomforest", "xgboost", "svm", "logreg", "neuralnet")
 
+cpoFixNames = makeCPO("fixnames",
+  cpo.train = NULL,
+  cpo.retrafo = {
+    colnames(data) <- make.names(colnames(data))
+    data
+  })
+
 # --- Task design ----
 checkmate::assert_double(task_ids)
 task_list = lapply(task_ids, function(x) {
@@ -29,14 +36,14 @@ task_list = lapply(task_ids, function(x) {
 names(task_list) = task_ids
 task_list = lapply(task_list, function(task.oml) {
   t = OpenML::convertOMLTaskToMlr(task.oml)$mlr.task
-  if (task.oml$task.id == 52945) {
-    df = getTaskData(t)
-    df$age = factor(str_replace(df$age, pattern = "-", "."))
-    df$inv.nodes = factor(str_replace(df$inv.nodes, pattern = "-", "."))
-    df$node.caps = factor(str_replace(df$node.caps, pattern = "-", "."))
-    df$tumor.size = factor(str_replace(df$tumor.size, pattern = "-", "."))
-    t = changeData(t, df)
-  }
+  # if (task.oml$task.id == 52945) {
+  #   df = getTaskData(t)
+  #   df$age = factor(str_replace(df$age, pattern = "-", "."))
+  #   df$inv.nodes = factor(str_replace(df$inv.nodes, pattern = "-", "."))
+  #   df$node.caps = factor(str_replace(df$node.caps, pattern = "-", "."))
+  #   df$tumor.size = factor(str_replace(df$tumor.size, pattern = "-", "."))
+  #   t = changeData(t, df)
+  # }
   if (SAVE_KERAS) {
     dir.create(path = file.path(data_dir, t$task.desc$id), showWarnings = FALSE)
   }
@@ -100,21 +107,21 @@ lrn.list[[5]] = setHyperPars2(lrn.list[[4]], list(epochs = 1000L))
 names(lrn.list) = names_models
 
 hyper.pars = list(
-    randomforest = pSS(
-        ntree : numeric[0, log(1000)]  [[trafo = function(x) round(exp(x))]]),
-      xgboost = pSS(
-        nrounds: numeric[0, log(1000)] [[trafo = function(x) round(exp(x))]]
-      ),
-      svm = pSS(
-        cost: numeric[0.01, 1]
-      ),
-      logreg = pSS(
-          lr: numeric[0.0005, 0.1]),
-      neuralnet = pSS(
-        lr: numeric[0.0005, 0.1],
-        layer_size: integer[1, 6]
-        )
-    )
+  randomforest = pSS(
+    ntree : numeric[0, log(1000)]  [[trafo = function(x) round(exp(x))]]),
+  xgboost = pSS(
+    nrounds: numeric[0, log(1000)] [[trafo = function(x) round(exp(x))]]
+  ),
+  svm = pSS(
+    cost: numeric[0.01, 1]
+  ),
+  logreg = pSS(
+    lr: numeric[0.0005, 0.1]),
+  neuralnet = pSS(
+    lr: numeric[0.0005, 0.1],
+    layer_size: integer[1, 6]
+  )
+)
 
 #--- Tune and train models ----
 grid = expand.grid(task.id = task_ids,
@@ -126,7 +133,8 @@ if (length(subset.id) > 0) {
 }
 
 print(nrow(grid))
-# grid = grid[c(20:21),] #SD
+#grid = grid[c(20:21),] #SD
+grid = grid[c(1:4), ] #SD
 
 if (PARALLEL) {
   set.seed(123456, "L'Ecuyer-CMRG")
@@ -144,26 +152,35 @@ models_trained = lapply(seq_row(grid), function(i) {
   test.set = seq(1, n)[-train.set]
   train.task = subsetTask(task, subset = train.set)
   test.task = subsetTask(task, subset = test.set)
-
+  
   if (task.nam %in% c("tic-tac-toe", "diabetes")) {
-      train.task= mlr::oversample(train.task, rate = 2L)
+    train.task= mlr::oversample(train.task, rate = 2L)
   } else if (task.nam %in% c("ilpd", "kc2")) {
-      train.task= mlr::oversample(train.task, rate = 3L)
+    train.task= mlr::oversample(train.task, rate = 3L)
   } else if (task.nam %in% c("pc1")) {
-      train.task= mlr::oversample(train.task, rate = 5L)
+    train.task= mlr::oversample(train.task, rate = 5L)
   }
-
+  
   # Train the learner
   dir_name = file.path(data_dir, task$task.desc$id)
   lrn.id = grid$lrn.ind[i]
   print(as.character(lrn.id))
   # Different handling if solely binary features (due to recourse)
   if (lrn.id == "logreg") {
-      lrn = cpoScaleRange() %>>% cpoDummyEncode(reference.cat = TRUE) %>>% lrn.list[[lrn.id]]
+    lrn = cpoScaleRange() %>>% 
+      cpoDummyEncode(reference.cat = TRUE) %>>% 
+      cpoFixNames() %>>% 
+      lrn.list[[lrn.id]]
   } else if (lrn.id == "randomforest") {
-      lrn = cpoScale() %>>% cpoDummyEncode() %>>% lrn.list[[lrn.id]]
+    lrn = cpoScale() %>>% 
+      cpoDummyEncode() %>>% 
+      cpoFixNames() %>>% 
+      lrn.list[[lrn.id]]
   } else {
-      lrn = cpoScaleRange() %>>% cpoDummyEncode() %>>% lrn.list[[lrn.id]]
+    lrn = cpoScaleRange() %>>% 
+      cpoDummyEncode() %>>% 
+      cpoFixNames() %>>% 
+      lrn.list[[lrn.id]]
   }
   par.set = hyper.pars[[grid$lrn.ind[i]]]
   ctrl = makeTuneControlRandom(maxit = 100L*length(par.set$pars))
@@ -188,8 +205,8 @@ models_trained = lapply(seq_row(grid), function(i) {
   }
   return(list(predictor = pred, task.id = task.nam,
     learner.id = lrn.id, sampled.rows = sampled.rows[[as.character(task.id)]],
-      performance = perf))
-  })
+    performance = perf))
+})
 if (PARALLEL) {
   parallelStop()
 }
