@@ -667,17 +667,17 @@ Counterfactuals = R6::R6Class("Counterfactuals",
           .binary.discrete.as.logical = TRUE))
         
         mutator = ecr::makeMutator(function(ind) {
-          # Transform use.original 
-          ind$use.orig = as.logical(mosmafs::mutBitflipCHW(as.integer(ind$use.orig), p = self$p.mut.use.orig))
-          # Transform to original values
-          ind = transform_to_orig(single.mutator(ind), x.interest, delete.use.orig = FALSE,
+          # # Transform use.original 
+          # ind$use.orig = as.logical(mosmafs::mutBitflipCHW(as.integer(ind$use.orig), p = self$p.mut.use.orig)) #SD
+          # Transform as before
+          ind = transform_to_orig(single.mutator(ind), x.interest, delete.use.orig = FALSE, #SD single.mutator(ind)
             fixed.features = self$fixed.features, max.changed = self$max.changed)
           ind.short = ind
           ind.short$use.orig = NULL
           # Select features to mutate: 
           affect = NA
           affect = runif(length(ind.short)) < self$p.mut.gen
-          cols.nams = names(ind)[names(ind)!="use.orig"]
+          cols.nams = names(ind.short)
           affected.cols = cols.nams[affect & !ind$use.orig]
           # Shuffle mutation order
           affected.cols = sample(affected.cols)

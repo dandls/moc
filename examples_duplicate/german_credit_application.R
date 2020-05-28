@@ -69,7 +69,9 @@ if (USE_TRAINED_MODEL) {
 
 pred = Predictor$new(model = credit.model, data = credit, class = "good", 
     conditional = FALSE)
-ctr = ctree_control(maxdepth = 2L)
+ctr = ctree_control(maxdepth = 5L)
+
+set.seed(1234)
 pred$conditionals = fit_conditionals(pred$data$get.x(), ctrl = ctr)
 
 ###---- Compute counterfactuals ----
