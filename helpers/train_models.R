@@ -158,14 +158,15 @@ models_trained = lapply(seq_row(grid), function(i) {
   }
   dir_name = file.path(data_dir, task$task.desc$id)
   
+  lrn.id = grid$lrn.ind[i]
+  print(as.character(lrn.id))
+  
   # Conditional
   ctr = ctree_control(maxdepth = 5L)
   con = fit_conditionals(getTaskData(train.task)[, getTaskFeatureNames(train.task)], ctrl = ctr)
-  saveRDS(object = con, file = paste(dir_name, "/conditional.rds", sep = ""))
+  saveRDS(object = con, file = paste(dir_name, "/conditional_",as.character(lrn.id), ".rds", sep = ""))
   
   # Train the learner
-  lrn.id = grid$lrn.ind[i]
-  print(as.character(lrn.id))
   # Different handling if solely binary features (due to recourse)
   if (lrn.id == "logreg") {
     lrn = cpoScaleRange() %>>% 
