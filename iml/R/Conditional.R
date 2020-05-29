@@ -37,7 +37,7 @@ Conditional = R6Class(
         data_ids = setdiff(data_ids, i) 
         data_ids_sample = sample(data_ids, size = size, replace = TRUE)
         xj = self$data$X[data_ids_sample, self$feature, with = FALSE]
-        return(data.frame(t(xj)))
+        data.frame(t(xj))
       })
       rbindlist(xj_samples)
       
@@ -73,7 +73,7 @@ Conditional = R6Class(
       if(inherits(cmodel, "trafotree")) {
         if (class(self$data$X[[self$feature]]) != "integer") {
           conditionals = predict(cmodel, newdata = X, type = "density", q = xgrid)
-          densities = reshape2::melt(conditionals)$value
+        densities = melt(conditionals)$value
           densities = data.table(.dens = densities, .id.dist = rep(1:nrow(X), each = length(xgrid)),
             feature = rep(xgrid, times = nrow(X)))
         } else {
@@ -92,7 +92,7 @@ Conditional = R6Class(
         }
       } else if (self$data$feature.types[self$feature] == "categorical") {
         probs = predict(cmodel, newdata = X, type = "prob")
-        probs.m = reshape2::melt(probs)$value
+        probs.m = melt(probs)$value
         densities = data.table(.dens = probs.m, .id.dist = rep(1:nrow(X), each = ncol(probs)),
           feature = factor(rep(colnames(probs), times = nrow(X)), levels = levels(self$data$X[[self$feature]])))
       } else {
@@ -101,7 +101,7 @@ Conditional = R6Class(
         res = sapply(pr, function(pr) pr(at) / sum(pr(at)))
         res = data.table(t(res))
         colnames(res) = as.character(at)
-        res.m = reshape2::melt(res, measure.vars = as.character(at))
+        res.m = melt(res, measure.vars = as.character(at))
         densities = data.table(.dens = res.m$value, .id.dist = rep(1:nrow(X), times = length(at)), feature = rep(at, each = nrow(X)))
       }
       colnames(densities) = c(".dens", ".id.dist", self$feature)
