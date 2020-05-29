@@ -231,7 +231,7 @@ get_ice_curve = function(instance, feature, predictor, values,
   
   # make grid of one feature
   grid = get.grid.1D(feature = values, grid.size = grid.size, 
-    type = "equidist")
+    type = "equidistant")
   grid.size = length(grid)
   grid = as.data.frame(grid)
   colnames(grid) = feature

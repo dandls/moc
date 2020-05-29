@@ -1013,7 +1013,7 @@ get_ice_curve_area = function (instance, features, predictor, param.set, grid.si
     
     # make grid of one feature
     grid = get.grid.1D(feature = val, grid.size = grid.size, 
-      type = "equidist")
+      type = "equidistant")
     return(as.data.frame(grid))
   })
   expgrid = expand.grid(a = grids[[1]], b = grids[[2]])
