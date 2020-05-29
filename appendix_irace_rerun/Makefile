@@ -11,7 +11,7 @@ train-models :
 	# Rscript ../helpers/train_models.R --savekeras TRUE --task_ids task_ids.rds --savedir $(model_dir) --data_dir $(data_dir)
 
 get-evals : 
-	Rscript get_evals.R --readdir $(model_dir) --savedir $(nr_evals_dir)
+	R CMD BATCH '--args  $(model_dir) $(data_dir) $(nr_evals_dir)' get_evals.R &
 	
 run-irace : 
 	R CMD BATCH '--args $(model_dir) $(irace_result_dir) $(nr_evals_dir) $(data_dir)' run_irace.R &
