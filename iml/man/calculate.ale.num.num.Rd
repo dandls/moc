@@ -4,8 +4,7 @@
 \alias{calculate.ale.num.num}
 \title{Compute ALE for 2 numerical features}
 \usage{
-calculate.ale.num.num(dat, run.prediction, feature.name, grid.size,
-  grid.type)
+calculate.ale.num.num(dat, run.prediction, feature.name, grid.size, grid.type)
 }
 \arguments{
 \item{dat}{the data.frame with same columns as training data}

@@ -3,7 +3,9 @@
 \name{FeatureImp}
 \alias{FeatureImp}
 \title{Feature importance}
-\format{\code{\link{R6Class}} object.}
+\format{
+\code{\link{R6Class}} object.
+}
 \description{
 \code{FeatureImp} computes feature importances for prediction models.
 The importance is measured as the factor by which the model's prediction error increases when the feature is shuffled.

@@ -3,7 +3,9 @@
 \name{Partial}
 \alias{Partial}
 \title{Effect of one or two feature(s) on the model predictions (deprecated)}
-\format{\code{\link{R6Class}} object.}
+\format{
+\code{\link{R6Class}} object.
+}
 \description{
 Deprecated, please use 'FeatureEffect', see ?FeatureEffect
 }

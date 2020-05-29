@@ -3,7 +3,9 @@
 \name{TreeSurrogate}
 \alias{TreeSurrogate}
 \title{Decision tree surrogate model}
-\format{\code{\link{R6Class}} object.}
+\format{
+\code{\link{R6Class}} object.
+}
 \description{
 \code{TreeSurrogate} fits a decision tree on the predictions of a prediction model.
 }

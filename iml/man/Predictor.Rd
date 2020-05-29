@@ -3,7 +3,9 @@
 \name{Predictor}
 \alias{Predictor}
 \title{Predictor object}
-\format{\code{\link{R6Class}} object.}
+\format{
+\code{\link{R6Class}} object.
+}
 \description{
 A \code{Predictor} object holds any machine learning model (mlr, caret, randomForest, ...) and the data to be used of analysing the model. 
 The interpretation methods in the iml package need the machine learning model to be wrapped in a \code{Predictor} object.
