@@ -91,7 +91,7 @@ sampled.rows = lapply(task_list, function(onetask) {
   }
   return(sampled.rows)
 })
-if (FALSE) { #SD
+
 # --- Algorithm design ----
 lrn.list = makeLearners(c("randomForest", "xgboost", "svm", "keraslogreg",  "keraslogreg"),
   type = "classif", predict.type = "prob")
@@ -160,7 +160,7 @@ models_trained = lapply(seq_row(grid), function(i) {
   
   # Conditional
   ctr = ctree_control(maxdepth = 5L)
-  con = fit_conditionals(getTaskData(traintask)[, getTaskFeatureNames(traintask)], ctrl = ctr)
+  con = fit_conditionals(getTaskData(train.task)[, getTaskFeatureNames(train.task)], ctrl = ctr)
   saveRDS(object = con, file = paste(dir_name, "/conditional.rds", sep = ""))
   
   # Train the learner
@@ -213,4 +213,4 @@ if (PARALLEL) {
 }
 
 saveRDS(models_trained, save_dir)
-}
+
