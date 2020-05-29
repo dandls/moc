@@ -10,7 +10,8 @@ args = commandArgs(trailingOnly=TRUE)
 read_dir = args[[1]]
 save_dir = args[[2]]
 data_dir = args[[4]]
-evals = 200*50
+evals = readRDS(args[[3]])
+evals = (ceiling(quantile(evals, probs = 0.95)/100)*100)[[1]]
 #evals = 2L #SD
 cpus = 20L 
 evals = max(evals)
@@ -84,7 +85,7 @@ tuner.config = c(list(targetRunnerParallel = targetRunnerParallel,
 #--- Run Irace ----
 library(parallel)
 if (PARALLEL) {
-  parallelStartSocket(cpus = cpus) # ParallelStartMulticore does not work for xgboost
+  parallelStartSocket(cpus = cpus, load.balancing = TRUE) # ParallelStartMulticore does not work for xgboost
   parallelExport(
   "Counterfactuals", "Predictor", "Conditional", "InterpretationMethod",
   "make_paramlist",

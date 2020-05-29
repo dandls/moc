@@ -1,7 +1,7 @@
 data_dir = ../saved_objects_rerun/irace
 model_dir = ../saved_objects_rerun/irace/models_irace.rds
 irace_result_dir = ../saved_objects_rerun/irace/irace_results.rds
-config_dir = ../saved_objects/best_configs.rds
+config_dir = ../saved_objects_rerun/best_configs.rds
 nr_evals_dir = ../saved_objects_rerun/irace/max_eval.rds
 
 all : train-models get-evals run-irace tune-evals
@@ -18,5 +18,6 @@ run-irace :
 	# Rscript run_irace.R --readdir $(model_dir) --savedir $(irace_result_dir) --evaldir $(nr_evals_dir) --data_dir $(data_dir)
 
 get-generations : 
-	Rscript get_generations.R --readdir $(model_dir) --savedir $(config_dir) --iracedir $(irace_result_dir) --gendir "../saved_objects/max_generations.rds"
+	R CMD BATCH '--args  $(model_dir) $(config_dir) $(irace_result_dir) $(nr_evals_dir)' get_generations.R &
+	# Rscript get_generations.R --readdir $(model_dir) --savedir $(config_dir) --iracedir $(irace_result_dir) --gendir "../saved_objects/max_generations.rds"
 

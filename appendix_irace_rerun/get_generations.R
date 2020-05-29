@@ -5,11 +5,11 @@
 #--- Setup ----
 source("../helpers/libs_mlr.R")
 args = commandArgs(trailingOnly=TRUE)
-models_irace = readRDS(args[[2]])
+models_irace = readRDS(args[[1]])
 models.5 = rep(models_irace, 5)
-savedir = args[[4]]
-irace_results = readRDS(args[[6]])
-savedirgen = args[[8]]
+savedir = args[[2]]
+irace_results = readRDS(args[[3]])
+savedirgen = args[[4]]
 cpus = 5L
 PARALLEL = TRUE
 Sys.setenv('TF_CPP_MIN_LOG_LEVEL' = 2)
@@ -41,7 +41,7 @@ generations = parallelMap(function(inst){
     p.rec.gen = best_params$p.rec.gen, 
     p.rec.use.orig = best_params$p.rec.use.orig, 
     generations = list(mosmafsTermStagnationHV(10), 
-      mosmafsTermGenerations(1000)))
+      mosmafsTermGenerations(400))) 
   return(nrow(cf$log) - 10)
 }, models.5)
 
