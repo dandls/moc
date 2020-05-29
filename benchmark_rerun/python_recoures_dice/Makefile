@@ -1,7 +1,7 @@
 
-openmlids := $(shell ls ../../saved_objects/benchmark/)
-datafiles := $(shell find ../../saved_objects/benchmark/*/data_orig.csv)
-datafiles_logreg := $(shell find ../../saved_objects/benchmark/*/data_orig.csv | grep -E "boston|diabetes|ilpd|kc2|no2|pc1")
+openmlids := $(shell ls ../../saved_objects/data/)
+datafiles := $(shell find ../../saved_objects/data/*/data_orig.csv)
+datafiles_logreg := $(shell find ../../saved_objects/data/*/data_orig.csv | grep -E "boston|diabetes|ilpd|kc2|no2|pc1")
 ncf = 10 
 all : recourse-benchmark dice-benchmark
 
@@ -24,10 +24,10 @@ dicefiles-neuralnet := $(patsubst %data_orig.csv, %cf-dice-neuralnet.csv,$(dataf
 
 dice-benchmark: $(dicefiles-logreg) $(dicefiles-neuralnet) cf-dice.py
 
-$(dicefiles-logreg) : ../../saved_objects/benchmark/%/cf-dice-logreg.csv: ../../saved_objects/benchmark/%/data_orig.csv
+$(dicefiles-logreg) : ../../saved_objects/data/%/cf-dice-logreg.csv: ../../saved_objects/data/%/data_orig.csv
 	-venv-dice/bin/python3 cf-dice.py --openmlid $* --model logreg --ncf $(ncf)
 
-$(dicefiles-neuralnet) : ../../saved_objects/benchmark/%/cf-dice-neuralnet.csv: ../../saved_objects/benchmark/%/data_orig.csv
+$(dicefiles-neuralnet) : ../../saved_objects/data/%/cf-dice-neuralnet.csv: ../../saved_objects/data/%/data_orig.csv
 	-venv-dice/bin/python3 cf-dice.py --openmlid $* --model neuralnet --ncf $(ncf)
 
 
@@ -49,7 +49,7 @@ recoursefiles := $(patsubst %data_orig.csv, %cf-recourse-logreg.csv,$(datafiles_
 
 recourse-benchmark : $(recoursefiles) cf-recourse.py
 
-$(recoursefiles) : ../../saved_objects/benchmark/%/cf-recourse-logreg.csv: ../../saved_objects/benchmark/%/data_orig.csv
+$(recoursefiles) : ../../saved_objects/data/%/cf-recourse-logreg.csv: ../../saved_objects/data/%/data_orig.csv
 	venv-recourse/bin/python3 cf-recourse.py --openmlid $* --ncf $(ncf) 
 
 

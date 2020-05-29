@@ -38,6 +38,8 @@ def counterfactual(openmlid, model, ncf):
         fnames = df_enc.columns
         encoded_features = [f for f in fnames if f not in numeric_features] 
         df = pd.concat([df[numeric_features], df_enc[encoded_features]], axis=1)
+        # Bring columns into original order again
+        df = df[fnames]
         numeric_features = df.columns       
         numeric_features = [nf for nf in numeric_features if not nf == outcome_name]
 
