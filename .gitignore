@@ -25,7 +25,5 @@
 *.swp
 
 # Results
-saved_objects_rerun/*
-saved_objects/*
 
 

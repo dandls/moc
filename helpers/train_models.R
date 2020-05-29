@@ -90,12 +90,12 @@ sampled.rows = lapply(task_list, function(onetask) {
     write(scale, file = paste(dir_name, "/feature_scale.json", sep = ""))
     # Conditional
     ctr = ctree_control(maxdepth = 5L)
-    con = fit_conditionals(getTaskData(onetask), ctrl = ctr)
+    con = fit_conditionals(getTaskData(onetask)[, getTaskFeatureNames(onetask)], ctrl = ctr)
     saveRDS(object = con, file = paste(dir_name, "/conditional.rds", sep = ""))
   }
   return(sampled.rows)
 })
-
+if (FALSE) { #SD
 # --- Algorithm design ----
 lrn.list = makeLearners(c("randomForest", "xgboost", "svm", "keraslogreg",  "keraslogreg"),
   type = "classif", predict.type = "prob")
@@ -212,3 +212,4 @@ if (PARALLEL) {
 }
 
 saveRDS(models_trained, save_dir)
+}

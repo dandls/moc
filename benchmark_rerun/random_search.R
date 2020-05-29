@@ -65,7 +65,10 @@ random_search = function(predictor, x.interest, target, mu,
   nondom.pop[, grep("use.orig", names(nondom.pop))] = NULL
   nondom = cbind(nondom.pop, nondom.fitness)
   if (!is.null(epsilon)) {
-    nondom = nondom[nondom$dist.target <= epsilon,]
+    feas.idx = nondom$dist.target <= epsilon
+    if (any(feas.idx)) {
+      nondom = nondom[feas.idx,]
+    } 
   }
   
   # Calculate hypervolume and diversity over generations
@@ -77,8 +80,7 @@ random_search = function(predictor, x.interest, target, mu,
   for (fold in folds) {
     hv = c(hv, ecr::computeHV(fitness[, 1:fold], ref.point)/
         ecr::computeHV(matrix(rep(0, nrow(fitness))), ref.point))
-    div = c(div, compute_diversity(pop[1:fold, ], range))
   }
   
-  return(list(cf = nondom, log = data.frame(hv_random = hv, div_random = div)))
+  return(list(cf = nondom, log = data.frame(hv_random = hv)))
 }
