@@ -88,10 +88,6 @@ sampled.rows = lapply(task_list, function(onetask) {
     scale = toJSON(state$control$scale)
     write(center, file = paste(dir_name, "/feature_center.json", sep = ""))
     write(scale, file = paste(dir_name, "/feature_scale.json", sep = ""))
-    # Conditional
-    ctr = ctree_control(maxdepth = 5L)
-    con = fit_conditionals(getTaskData(onetask)[, getTaskFeatureNames(onetask)], ctrl = ctr)
-    saveRDS(object = con, file = paste(dir_name, "/conditional.rds", sep = ""))
   }
   return(sampled.rows)
 })
@@ -160,9 +156,14 @@ models_trained = lapply(seq_row(grid), function(i) {
   } else if (task.nam %in% c("pc1")) {
     train.task= mlr::oversample(train.task, rate = 5L)
   }
+  dir_name = file.path(data_dir, task$task.desc$id)
+  
+  # Conditional
+  ctr = ctree_control(maxdepth = 5L)
+  con = fit_conditionals(getTaskData(traintask)[, getTaskFeatureNames(traintask)], ctrl = ctr)
+  saveRDS(object = con, file = paste(dir_name, "/conditional.rds", sep = ""))
   
   # Train the learner
-  dir_name = file.path(data_dir, task$task.desc$id)
   lrn.id = grid$lrn.ind[i]
   print(as.character(lrn.id))
   # Different handling if solely binary features (due to recourse)
