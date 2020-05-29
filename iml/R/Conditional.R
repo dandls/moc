@@ -11,6 +11,10 @@
 # unique(self$X[[self$feature]]) --> unique(self$data$X[[self$features]])
 # added functions in cdens to process integers + save data_nodes as private$object
 # Set number of classes for trafotree to 10
+# explicitly use reshape2:: in reshape2::melt, because a warning is given otherwise
+
+#### Some other changes (Martin): ####
+# sample() problematic for single integer values
 
 Conditional = R6Class(
   public = list(
@@ -35,7 +39,7 @@ Conditional = R6Class(
         node = X_nodes[i, "node"]
         data_ids = which(private$data_nodes$node == node)
         data_ids = setdiff(data_ids, i) 
-        data_ids_sample = sample(data_ids, size = size, replace = TRUE)
+        data_ids_sample = data_ids[sample.int(length(data_ids), size = size, replace = TRUE)]
         xj = self$data$X[data_ids_sample, self$feature, with = FALSE]
         data.frame(t(xj))
       })
@@ -52,8 +56,8 @@ Conditional = R6Class(
       }
       dens = self$cdens(X, xgrid)
       xj_samples = lapply(1:nrow(X), function(i) {
-        dens_i = dens[dens$.id.dist == i,]
-        xj = sample(dens_i[[self$feature]], size = size, prob = dens_i[[".dens"]], replace = TRUE)
+        dens_i = dens[dens$.id.dist == i, , drop = FALSE]
+        xj = dens_i[[self$feature]][sample.int(nrow(dens_i), size = size, prob = dens_i[[".dens"]], replace = TRUE)]
         data.frame(t(xj))
       })
       rbindlist(xj_samples)
@@ -73,7 +77,7 @@ Conditional = R6Class(
       if(inherits(cmodel, "trafotree")) {
         if (class(self$data$X[[self$feature]]) != "integer") {
           conditionals = predict(cmodel, newdata = X, type = "density", q = xgrid)
-        densities = melt(conditionals)$value
+          densities = reshape2::melt(conditionals)$value
           densities = data.table(.dens = densities, .id.dist = rep(1:nrow(X), each = length(xgrid)),
             feature = rep(xgrid, times = nrow(X)))
         } else {
@@ -92,7 +96,7 @@ Conditional = R6Class(
         }
       } else if (self$data$feature.types[self$feature] == "categorical") {
         probs = predict(cmodel, newdata = X, type = "prob")
-        probs.m = melt(probs)$value
+        probs.m = reshape2::melt(probs)$value
         densities = data.table(.dens = probs.m, .id.dist = rep(1:nrow(X), each = ncol(probs)),
           feature = factor(rep(colnames(probs), times = nrow(X)), levels = levels(self$data$X[[self$feature]])))
       } else {
@@ -101,7 +105,7 @@ Conditional = R6Class(
         res = sapply(pr, function(pr) pr(at) / sum(pr(at)))
         res = data.table(t(res))
         colnames(res) = as.character(at)
-        res.m = melt(res, measure.vars = as.character(at))
+        res.m = reshape2::melt(res, measure.vars = as.character(at))
         densities = data.table(.dens = res.m$value, .id.dist = rep(1:nrow(X), times = length(at)), feature = rep(at, each = nrow(X)))
       }
       colnames(densities) = c(".dens", ".id.dist", self$feature)
