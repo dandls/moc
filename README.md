@@ -28,13 +28,13 @@ git clone https://github.com/susanne-207/moc.git
 
 ### Statistical Analysis
 For the German Credit dataset example shown in the paper, step through this file:     
-[german_credit_application.R](https://github.com/susanne-207/moc/blob/master/example_run/german_credit_application.R) 
+[german_credit_application.R](example_run/german_credit_application.R) 
 
 For the results of the benchmark study, step through the following file:      
-[evaluate_cfexps.R](https://github.com/susanne-207/moc/blob/master/benchmark_analysis/evaluate_cfexps.R) 
+[evaluate_cfexps.R](benchmark_analysis/evaluate_cfexps.R) 
 
 ### `irace` run
-Have a look on the [Makefile](https://github.com/susanne-207/moc/blob/master/appendix_irace/Makefile).
+Have a look on the [Makefile](appendix_irace/Makefile).
 
 `make train-models` will train the classification models for iterated racing on the tasks derived from OpenML.    
 
@@ -48,9 +48,9 @@ tuned.
 All results are saved in a new folder called *saved_objects_rerun*. 
 
 ### Rerun Benchmark
-Have a look on the [Makefile](https://github.com/susanne-207/moc/blob/master/benchmark/Makefile).
+Have a look on the [Makefile](benchmark/Makefile).
 
-`make train-models` will train the classification models for the benchmark on the tasks derived from OpenML. The id of the tasks are saved in [benchmark_task_ids.rds](https://github.com/susanne-207/moc/blob/master/helpers/benchmark_task_ids.rds).
+`make train-models` will train the classification models for the benchmark on the tasks derived from OpenML. The id of the tasks are saved in [benchmark_task_ids.rds](helpers/benchmark_task_ids.rds).
 The models are saved in *saved_objects_rerun*.
 
 `make run-moc` will run the benchmark for MOC. 
@@ -59,6 +59,6 @@ The models are saved in *saved_objects_rerun*.
 
 `make run-tweaking` will run the benchmark for Tweaking. 
 
-Recourse and DiCE have a seperate [Makefile](https://github.com/susanne-207/moc/blob/master/benchmark/python_recoures_dice/Makefile) since they are Python and not R based.
+Recourse and DiCE have a seperate [Makefile](benchmark/python_recoures_dice/Makefile) since they are Python and not R based.
 At first a virtual environment is necessary using `make venv-dice` and `make venv-recourse`. 
 To run the experiments, use `make all`. 
