@@ -27,16 +27,16 @@ git clone https://github.com/susanne-207/moc.git
 ``` 
 
 ### Statistical Analysis
-For the German Credit dataset example shown in the paper, step through this file:     
+For the German Credit dataset example shown in the paper, step through this file:
 [german_credit_application.R](example_run/german_credit_application.R) 
 
-For the results of the benchmark study, step through the following file:      
+For the results of the benchmark study, step through the following file:
 [evaluate_cfexps.R](benchmark_analysis/evaluate_cfexps.R) 
 
 ### `irace` run
 Have a look on the [Makefile](appendix_irace/Makefile).
 
-`make train-models` will train the classification models for iterated racing on the tasks derived from OpenML.    
+`make train-models` will train the classification models for iterated racing on the tasks derived from OpenML.
 
 `make get-evals` will return the number of generations to ensure convergence of the hypervolume in most cases for running MOC within iterated F-racing. 
 	
