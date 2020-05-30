@@ -134,76 +134,81 @@ print(nrow(grid))
 
 if (PARALLEL) {
   set.seed(123456, "L'Ecuyer-CMRG")
-  parallelMap::parallelStartSocket(cpus, level = "mlr.tuneParams")
-  parallelMap::parallelSource("../helpers/libs_mlr.R", level = "mlr.tuneParams")
-  parallelMap::parallelLibrary("keras", level = "mlr.tuneParams")
+  parallelMap::parallelStartSocket(cpus)
+  parallelMap::parallelSource("../helpers/libs_mlr.R")
+  parallelMap::parallelExport("grid", "hyper.pars", "lrn.list",
+    "task_list", "SAVE_KERAS", "data_dir", "cpoFixNames")
+  parallelMap::parallelLibrary("keras")
   parallelMap::parallelExport("trainLearner.classif.keraslogreg", "predictLearner.classif.keraslogreg",
-    "trans_target", "get_keras_model", level = "mlr.tuneParams")
+    "trans_target", "get_keras_model")
 }
-models_trained = lapply(seq_len(nrow(grid)), function(i) {
-  task.id = grid$task.id[i]
-  task = task_list[[as.character(task.id)]]
-  task.nam = task$task.desc$id
-  n = getTaskSize(task)
-  train.set = sample.int(n, size = n*0.8)
-  test.set = setdiff(seq_len(n), -train.set)
-  train.task = subsetTask(task, subset = train.set)
-  test.task = subsetTask(task, subset = test.set)
+tryCatch({
+  models_trained = parallelMap::parallelLapply(seq_len(nrow(grid)), function(i) {
+    task.id = grid$task.id[i]
+    task = task_list[[as.character(task.id)]]
+    task.nam = task$task.desc$id
+    n = getTaskSize(task)
+    train.set = sample.int(n, size = n*0.8)
+    test.set = setdiff(seq_len(n), -train.set)
+    train.task = subsetTask(task, subset = train.set)
+    test.task = subsetTask(task, subset = test.set)
 
-  if (task.nam %in% c("tic-tac-toe", "diabetes")) {
-    train.task = mlr::oversample(train.task, rate = 2L)
-  } else if (task.nam %in% c("ilpd", "kc2")) {
-    train.task = mlr::oversample(train.task, rate = 3L)
-  } else if (task.nam %in% c("pc1")) {
-    train.task = mlr::oversample(train.task, rate = 5L)
+    if (task.nam %in% c("tic-tac-toe", "diabetes")) {
+      train.task = mlr::oversample(train.task, rate = 2L)
+    } else if (task.nam %in% c("ilpd", "kc2")) {
+      train.task = mlr::oversample(train.task, rate = 3L)
+    } else if (task.nam %in% c("pc1")) {
+      train.task = mlr::oversample(train.task, rate = 5L)
+    }
+
+    # Train the learner
+    dir_name = file.path(data_dir, task$task.desc$id)
+
+    lrn.id = grid$lrn.ind[i]
+    print(as.character(lrn.id))
+
+    # Conditional
+    ctr = partykit::ctree_control(maxdepth = 5L)
+    con = fit_conditionals(getTaskData(train.task)[, getTaskFeatureNames(train.task)], ctrl = ctr)
+    saveRDS(object = con, file = file.path(dir_name, paste0("conditional_", as.character(lrn.id), ".rds")))
+
+    # Train the learner
+    # Different handling if solely binary features (due to recourse)
+
+    lrn = (if (lrn.id == "randomforest") cpoScale() else cpoScaleRange()) %>>%
+      cpoDummyEncode(reference.cat = (lrn.id == "logreg")) %>>%
+      cpoFixNames() %>>%
+      lrn.list[[lrn.id]]
+
+    par.set = hyper.pars[[grid$lrn.ind[i]]]
+    ctrl = makeTuneControlRandom(maxit = 100L*length(par.set$pars))
+    if (!is.null(par.set)) { #SD & FALSE
+      res = tuneParams(lrn, train.task, cv5, par.set = par.set, control = ctrl,
+        show.info = FALSE)
+      lrn = setHyperPars(lrn, par.vals = res$x) # evtl exp
+    }
+    mod = mlr::train(lrn, train.task)
+    p = predict(mod, test.task)
+    perf = performance(p, measures = acc)
+    pred = Predictor$new(mod, data = getTaskData(task),
+      class = getTaskDesc(task)$positive)
+    # Save keras models --> read into python
+    if ((lrn.id == "logreg") && (SAVE_KERAS)) {
+      keras.mod =  mod$learner.model$next.model$learner.model$model
+      save_model_hdf5(keras.mod, filepath = file.path(dir_name, "logreg.h5"))
+    }
+    if (lrn.id == "neuralnet" && SAVE_KERAS) {
+      keras.mod =  mod$learner.model$next.model$learner.model$model
+      save_model_hdf5(keras.mod, filepath = file.path(dir_name, "neuralnet.h5"))
+    }
+    list(predictor = pred, task.id = task.nam,
+      learner.id = lrn.id, sampled.rows = sampled.rows[[as.character(task.id)]],
+      performance = perf)
+  })
+}, finally = {
+  if (PARALLEL) {
+    parallelMap::parallelStop()
   }
-
-  # Train the learner
-  dir_name = file.path(data_dir, task$task.desc$id)
-
-  lrn.id = grid$lrn.ind[i]
-  print(as.character(lrn.id))
-
-  # Conditional
-  ctr = partykit::ctree_control(maxdepth = 5L)
-  con = fit_conditionals(getTaskData(train.task)[, getTaskFeatureNames(train.task)], ctrl = ctr)
-  saveRDS(object = con, file = file.path(dir_name, paste0("conditional_", as.character(lrn.id), ".rds")))
-
-  # Train the learner
-  # Different handling if solely binary features (due to recourse)
-
-  lrn = (if (lrn.id == "randomforest") cpoScale() else cpoScaleRange()) %>>%
-    cpoDummyEncode(reference.cat = (lrn.id == "logreg")) %>>%
-    cpoFixNames() %>>%
-    lrn.list[[lrn.id]]
-
-  par.set = hyper.pars[[grid$lrn.ind[i]]]
-  ctrl = makeTuneControlRandom(maxit = 100L*length(par.set$pars))
-  if (!is.null(par.set)) { #SD & FALSE
-    res = tuneParams(lrn, train.task, cv5, par.set = par.set, control = ctrl,
-      show.info = FALSE)
-    lrn = setHyperPars2(lrn, res$x) # evtl exp
-  }
-  mod = mlr::train(lrn, train.task)
-  p = predict(mod, test.task)
-  perf = performance(p, measures = acc)
-  pred = Predictor$new(mod, data = getTaskData(task),
-    class = getTaskDesc(task)$positive)
-  # Save keras models --> read into python
-  if ((lrn.id == "logreg") && (SAVE_KERAS)) {
-    keras.mod =  mod$learner.model$next.model$learner.model$model
-    save_model_hdf5(keras.mod, filepath = file.path(dir_name, "logreg.h5"))
-  }
-  if (lrn.id == "neuralnet" && SAVE_KERAS) {
-    keras.mod =  mod$learner.model$next.model$learner.model$model
-    save_model_hdf5(keras.mod, filepath = file.path(dir_name, "neuralnet.h5"))
-  }
-  list(predictor = pred, task.id = task.nam,
-    learner.id = lrn.id, sampled.rows = sampled.rows[[as.character(task.id)]],
-    performance = perf)
 })
-if (PARALLEL) {
-  parallelStop()
-}
 
 saveRDS(models_trained, save_dir)
