@@ -16,7 +16,7 @@ For all computations, we used either the statistical software R (version ≥ 3.4
     * *saved_objects*: Saved benchmark and irace results to duplicate results without the necessity to rerun experiments. 
 * **Package Code**:
     * *iml*: Copy of the [`iml` Package](https://github.com/christophM/iml). This is code from the ["`conditional`" branch as of February 2020](https://github.com/christophM/iml/tree/c12febbfaee07ccb2c8bac025d9faf0045ee178f) with minor fixes that will eventually be merged into `iml`.
-    * *counterfactuals*: `counterfactuals` package in an early state. To be released as an R package in the future.
+    * *counterfactuals*: [`counterfactuals`](counterfactuals/) package in an early state. To be released as an R package in the future.
 
 ## Manual 
 
