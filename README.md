@@ -7,13 +7,14 @@ For all computations, we used either the statistical software R (version ≥ 3.4
 
 ## Overview 
 
-* *appendix_irace_rerun*: Code to rerun the iterated F-racing to tune the hyperparameters of MOC. Includes a `Makefile`. 
-* *appendix_study_duplicate*: R code to duplicate distribution consistency study. 
-* *benchmark_duplicate*: R code to duplicate benchmark study. Includes a `Makefile`. 
-* *examples_duplicate*: R code to duplicate German credit dataset example. 
+* *appendix_irace*: Code that was used to run [iterated F-racing](https://doi.org/10.1016/j.orp.2016.09.002) to tune the hyperparameters of MOC. Includes a `Makefile`. 
+* *benchmark*: Code that was used to generate the benchmark data. Includes a `Makefile`.
+* *benchmark_analysis*: R code for the analysis of the benchmark results.
+* *examples*: Example R code that generates counterfactuals on the German credit dataset, as used in the Paper. 
 * *helpers*: Helper functions. 
-* *iml*: R code of the [iml Package](https://github.com/christophM/iml) (copy of November 2019) in addition to the code for [Counterfactual Explanations](https://github.com/susanne-207/moc/blob/master/iml/R/Counterfactuals.R). 
-* *saved_objects*: Saved benchmark and irace results to duplicate results without the necessity to rerun the experiments. 
+* *iml*: Copy of the [`iml` Package](https://github.com/christophM/iml). This is code from the ["`conditional`" branch as of February 2020](https://github.com/christophM/iml/tree/c12febbfaee07ccb2c8bac025d9faf0045ee178f) with minor fixes that will eventually be merged into `iml`.
+* *counterfactuals*: 
+* *saved_objects*: Saved benchmark and irace results to duplicate results without the necessity to rerun experiments. 
 
 
 
