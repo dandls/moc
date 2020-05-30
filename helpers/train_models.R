@@ -1,5 +1,5 @@
 ####################################
-## Train Models  
+## Train Models
 ####################################
 
 #---Setup----
@@ -54,44 +54,44 @@ task_list = lapply(task_list, function(task.oml) {
 # Necessary to read into Python
 sampled.rows = lapply(task_list, function(onetask) {
   task.id = onetask$task.desc$id
-  sampled.rows = sample(seq_len(onetask$task.desc$size), size = 10, replace = FALSE)
+  sampled.rows = sample.int(onetask$task.desc$size, size = 10, replace = FALSE)
   if (SAVE_KERAS) {
     dir_name = file.path(data_dir, task.id)
     # Save sampled rows
-    write(sampled.rows, file = paste(dir_name, "/sampled_ids.txt", sep = ""), ncolumns = 1)
+    write(sampled.rows, file = file.path(dir_name, "sampled_ids.txt"), ncolumns = 1)
     # Save original data
     dat = getTaskData(onetask)
     dat[[getTaskTargetNames(onetask)]] = trans_target(dat[[getTaskTargetNames(onetask)]])
-    write.csv(dat, file = paste(dir_name, "/data_orig.csv", sep = ""), row.names = FALSE)
+    write.csv(dat, file = file.path(dir_name, "data_orig.csv"), row.names = FALSE)
     # Encode features with enc
     # Different handling of binary features (due to recourse!)
-     map = mlrCPO::cpoScaleRange() %>>% mlrCPO::cpoDummyEncode()
-    nw.onetask = mlrCPO::applyCPO(map, onetask)
+     map = cpoScaleRange() %>>% cpoDummyEncode()
+    nw.onetask = applyCPO(map, onetask)
     dat_encoded = getTaskData(nw.onetask)
     dat_encoded[[getTaskTargetNames(nw.onetask)]] = trans_target(dat_encoded[[getTaskTargetNames(nw.onetask)]])
-    write.csv(dat_encoded, file = paste(dir_name, "/data_encoded.csv", sep = ""), row.names = FALSE)
+    write.csv(dat_encoded, file = file.path(dir_name, "data_encoded.csv"), row.names = FALSE)
     if (!task.id %in% c("cmc", "tic-tac-toe", "plasma_retinol", "kr-vs-kp")) {
-        map = mlrCPO::cpoScaleRange() %>>% mlrCPO::cpoDummyEncode(reference.cat = TRUE)
-        nw.onetask = mlrCPO::applyCPO(map, onetask)
+        map = cpoScaleRange() %>>% cpoDummyEncode(reference.cat = TRUE)
+        nw.onetask = applyCPO(map, onetask)
         dat_encoded = getTaskData(nw.onetask)
         dat_encoded[[getTaskTargetNames(nw.onetask)]] = trans_target(dat_encoded[[getTaskTargetNames(nw.onetask)]])
-        write.csv(dat_encoded, file = paste(dir_name, "/data_encoded_refcat.csv", sep = ""), row.names = FALSE)
+        write.csv(dat_encoded, file = file.path(dir_name, "data_encoded_refcat.csv"), row.names = FALSE)
     }
     # Save feature types
     col_info = sapply(dat[,getTaskFeatureNames(onetask)], class)
     col_info["target"] = getTaskTargetNames(onetask)
     feature.types = rjson::toJSON(col_info)
-    write(feature.types, file = paste(dir_name, "/feature_types.json", sep = ""))
+    write(feature.types, file = file.path(dir_name, "feature_types.json"))
     # Save scale and center
-    state = mlrCPO::getCPOTrainedState(retrafo(onetask %>>% cpoScale()))
-    center = toJSON(state$control$center)
-    scale = toJSON(state$control$scale)
-    write(center, file = paste(dir_name, "/feature_center.json", sep = ""))
-    write(scale, file = paste(dir_name, "/feature_scale.json", sep = ""))
+    state = getCPOTrainedState(retrafo(onetask %>>% cpoScale()))
+    center = rjson::toJSON(state$control$center)
+    scale = rjson::toJSON(state$control$scale)
+    write(center, file = file.path(dir_name, "feature_center.json"))
+    write(scale, file = file.path(dir_name, "feature_scale.json"))
     # Conditional
-    ctr = ctree_control(maxdepth = 5L)
+    ctr = partykit::ctree_control(maxdepth = 5L)
     con = fit_conditionals(getTaskData(onetask)[, getTaskFeatureNames(onetask)], ctrl = ctr)
-    saveRDS(object = con, file = paste(dir_name, "/conditional.rds", sep = ""))
+    saveRDS(object = con, file = file.path(dir_name, "conditional.rds"))
   }
   return(sampled.rows)
 })
@@ -129,7 +129,7 @@ grid = expand.grid(task.id = task_ids,
 
 subset.id = which((grid$lrn.ind == "logreg") & (grid$task.id %in% c(3846, 145804, 3778, 3)))
 if (length(subset.id) > 0) {
-  grid = grid[-subset.id, ]  
+  grid = grid[-subset.id, ]
 }
 
 print(nrow(grid))
@@ -152,7 +152,7 @@ models_trained = lapply(seq_row(grid), function(i) {
   test.set = seq(1, n)[-train.set]
   train.task = subsetTask(task, subset = train.set)
   test.task = subsetTask(task, subset = test.set)
-  
+
   if (task.nam %in% c("tic-tac-toe", "diabetes")) {
     train.task= mlr::oversample(train.task, rate = 2L)
   } else if (task.nam %in% c("ilpd", "kc2")) {
@@ -160,26 +160,26 @@ models_trained = lapply(seq_row(grid), function(i) {
   } else if (task.nam %in% c("pc1")) {
     train.task= mlr::oversample(train.task, rate = 5L)
   }
-  
+
   # Train the learner
   dir_name = file.path(data_dir, task$task.desc$id)
   lrn.id = grid$lrn.ind[i]
   print(as.character(lrn.id))
   # Different handling if solely binary features (due to recourse)
   if (lrn.id == "logreg") {
-    lrn = cpoScaleRange() %>>% 
-      cpoDummyEncode(reference.cat = TRUE) %>>% 
-      cpoFixNames() %>>% 
+    lrn = cpoScaleRange() %>>%
+      cpoDummyEncode(reference.cat = TRUE) %>>%
+      cpoFixNames() %>>%
       lrn.list[[lrn.id]]
   } else if (lrn.id == "randomforest") {
-    lrn = cpoScale() %>>% 
-      cpoDummyEncode() %>>% 
-      cpoFixNames() %>>% 
+    lrn = cpoScale() %>>%
+      cpoDummyEncode() %>>%
+      cpoFixNames() %>>%
       lrn.list[[lrn.id]]
   } else {
-    lrn = cpoScaleRange() %>>% 
-      cpoDummyEncode() %>>% 
-      cpoFixNames() %>>% 
+    lrn = cpoScaleRange() %>>%
+      cpoDummyEncode() %>>%
+      cpoFixNames() %>>%
       lrn.list[[lrn.id]]
   }
   par.set = hyper.pars[[grid$lrn.ind[i]]]
