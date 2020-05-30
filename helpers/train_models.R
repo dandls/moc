@@ -88,14 +88,10 @@ sampled.rows = lapply(task_list, function(onetask) {
     scale = rjson::toJSON(state$control$scale)
     write(center, file = file.path(dir_name, "feature_center.json"))
     write(scale, file = file.path(dir_name, "feature_scale.json"))
-    # Conditional
-    ctr = partykit::ctree_control(maxdepth = 5L)
-    con = fit_conditionals(getTaskData(onetask)[, getTaskFeatureNames(onetask)], ctrl = ctr)
-    saveRDS(object = con, file = file.path(dir_name, "conditional.rds"))
   }
   return(sampled.rows)
 })
-if (FALSE) { #SD
+
 # --- Algorithm design ----
 lrn.list = makeLearners(c("randomForest", "xgboost", "svm", "keraslogreg",  "keraslogreg"),
   type = "classif", predict.type = "prob")
@@ -163,8 +159,16 @@ models_trained = lapply(seq_row(grid), function(i) {
 
   # Train the learner
   dir_name = file.path(data_dir, task$task.desc$id)
+
   lrn.id = grid$lrn.ind[i]
   print(as.character(lrn.id))
+
+  # Conditional
+  ctr = ctree_control(maxdepth = 5L)
+  con = fit_conditionals(getTaskData(train.task)[, getTaskFeatureNames(train.task)], ctrl = ctr)
+  saveRDS(object = con, file = paste(dir_name, "/conditional_",as.character(lrn.id), ".rds", sep = ""))
+
+  # Train the learner
   # Different handling if solely binary features (due to recourse)
   if (lrn.id == "logreg") {
     lrn = cpoScaleRange() %>>%
@@ -212,4 +216,3 @@ if (PARALLEL) {
 }
 
 saveRDS(models_trained, save_dir)
-}
