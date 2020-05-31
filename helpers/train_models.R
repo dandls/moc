@@ -198,12 +198,9 @@ tryCatch({
 
 if (PARALLEL) {
   set.seed(123456, "L'Ecuyer-CMRG")
-  parallelMap::parallelStartSocket(cpus)
+  parallelMap::parallelStartSocket(cpus, load.balancing = TRUE)
   parallelMap::parallelSource("../helpers/libs_mlr.R")
   parallelMap::parallelExport("task.learner.grid")
-  parallelMap::parallelLibrary("keras")
-  parallelMap::parallelExport("trainLearner.classif.keraslogreg", "predictLearner.classif.keraslogreg",
-    "trans_target", "get_keras_model")
 }
 tryCatch({
   models_trained = parallelMap::parallelLapply(seq_len(nrow(task.learner.grid)), function(row) {

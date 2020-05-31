@@ -4,26 +4,24 @@
 
 # Subset object of trained benchmark models by specific task and learner names
 subset_instances = function(instances, task = NULL, learner = NULL) {
-    if (!is.null(task)) {
-        task.identifier = unlist(lapply(instances, FUN = function(x) x$task.id %in% task))
-        instances = instances[task.identifier]
-    }
-    if (!is.null(learner)) {
-        lrn.identifier = unlist(lapply(instances, FUN = function(x) x$learner.id %in% learner))
-        instances = instances[lrn.identifier]
-    }
-    return(instances)
+  if (!is.null(task)) {
+    instances = Filter(function(x) x$task.id %in% task, instances)
+  }
+  if (!is.null(learner)) {
+    instances = Filter(function(x) x$learner.id %in% learner, instances)
+  }
+  return(instances)
 }
 
 # Evaluate counterfactuals of dice, recourse and tweaking
 # Remove dominated counterfactuals from set if wanted (default FALSE)
-evaluate_cfexp = function(cf, instance, id = "dice", remove.dom = FALSE, data.dir) {
-    # Get training data 
+evaluate_cfexp = function(cf, instance, id = "dice", remove.dom = FALSE, data.dir = "data") {
+    # Get training data
     train.data = data.frame(instance$predictor$data$get.x())
-    
+
     # Load keras model if necessary
     if (instance$learner.id %in% c("logreg", "neuralnet")) {
-        instance = load_keras_model(instance, data.dir = data.dir) 
+        instance = load_keras_model(instance, data.dir = data.dir)
     }
     # Revert dummmy
     if (id %in% c("dice", "recourse", "tweaking")) {
@@ -33,48 +31,48 @@ evaluate_cfexp = function(cf, instance, id = "dice", remove.dom = FALSE, data.di
       }
     }
     pred = instance$predictor
-    
+
     # Get information from predictor to calculate fitness
-    row_ids = unique(cf$row_ids) 
+    row_ids = unique(cf$row_ids)
     x.interests = as.data.frame(train.data[row_ids, ])
     targets = ifelse(pred$predict(
         newdata = as.data.frame(x.interests)) < 0.5, 1, 0)[,1]
     param.set = ParamHelpers::makeParamSet(
         params = make_paramlist(train.data))
-    range = ParamHelpers::getUpper(param.set) - 
+    range = ParamHelpers::getUpper(param.set) -
         ParamHelpers::getLower(param.set)
     range[ParamHelpers::getParamIds(param.set)
         [ParamHelpers::getParamTypes(param.set) == "discrete"]]  = NA
     range = range[pred$data$feature.names]
     list.x.interests = split(x.interests, seq(nrow(x.interests)))
-    
-    # Transform entries of counterfactuals that should be discrete to characters 
+
+    # Transform entries of counterfactuals that should be discrete to characters
     id.char = unlist(lapply(param.set$pars, FUN = function(par) par$type == "discrete"))
     cf[names(id.char)[id.char]] = data.frame(lapply(cf[names(id.char)[id.char]], as.character), stringsAsFactors = FALSE)
-    
+
     id.int = which(sapply(cf[, instance$predictor$data$feature.names], is.integer))
     cf[, id.int] = sapply(cf[, id.int],  as.numeric)
-    
+
     cf = cf[, !(names(cf) %in% pred$data$y.names)]
     cf$prediction = NULL
-    
+
     # Calculate fitness for each x.interest & target
     res.row = mapply(function(x.interest, target, row_id) {
         x = cf[cf$row_ids == (row_id), names(cf) != "row_ids"]
-        # Remove duplicated rows 
+        # Remove duplicated rows
         dup.idx = which(duplicated(x))
         if (length(dup.idx) > 1L) {
             x = x[-dup.idx,]
         }
-        
+
         # Transform target to range
         if (target == 1) {
             target = c(0.5, 1)
         } else {
             target = c(0, 0.5)
         }
-        
-        # Convert characters to factors 
+
+        # Convert characters to factors
         x.list = split(x, seq(nrow(x)))
         x.list = lapply(x.list, function(x) {
             x = as.list(x)
@@ -85,14 +83,14 @@ evaluate_cfexp = function(cf, instance, id = "dice", remove.dom = FALSE, data.di
             obstest <- valuesFromNames(param.set, obs)
             trafoValue(param.set, obs)
         })
-        x <- listToDf(x.list, param.set) 
-        
+        x <- listToDf(x.list, param.set)
+
         # Calculate objective values
-        fitness = fitness_fun(x = x, 
-            x.interest = x.interest, target = target, 
-            predictor = pred, train.data = train.data, 
+        fitness = fitness_fun(x = x,
+            x.interest = x.interest, target = target,
+            predictor = pred, train.data = train.data,
             range = range, identical.strategy = TRUE)
-    
+
         # only keep nondominated solutions if remove.dom TRUE
         if (ncol(fitness) > 1 & remove.dom) {
             nondom.id = nondominated(fitness)
@@ -131,16 +129,16 @@ revert_dummy <-function(var,indata, origvar){
 }
 
 
-# Plot performance curves 
+# Plot performance curves
 # Works for ranks and hypervolumes
-plot_results = function(df, type = "hv", methods = NULL, subset.col = "learner", 
-    pdf.file = NULL, ylim = NULL, width = 6, height = 2.7, xlim = c(0, 40), 
+plot_results = function(df, type = "hv", methods = NULL, subset.col = "learner",
+    pdf.file = NULL, ylim = NULL, width = 6, height = 2.7, xlim = c(0, 40),
     ylab = "dominated hypervolume", line.width = 0.4, ncol = 2) {
-    
+
     assert_true(type %in% c("hv", "div", "rank"))
     assert_character(methods, null.ok = TRUE)
     assert_character(subset.col, null.ok = TRUE)
-    
+
     # Extract info given by type and methods
     gen = df$generation
     by.subset_vector = !is.null(subset.col)
@@ -151,57 +149,57 @@ plot_results = function(df, type = "hv", methods = NULL, subset.col = "learner",
         }
     }
     df = df[, grepl(type, names(df))]
-    needed.cols = paste(type, "_", methods, sep = "") 
+    needed.cols = paste(type, "_", methods, sep = "")
     if (!is.null(methods)) {
         df = df[, needed.cols]
         assert_true(ncol(df) == length(methods))
-    } 
+    }
     names(df) = str_remove(names(df), needed.cols)
     df$generation = gen
-    
+
     # Seperate by subset vector if given (e.g. by dataset or predictor type)
     if (by.subset_vector) {
         df$subset_vector = pred
         id.vars = c("generation", "subset_vector")
-        
+
     } else {
         id.vars = c("generation")
     }
-    
+
     # Prepare for plotting
     df.melt <- reshape2::melt(df, id.vars=id.vars)
     names(df.melt) = c(id.vars, "method", "value")
-    ylab.name = switch(type, hv = "relnondom", 
+    ylab.name = switch(type, hv = "relnondom",
         div = "diversity")
     if (by.subset_vector) {
-        by.list = list(method = df.melt$method, 
+        by.list = list(method = df.melt$method,
             subset_vector = df.melt$subset_vector, generation = df.melt$generation)
     } else {
         by.list = list(method = df.melt$method, generation = df.melt$generation)
     }
-    df.agg = aggregate(df.melt[, "value"], by = by.list, 
+    df.agg = aggregate(df.melt[, "value"], by = by.list,
         FUN = mean, na.rm = TRUE) ## watch out!!
     df.agg$method = as.character(df.agg$method)
     df.agg = df.agg[order(df.agg$method),]
     # Plot
-    p = ggplot(data = df.agg, aes(x=generation, y=x)) + 
-        geom_line(aes(colour=method, linetype = method), size = line.width) + 
+    p = ggplot(data = df.agg, aes(x=generation, y=x)) +
+        geom_line(aes(colour=method, linetype = method), size = line.width) +
         ylab(ylab.name) +
-        #ylim(ylim) + 
+        #ylim(ylim) +
         xlim(xlim) +
         ylab(ylab) +
         scale_colour_manual(values=c("grey10", "grey33", "grey53", "black", "grey73")) +
-        scale_linetype_manual(values=c( "dotdash", 
+        scale_linetype_manual(values=c( "dotdash",
           "dashed", "dotted", "solid", "solid")) +
-        theme_bw() 
+        theme_bw()
     if (by.subset_vector) {
         p  = p + facet_wrap(~ subset_vector, scales = "free", ncol = ncol) +
             theme(legend.position="bottom", legend.spacing=unit(-.1,"cm"))
-    } 
-    
+    }
+
     # Save if info given
     if (!is.null(pdf.file)) {
-        ggsave(filename = pdf.file, p, 
+        ggsave(filename = pdf.file, p,
             width = width, height = height)
     }
     return(p)
@@ -214,20 +212,20 @@ subset_results = function(cfexps, nr.solutions, strategy = "crowdingdist") {
   }
   assert_integerish(nr.solutions, lower = 1)
   if (strategy == "crowdingdist") {
-  ods = computeCrowdingDistanceR(fitness = t(cfexps[, obj.nams]), 
+    ods = computeCrowdingDistanceR(fitness = t(cfexps[, obj.nams]),
     candidates = cfexps[, !names(cfexps) %in% c(obj.nams, "pred", "method", "row_ids")])
   } else if (strategy == "random") {
-    ods = sample(seq_len(nrow(cfexps)), nr.solutions)
+    ods = sample.int(nrow(cfexps), nr.solutions)
   }
-  idx = order(ods, decreasing = TRUE)[1:nr.solutions]
-  return(cfexps[idx,])
+  idx = head(order(ods, decreasing = TRUE), n = nr.solutions)
+  return(cfexps[idx, ])
 }
 
 # Calculate relative coverage of pf2 (MOC) over pf1(other methods)
 relative_coverage = function(pf1, pf2) {
-  
-  assertTRUE(class(pf1) == class(pf2))
-  if(check_data_frame(pf2) & check_data_frame(pf2)) {
+
+  assertTRUE(all(class(pf1) == class(pf2)))
+  if(is.data.frame(pf2) && is.data.frame(pf2)) {
     pf1 = as.matrix(t(pf1))
     pf2 = as.matrix(t(pf2))
   }
