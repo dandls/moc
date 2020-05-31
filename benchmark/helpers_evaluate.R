@@ -5,25 +5,23 @@
 # Subset object of trained benchmark models by specific task and learner names
 subset_instances = function(instances, task = NULL, learner = NULL) {
     if (!is.null(task)) {
-        task.identifier = unlist(lapply(instances, FUN = function(x) x$task.id %in% task))
-        instances = instances[task.identifier]
+    instances = Filter(function(x) x$task.id %in% task, instances)
     }
     if (!is.null(learner)) {
-        lrn.identifier = unlist(lapply(instances, FUN = function(x) x$learner.id %in% learner))
-        instances = instances[lrn.identifier]
+    instances = Filter(function(x) x$learner.id %in% learner, instances)
     }
     return(instances)
 }
 
 # Evaluate counterfactuals of dice, recourse and tweaking
 # Remove dominated counterfactuals from set if wanted (default FALSE)
-evaluate_cfexp = function(cf, instance, id = "dice", remove.dom = FALSE) {
+evaluate_cfexp = function(cf, instance, id = "dice", remove.dom = FALSE, data.dir = "data") {
     # Get training data 
     train.data = data.frame(instance$predictor$data$get.x())
     
     # Load keras model if necessary
     if (instance$learner.id %in% c("logreg", "neuralnet")) {
-        instance = load_keras_model(instance, data.dir = "data") 
+        instance = load_keras_model(instance, data.dir = data.dir)
     }
     # Revert dummmy
     if (id %in% c("dice", "recourse", "tweaking")) {
@@ -222,8 +220,8 @@ subset_results = function(cfexps, nr.solutions) {
 # Calculate relative coverage of pf2 (MOC) over pf1(other methods)
 relative_coverage = function(pf1, pf2) {
   
-  assertTRUE(class(pf1) == class(pf2))
-  if(check_data_frame(pf2) & check_data_frame(pf2)) {
+  assertTRUE(all(class(pf1) == class(pf2)))
+  if(is.data.frame(pf2) && is.data.frame(pf2)) {
     pf1 = as.matrix(t(pf1))
     pf2 = as.matrix(t(pf2))
   }
