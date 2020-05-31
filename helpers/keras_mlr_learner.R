@@ -108,3 +108,13 @@ initialize_instance = function(inst, data.dir) {
     point.id = sample.id,
     target = target)
 }
+
+# turn instances with `sampled.rows` vector into more instances, each with a single `sampled.rows` value.
+flatten_instances <- function(instances) {
+  unlist(lapply(instances, function(inst) {
+    lapply(inst$sampled.rows, function(sr) {
+      inst$sampled.rows <- sr  # copy semantics means this does *not* change the 'inst' var of the outer fun
+      inst
+    })
+  }), recursive = FALSE)
+}

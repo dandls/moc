@@ -229,7 +229,8 @@ tryCatch({
         save_model_hdf5(keras.mod, filepath = file.path(dir_name, "neuralnet.h5"))
       }
       list(predictor = pred, task.id = task.id[[row]],
-        learner.id = learner.id[[row]], sampled.rows = sampled.rows[[row]],
+        learner.id = learner.id[[row]],
+        sampled.rows = getTaskData(task[[row]], subset = sampled.rows[[row]], target.extra = TRUE)$data,
         performance = performance[[row]])
       })
   })
