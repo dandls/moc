@@ -98,14 +98,13 @@ initialize_instance = function(inst, data.dir) {
   if (inst$learner.id %in% c("logreg", "neuralnet")) {
     inst = load_keras_model(inst, data.dir)
   }
-  sample.id = sample.int(nrow(inst$predictor$data$get.x()), 1)
-  x.interest = as.data.frame(inst$predictor$data$get.x()[sample.id, ])
+  if (nrow(inst$sampled.rows) > 1) stop("Need to flatten_instance()!")
+  x.interest = inst$sampled.rows
   inst$predictor$predict(newdata = x.interest)
   target = ifelse(inst$predictor$predict(newdata = x.interest) < 0.5, 1, 0)
 
   list(predictor = inst$predictor, task.id = inst$task.id,
     learner.id = inst$learner.id,x.interest = x.interest,
-    point.id = sample.id,
     target = target)
 }
 
