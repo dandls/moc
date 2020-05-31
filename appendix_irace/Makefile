@@ -7,17 +7,17 @@ nr_evals_dir = ../saved_objects_rerun/irace/max_eval.rds
 all : train-models get-evals run-irace tune-evals
 
 train-models : 
-	R CMD BATCH '--args TRUE task_ids.rds $(model_dir) $(data_dir)' ../helpers/train_models.R  &
+	R CMD BATCH '--args TRUE task_ids.rds $(model_dir) $(data_dir)' ../helpers/train_models.R
 	# Rscript ../helpers/train_models.R --savekeras TRUE --task_ids task_ids.rds --savedir $(model_dir) --data_dir $(data_dir)
 
 get-evals : 
-	R CMD BATCH '--args  $(model_dir) $(data_dir) $(nr_evals_dir)' get_evals.R &
+	R CMD BATCH '--args  $(model_dir) $(data_dir) $(nr_evals_dir)' get_evals.R
 	
 run-irace : 
-	R CMD BATCH '--args $(model_dir) $(irace_result_dir) $(nr_evals_dir) $(data_dir)' run_irace.R &
+	R CMD BATCH '--args $(model_dir) $(irace_result_dir) $(nr_evals_dir) $(data_dir)' run_irace.R
 	# Rscript run_irace.R --readdir $(model_dir) --savedir $(irace_result_dir) --evaldir $(nr_evals_dir) --data_dir $(data_dir)
 
 get-generations : 
-	R CMD BATCH '--args  $(model_dir) $(config_dir) $(irace_result_dir) $(nr_evals_dir)' get_generations.R &
+	R CMD BATCH '--args  $(model_dir) $(config_dir) $(irace_result_dir) $(nr_evals_dir)' get_generations.R
 	# Rscript get_generations.R --readdir $(model_dir) --savedir $(config_dir) --iracedir $(irace_result_dir) --gendir "../saved_objects/max_generations.rds"
 
