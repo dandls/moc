@@ -9,8 +9,6 @@ packages = c("checkmate",  "devtools", "Rcpp", "ParamHelpers", "mlr", "ecr",
   "xtable", "ggpubr", "tidyr", # Packages for evaluation of benchmark results
   "GGally", "fmsb", "ggExtra", "metR", "mvtnorm") # Packages for study and applications
 
-source("../helpers/keras_mlr_learner.R")
-
 new.packages = packages[!(packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
 
@@ -22,4 +20,6 @@ devtools::load_all("../counterfactuals", export_all = FALSE)
 
 library("mlr")
 library("mlrCPO")
+
+source("../helpers/keras_mlr_learner.R")
 
