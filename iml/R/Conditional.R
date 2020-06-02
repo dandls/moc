@@ -11,6 +11,10 @@
 # unique(self$X[[self$feature]]) --> unique(self$data$X[[self$features]])
 # added functions in cdens to process integers + save data_nodes as private$object
 # Set number of classes for trafotree to 10
+# explicitly use reshape2:: in reshape2::melt, because a warning is given otherwise
+
+#### Some other changes (Martin): ####
+# sample() problematic for single integer values
 
 Conditional = R6Class(
   public = list(
@@ -35,9 +39,9 @@ Conditional = R6Class(
         node = X_nodes[i, "node"]
         data_ids = which(private$data_nodes$node == node)
         data_ids = setdiff(data_ids, i) 
-        data_ids_sample = sample(data_ids, size = size, replace = TRUE)
+        data_ids_sample = data_ids[sample.int(length(data_ids), size = size, replace = TRUE)]
         xj = self$data$X[data_ids_sample, self$feature, with = FALSE]
-        return(data.frame(t(xj)))
+        data.frame(t(xj))
       })
       rbindlist(xj_samples)
       
@@ -55,8 +59,8 @@ Conditional = R6Class(
       } 
       dens = self$cdens(X, xgrid)
       xj_samples = lapply(1:nrow(X), function(i) {
-        dens_i = dens[dens$.id.dist == i,]
-        xj = sample(dens_i[[self$feature]], size = size, prob = dens_i[[".dens"]], replace = TRUE)
+        dens_i = dens[dens$.id.dist == i, , drop = FALSE]
+        xj = dens_i[[self$feature]][sample.int(nrow(dens_i), size = size, prob = dens_i[[".dens"]], replace = TRUE)]
         data.frame(t(xj))
       })
       rbindlist(xj_samples)

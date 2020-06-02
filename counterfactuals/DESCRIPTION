@@ -1,0 +1,42 @@
+Package: counterfactuals
+Type: Package
+Title: Counterfactual Explanations
+Version: 0.9.0
+Date: 2019-02-01
+Authors@R: c(
+        person("Susanne", "Dandl", email = "dandl.susanne@googlemail.com", role = c("aut", "cre"))
+    )
+Maintainer: Susanne Dandl <dandl.susanne@googlemail.com>
+Description: Counterfactuals as described in <doi:DOI>.
+URL: https://github.com/TODO
+BugReports: https://github.com/TODO/issues
+Imports: R6,
+         checkmate,
+         ggplot2,
+         Metrics,
+         ParamHelpers, 
+         mosmafs,
+         ecr,
+         StatMatch,
+         ggplot2,
+         GGally,
+         ggExtra,
+         metR
+Suggests: randomForest,
+          mlt,
+          gower,
+          glmnet,
+          partykit,
+          trtf,
+          yaImpute,
+          testthat, 
+          rpart, 
+          MASS,
+          caret,
+          e1071, 
+          knitr,
+          mlr
+License: TODO
+Encoding: UTF-8
+RoxygenNote: 7.1.0
+VignetteBuilder: knitr

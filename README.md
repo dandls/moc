@@ -7,15 +7,16 @@ For all computations, we used either the statistical software R (version ≥ 3.4
 
 ## Overview 
 
-* *appendix_irace_rerun*: Code to rerun the iterated F-racing to tune the hyperparameters of MOC. Includes a `Makefile`. 
-* *appendix_study_duplicate*: R code to duplicate distribution consistency study. 
-* *benchmark_duplicate*: R code to duplicate benchmark study. Includes a `Makefile`. 
-* *examples_duplicate*: R code to duplicate German credit dataset example. 
-* *helpers*: Helper functions. 
-* *iml*: R code of the [iml Package](https://github.com/christophM/iml) (copy of November 2019) in addition to the code for [Counterfactual Explanations](https://github.com/susanne-207/moc/blob/master/iml/R/Counterfactuals.R). 
-* *saved_objects*: Saved benchmark and irace results to duplicate results without the necessity to rerun the experiments. 
-
-
+* **Code to reproduce analysis done in the Paper**:
+    * *examples*: Example R code that generates counterfactuals on the German credit dataset, as used in the Paper. 
+    * *appendix_irace*: Code that was used to run [iterated F-racing](https://doi.org/10.1016/j.orp.2016.09.002) to tune the hyperparameters of MOC. Includes a `Makefile`. 
+    * *benchmark*: Code that was used to generate the benchmark data. Includes a `Makefile`.
+    * *benchmark_analysis*: R code for the analysis of the benchmark results.
+    * *helpers*: Helper functions.
+    * *saved_objects*: Saved benchmark and irace results to duplicate results without the necessity to rerun experiments. 
+* **Package Code**:
+    * *iml*: Copy of the [`iml` Package](https://github.com/christophM/iml). This is code from the ["`conditional`" branch as of February 2020](https://github.com/christophM/iml/tree/c12febbfaee07ccb2c8bac025d9faf0045ee178f) with minor fixes that will eventually be merged into `iml`.
+    * *counterfactuals*: [`counterfactuals`](counterfactuals/) package in an early state. To be released as an R package in the future.
 
 ## Manual 
 
@@ -24,20 +25,18 @@ For all computations, we used either the statistical software R (version ≥ 3.4
 ```
 git clone https://github.com/susanne-207/moc.git
 ``` 
-### Duplicate results
-For the results of the benchmark study, step through the following file:      
-[evaluate_cfexps.R](https://github.com/susanne-207/moc/blob/master/benchmark_duplicate/evaluate_cfexps.R)    
 
-For the results of the German Credit dataset example, step through this file:     
-[german_credit_application.R](https://github.com/susanne-207/moc/blob/master/examples_duplicate/german_credit_application.R) 
+### Statistical Analysis
+For the German Credit dataset example shown in the paper, step through this file:
+[german_credit_application.R](example_run/german_credit_application.R) 
 
-For the distribution consistency study of the appendix, step through:     
-[distribution_consistency_study.R](https://github.com/susanne-207/moc/blob/master/appendix_study_duplicate/distribution_consistency_study.R)
+For the results of the benchmark study, step through the following file:
+[evaluate_cfexps.R](benchmark_analysis/evaluate_cfexps.R) 
 
-### Rerun irace 
-Have a look on the [Makefile](https://github.com/susanne-207/moc/blob/master/appendix_irace_rerun/Makefile).
+### `irace` run
+Have a look on the [Makefile](appendix_irace/Makefile).
 
-`make train-models` will train the classification models for iterated racing on the tasks derived from OpenML.    
+`make train-models` will train the classification models for iterated racing on the tasks derived from OpenML.
 
 `make get-evals` will return the number of generations to ensure convergence of the hypervolume in most cases for running MOC within iterated F-racing. 
 	
@@ -49,9 +48,9 @@ tuned.
 All results are saved in a new folder called *saved_objects_rerun*. 
 
 ### Rerun Benchmark
-Have a look on the [Makefile](https://github.com/susanne-207/moc/blob/master/benchmark_rerun/Makefile).
+Have a look on the [Makefile](benchmark/Makefile).
 
-`make train-models` will train the classification models for the benchmark on the tasks derived from OpenML. The id of the tasks are saved in [benchmark_task_ids.rds](https://github.com/susanne-207/moc/blob/master/helpers/benchmark_task_ids.rds).
+`make train-models` will train the classification models for the benchmark on the tasks derived from OpenML. The id of the tasks are saved in [benchmark_task_ids.rds](helpers/benchmark_task_ids.rds).
 The models are saved in *saved_objects_rerun*.
 
 `make run-moc` will run the benchmark for MOC. 
@@ -60,6 +59,6 @@ The models are saved in *saved_objects_rerun*.
 
 `make run-tweaking` will run the benchmark for Tweaking. 
 
-Recourse and DiCE have a seperate [Makefile](https://github.com/susanne-207/moc/blob/master/benchmark_rerun/python_recoures_dice/Makefile) since they are Python and not R based.
+Recourse and DiCE have a seperate [Makefile](benchmark/python_recoures_dice/Makefile) since they are Python and not R based.
 At first a virtual environment is necessary using `make venv-dice` and `make venv-recourse`. 
 To run the experiments, use `make all`. 

@@ -1,5 +1,5 @@
 ####################################
-## Train Models  
+## Train Models
 ####################################
 
 #---Setup----
@@ -8,18 +8,21 @@ set.seed(1234)
 
 # Collect arguments
 args = commandArgs(trailingOnly=TRUE)
-SAVE_KERAS = as.logical(args[[1]])
+SAVEINFO = as.logical(args[[1]])
 task_ids = readRDS(args[[2]])
 save_dir = args[[3]]
 folder = args[[4]]
 dir.create(path = "../saved_objects_rerun", showWarnings = FALSE)
 
 PARALLEL = TRUE
-cpus = 20L
+cpus = parallel::detectCores()
 current_dir = getwd()
 data_dir = file.path(current_dir, folder)
 dir.create(path = data_dir, showWarnings = FALSE)
 names_models = c("randomforest", "xgboost", "svm", "logreg", "neuralnet")
+
+RESAMPLING = cv5
+TUNEITERS = 100
 
 cpoFixNames = makeCPO("fixnames",
   cpo.train = NULL,
@@ -36,17 +39,7 @@ task_list = lapply(task_ids, function(x) {
 names(task_list) = task_ids
 task_list = lapply(task_list, function(task.oml) {
   t = OpenML::convertOMLTaskToMlr(task.oml)$mlr.task
-  # if (task.oml$task.id == 52945) {
-  #   df = getTaskData(t)
-  #   df$age = factor(str_replace(df$age, pattern = "-", "."))
-  #   df$inv.nodes = factor(str_replace(df$inv.nodes, pattern = "-", "."))
-  #   df$node.caps = factor(str_replace(df$node.caps, pattern = "-", "."))
-  #   df$tumor.size = factor(str_replace(df$tumor.size, pattern = "-", "."))
-  #   t = changeData(t, df)
-  # }
-  if (SAVE_KERAS) {
-    dir.create(path = file.path(data_dir, t$task.desc$id), showWarnings = FALSE)
-  }
+  dir.create(path = file.path(data_dir, t$task.desc$id), showWarnings = FALSE)
   t
 })
 
@@ -54,40 +47,47 @@ task_list = lapply(task_list, function(task.oml) {
 # Necessary to read into Python
 sampled.rows = lapply(task_list, function(onetask) {
   task.id = onetask$task.desc$id
-  sampled.rows = sample(seq_len(onetask$task.desc$size), size = 10, replace = FALSE)
-  if (SAVE_KERAS) {
-    dir_name = file.path(data_dir, task.id)
-    # Save sampled rows
-    write(sampled.rows, file = paste(dir_name, "/sampled_ids.txt", sep = ""), ncolumns = 1)
+  dir_name = file.path(data_dir, task.id)
+  sampled.rows = sample.int(onetask$task.desc$size, size = 10, replace = FALSE)
+  # Save sampled rows
+  write(sampled.rows, file = file.path(dir_name, "sampled_ids.txt"), ncolumns = 1)
+  dat = getTaskData(onetask)
+  # Subset data by sampled rows and save as xinterests
+  xinterests = dat[sampled.rows, getTaskFeatureNames(onetask)]
+  write.csv(xinterests, file = file.path(dir_name, "xinterests.csv"), row.names = FALSE)
+  # Conditional
+  ctr = partykit::ctree_control(maxdepth = 5L)
+  con = fit_conditionals(dat[-sampled.rows, getTaskFeatureNames(onetask)], ctrl = ctr)
+  saveRDS(object = con, file = file.path(dir_name, paste0("conditional.rds")))
+  if (SAVEINFO) { #ONLY FOR BENCHMARK --> Used for other methods than MOC
     # Save original data
-    dat = getTaskData(onetask)
     dat[[getTaskTargetNames(onetask)]] = trans_target(dat[[getTaskTargetNames(onetask)]])
-    write.csv(dat, file = paste(dir_name, "/data_orig.csv", sep = ""), row.names = FALSE)
-    # Encode features with enc
+    write.csv(dat, file = file.path(dir_name, "data_orig.csv"), row.names = FALSE)
+    # Encode features
     # Different handling of binary features (due to recourse!)
-     map = mlrCPO::cpoScaleRange() %>>% mlrCPO::cpoDummyEncode()
-    nw.onetask = mlrCPO::applyCPO(map, onetask)
+    map = cpoScaleRange() %>>% cpoDummyEncode()
+    nw.onetask = applyCPO(map, onetask)
     dat_encoded = getTaskData(nw.onetask)
     dat_encoded[[getTaskTargetNames(nw.onetask)]] = trans_target(dat_encoded[[getTaskTargetNames(nw.onetask)]])
-    write.csv(dat_encoded, file = paste(dir_name, "/data_encoded.csv", sep = ""), row.names = FALSE)
+    write.csv(dat_encoded, file = file.path(dir_name, "data_encoded.csv"), row.names = FALSE)
     if (!task.id %in% c("cmc", "tic-tac-toe", "plasma_retinol", "kr-vs-kp")) {
-        map = mlrCPO::cpoScaleRange() %>>% mlrCPO::cpoDummyEncode(reference.cat = TRUE)
-        nw.onetask = mlrCPO::applyCPO(map, onetask)
-        dat_encoded = getTaskData(nw.onetask)
-        dat_encoded[[getTaskTargetNames(nw.onetask)]] = trans_target(dat_encoded[[getTaskTargetNames(nw.onetask)]])
-        write.csv(dat_encoded, file = paste(dir_name, "/data_encoded_refcat.csv", sep = ""), row.names = FALSE)
+      map = cpoScaleRange() %>>% cpoDummyEncode(reference.cat = TRUE)
+      nw.onetask = applyCPO(map, onetask)
+      dat_encoded = getTaskData(nw.onetask)
+      dat_encoded[[getTaskTargetNames(nw.onetask)]] = trans_target(dat_encoded[[getTaskTargetNames(nw.onetask)]])
+      write.csv(dat_encoded, file = file.path(dir_name, "data_encoded_refcat.csv"), row.names = FALSE)
     }
     # Save feature types
     col_info = sapply(dat[,getTaskFeatureNames(onetask)], class)
     col_info["target"] = getTaskTargetNames(onetask)
     feature.types = rjson::toJSON(col_info)
-    write(feature.types, file = paste(dir_name, "/feature_types.json", sep = ""))
+    write(feature.types, file = file.path(dir_name, "feature_types.json"))
     # Save scale and center
-    state = mlrCPO::getCPOTrainedState(retrafo(onetask %>>% cpoScale()))
-    center = toJSON(state$control$center)
-    scale = toJSON(state$control$scale)
-    write(center, file = paste(dir_name, "/feature_center.json", sep = ""))
-    write(scale, file = paste(dir_name, "/feature_scale.json", sep = ""))
+    state = getCPOTrainedState(retrafo(onetask %>>% cpoScale()))
+    center = rjson::toJSON(state$control$center)
+    scale = rjson::toJSON(state$control$scale)
+    write(center, file = file.path(dir_name, "feature_center.json"))
+    write(scale, file = file.path(dir_name, "feature_scale.json"))
   }
   return(sampled.rows)
 })
@@ -96,9 +96,9 @@ sampled.rows = lapply(task_list, function(onetask) {
 lrn.list = makeLearners(c("randomForest", "xgboost", "svm", "keraslogreg",  "keraslogreg"),
   type = "classif", predict.type = "prob")
 
-lrn.list[[2]] = setHyperPars2(lrn.list[[2]], list(nthread = 1))
-lrn.list[[4]] = setHyperPars2(lrn.list[[4]], list(layer_size = 0, lr = 0.001, epochs = 1000L))
-lrn.list[[5]] = setHyperPars2(lrn.list[[4]], list(epochs = 1000L))
+lrn.list[[2]] = setHyperPars(lrn.list[[2]], nthread = 1)
+lrn.list[[4]] = setHyperPars(lrn.list[[4]], layer_size = 0, lr = 0.001, epochs = 1000L)
+lrn.list[[5]] = setHyperPars(lrn.list[[4]], epochs = 1000L)
 
 names(lrn.list) = names_models
 
@@ -125,93 +125,116 @@ grid = expand.grid(task.id = task_ids,
 
 subset.id = which((grid$lrn.ind == "logreg") & (grid$task.id %in% c(3846, 145804, 3778, 3)))
 if (length(subset.id) > 0) {
-  grid = grid[-subset.id, ]  
+  grid = grid[-subset.id, ]
 }
 
 print(nrow(grid))
 #grid = grid[c(20:21),] #SD
 #grid = grid[c(1:4, 20), ] #SD
 
+stopifnot(identical(names(lrn.list), names(hyper.pars)))
+stopifnot(identical(names(task_list), names(sampled.rows)))
+
+learners = data.table::data.table(learner.id = names(lrn.list),
+  learner = lrn.list, searchspace = hyper.pars, key = "learner.id")
+
+tasks = data.table::data.table(openml.id = as.numeric(names(task_list)),
+  task = task_list, sampled.rows = sampled.rows, key = "openml.id")
+
+grid = data.table::as.data.table(grid)
+
+tasks[,
+  task.id := vapply(task, function(x) x$task.desc$id, character(1))][,
+    # preproc.cpo: these should be applied to the task
+    # (because some of then need outcome class balancing oversampling)
+    task.preproc.cpo := lapply(task.id, function(task.nam) {
+      if (task.nam %in% c("tic-tac-toe", "diabetes")) {
+        cpoOversample(rate = 2L)
+      } else if (task.nam %in% c("ilpd", "kc2")) {
+        cpoOversample(rate = 3L)
+      } else if (task.nam %in% "pc1") {
+        cpoOversample(rate = 5L)
+      } else {
+        NULLCPO
+      }
+    })][,
+      # train.task: has the evaluation points removed
+      train.task := Map(function(t, s) subsetTask(t, subset = seq_len(getTaskSize(t))[-s]),
+        task, sampled.rows)]
+
+learners[,
+  learner.preproc.cpo := lapply(learner.id, function(lrn)
+    (if (lrn == "randomforest") cpoScale() else cpoScaleRange()) %>>%
+      cpoDummyEncode(reference.cat = (lrn == "logreg")) %>>%
+      cpoFixNames())]
+
+task.learner.grid = tasks[learners[grid, on = c(learner.id = "lrn.ind")], on = c(openml.id = "task.id")]
+
+### Evaluate Performance
 if (PARALLEL) {
   set.seed(123456, "L'Ecuyer-CMRG")
-  parallelStartSocket(cpus, level = c("mlr.tuneParams"))
-  parallelLibrary("keras", level = "mlr.tuneParams")
-  parallelExport("trainLearner.classif.keraslogreg", "predictLearner.classif.keraslogreg",
-    "trans_target", "invoke", "get_keras_model", level = "mlr.tuneParams")
+  parallelMap::parallelStartSocket(cpus, level = "mlr.tuneParams")
+  parallelMap::parallelSource("../helpers/libs_mlr.R", level = "mlr.tuneParams", master = FALSE)
 }
-models_trained = lapply(seq_row(grid), function(i) {
-  task.id = grid$task.id[i]
-  task = task_list[[as.character(task.id)]]
-  task.nam = task$task.desc$id
-  n = getTaskSize(task)
-  train.set = sample(n, size = n*0.8)
-  test.set = seq(1, n)[-train.set]
-  train.task = subsetTask(task, subset = train.set)
-  test.task = subsetTask(task, subset = test.set)
-  
-  if (task.nam %in% c("tic-tac-toe", "diabetes")) {
-    train.task= mlr::oversample(train.task, rate = 2L)
-  } else if (task.nam %in% c("ilpd", "kc2")) {
-    train.task= mlr::oversample(train.task, rate = 3L)
-  } else if (task.nam %in% c("pc1")) {
-    train.task= mlr::oversample(train.task, rate = 5L)
+tryCatch({
+  task.learner.grid[,
+    c("performance", "paramvals") := data.table::rbindlist(lapply(seq_len(nrow(task.learner.grid)), function(row) {
+
+      cat(sprintf("Resampling task %s x learner %s\n", task.id[[row]], learner.id[[row]]))
+      lrn = task.preproc.cpo[[row]] %>>% learner.preproc.cpo[[row]] %>>% learner[[row]]
+      par.set = searchspace[[row]]
+      ctrl = makeTuneControlRandom(maxit = TUNEITERS * length(par.set$pars))
+      lrn.tuning = makeTuneWrapper(lrn, RESAMPLING, list(mlr::acc), par.set, ctrl, show.info = FALSE)
+      res = tuneParams(lrn, train.task[[row]], RESAMPLING, par.set = par.set, control = ctrl,
+        show.info = FALSE)
+      list(performance = resample(lrn.tuning, train.task[[row]], RESAMPLING, list(mlr::acc))$aggr,
+        paramvals = list(res$x))
+
+    }))]
+}, finally = {
+  if (PARALLEL) {
+    parallelMap::parallelStop()
   }
-  dir_name = file.path(data_dir, task$task.desc$id)
-  
-  lrn.id = grid$lrn.ind[i]
-  print(as.character(lrn.id))
-  
-  # Conditional
-  ctr = ctree_control(maxdepth = 5L)
-  con = fit_conditionals(getTaskData(train.task)[, getTaskFeatureNames(train.task)], ctrl = ctr)
-  saveRDS(object = con, file = paste(dir_name, "/conditional_",as.character(lrn.id), ".rds", sep = ""))
-  
-  # Train the learner
-  # Different handling if solely binary features (due to recourse)
-  if (lrn.id == "logreg") {
-    lrn = cpoScaleRange() %>>% 
-      cpoDummyEncode(reference.cat = TRUE) %>>% 
-      cpoFixNames() %>>% 
-      lrn.list[[lrn.id]]
-  } else if (lrn.id == "randomforest") {
-    lrn = cpoScale() %>>% 
-      cpoDummyEncode() %>>% 
-      cpoFixNames() %>>% 
-      lrn.list[[lrn.id]]
-  } else {
-    lrn = cpoScaleRange() %>>% 
-      cpoDummyEncode() %>>% 
-      cpoFixNames() %>>% 
-      lrn.list[[lrn.id]]
-  }
-  par.set = hyper.pars[[grid$lrn.ind[i]]]
-  ctrl = makeTuneControlRandom(maxit = 100L*length(par.set$pars))
-  if (!is.null(par.set)) { #SD & FALSE
-    res = tuneParams(lrn, train.task, cv5, par.set = par.set, control = ctrl,
-      show.info = FALSE)
-    lrn = setHyperPars2(lrn, res$x) # evtl exp
-  }
-  mod = mlr::train(lrn, train.task)
-  p = predict(mod, test.task)
-  perf = performance(p, measures = acc)
-  pred = Predictor$new(mod, data = getTaskData(task),
-    class = getTaskDesc(task)$positive)
-  # Save keras models --> read into python
-  if ((lrn.id == "logreg") & (SAVE_KERAS)) {
-    keras.mod =  mod$learner.model$next.model$learner.model$model
-    save_model_hdf5(keras.mod, filepath = paste(dir_name, "/logreg.h5", sep = ""))
-  }
-  if (lrn.id == "neuralnet" & SAVE_KERAS) {
-    keras.mod =  mod$learner.model$next.model$learner.model$model
-    save_model_hdf5(keras.mod, filepath = paste(dir_name, "/neuralnet.h5", sep = ""))
-  }
-  return(list(predictor = pred, task.id = task.nam,
-    learner.id = lrn.id, sampled.rows = sampled.rows[[as.character(task.id)]],
-    performance = perf))
 })
+
 if (PARALLEL) {
-  parallelStop()
+  set.seed(123456, "L'Ecuyer-CMRG")
+  parallelMap::parallelStartSocket(cpus, load.balancing = TRUE)
+  parallelMap::parallelSource("../helpers/libs_mlr.R", master = FALSE)
+  parallelMap::parallelExport("task.learner.grid", "data_dir")
 }
+tryCatch({
+  models_trained = parallelMap::parallelLapply(seq_len(nrow(task.learner.grid)), function(row) {
+    with(task.learner.grid, {
+      dir_name = file.path(data_dir, task.id[[row]])
+
+
+      lrn = task.preproc.cpo[[row]] %>>% learner.preproc.cpo[[row]] %>>% learner[[row]]
+      lrn = setHyperPars(lrn, par.vals = paramvals[[row]])
+
+      mod = mlr::train(lrn, train.task[[row]])
+
+      pred = Predictor$new(mod, data = getTaskData(train.task[[row]]),
+        class = getTaskDesc(train.task[[row]])$positive)
+      # Save keras models --> read into python
+      if (learner.id[[row]] == "logreg") {
+        keras.mod =  mod$learner.model$next.model$learner.model$model
+        save_model_hdf5(keras.mod, filepath = file.path(dir_name, "logreg.h5"))
+      }
+      if (learner.id[[row]] == "neuralnet") {
+        keras.mod =  mod$learner.model$next.model$learner.model$model
+        save_model_hdf5(keras.mod, filepath = file.path(dir_name, "neuralnet.h5"))
+      }
+      list(predictor = pred, task.id = task.id[[row]],
+        learner.id = learner.id[[row]],
+        sampled.rows = getTaskData(task[[row]], subset = sampled.rows[[row]], target.extra = TRUE)$data,
+        performance = performance[[row]])
+    })
+  })
+}, finally = {
+  if (PARALLEL) {
+    parallelMap::parallelStop()
+  }
+})
 
 saveRDS(models_trained, save_dir)
-

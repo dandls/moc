@@ -3,7 +3,9 @@
 \name{Interaction}
 \alias{Interaction}
 \title{Feature interactions}
-\format{\code{\link{R6Class}} object.}
+\format{
+\code{\link{R6Class}} object.
+}
 \description{
 \code{Interaction} estimates the feature interactions in a prediction model.
 }

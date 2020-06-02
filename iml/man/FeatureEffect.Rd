@@ -3,7 +3,9 @@
 \name{FeatureEffect}
 \alias{FeatureEffect}
 \title{Effect of a feature on predictions}
-\format{\code{\link{R6Class}} object.}
+\format{
+\code{\link{R6Class}} object.
+}
 \description{
 \code{FeatureEffect} computes and plots (individual) feature effects of prediction models.
 }
