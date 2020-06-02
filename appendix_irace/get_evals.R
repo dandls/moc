@@ -22,7 +22,7 @@ models_irace.10 = flatten_instances(models_irace)
 
 if (PARALLEL) {
   parallelMap::parallelStartSocket(cpus = cpus, load.balancing = TRUE) # ParallelStartMulticore does not work for xgboost
-  parallelMap::parallelSource("../helpers/libs_mlr.R")
+  parallelMap::parallelSource("../helpers/libs_mlr.R", master = FALSE)
   parallelMap::parallelLibrary("pracma")
   parallelMap::parallelExport("mu", "data_dir")
 

@@ -13,7 +13,7 @@ get_keras_model = function(layer_size = 0, lr = 3*10^-4, input_shape) {
   } else {
     layer_dense(ffnet, units = 2^layer_size, input_shape = input_shape,
       activation = "relu")
-    #layer_dense(ffnet, units = 2^layer_size, activation = "relu") %>%
+    #layer_dense(ffnet, units = 2^layer_size, activation = "relu")
     layer_dense(ffnet, units = 1L, activation = "sigmoid")
   }
   compile(ffnet, optimizer = optimizer_adam(lr),
@@ -68,12 +68,12 @@ trainLearner.classif.keraslogreg = function(.learner, .task, .subset, .weights =
 
 predictLearner.classif.keraslogreg = function(.learner, .model, .newdata) {
   if (.learner$predict.type == "response") {
-    p = .model$learner.model$model %>% predict_classes(x = as.matrix(.newdata))
+    p = predict_classes(.model$learner.model$model, x = as.matrix(.newdata))
     p = factor(ifelse(p == 1, .model$learner.model$target_labels[1],
       .model$learner.model$target_labels[2]), levels = .model$learner.model$target_labels)
   }
   if (.learner$predict.type == "prob") {
-    p = .model$learner.model$model %>% predict_proba(x = as.matrix(.newdata))
+    p = predict_proba(.model$learner.model$model, x = as.matrix(.newdata))
     if (ncol(p) == 1L) p = cbind(p, 1-p)
     colnames(p) = .model$learner.model$target_labels
   }

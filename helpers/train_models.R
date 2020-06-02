@@ -177,7 +177,7 @@ task.learner.grid = tasks[learners[grid, on = c(learner.id = "lrn.ind")], on = c
 if (PARALLEL) {
   set.seed(123456, "L'Ecuyer-CMRG")
   parallelMap::parallelStartSocket(cpus, level = "mlr.tuneParams")
-  parallelMap::parallelSource("../helpers/libs_mlr.R", level = "mlr.tuneParams")
+  parallelMap::parallelSource("../helpers/libs_mlr.R", level = "mlr.tuneParams", master = FALSE)
 }
 tryCatch({
   task.learner.grid[,
@@ -203,7 +203,7 @@ tryCatch({
 if (PARALLEL) {
   set.seed(123456, "L'Ecuyer-CMRG")
   parallelMap::parallelStartSocket(cpus, load.balancing = TRUE)
-  parallelMap::parallelSource("../helpers/libs_mlr.R")
+  parallelMap::parallelSource("../helpers/libs_mlr.R", master = FALSE)
   parallelMap::parallelExport("task.learner.grid", "data_dir", "SAVE_KERAS")
 }
 tryCatch({
