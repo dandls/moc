@@ -34,7 +34,8 @@ levels(credit$Saving.accounts) = c("little", "moderate", "rich", "rich")
 names(credit) = tolower(names(credit))
 # Drop levels
 credit = droplevels.data.frame(credit)
-
+x.interest = credit[1,]
+credit = credit[-1,]
 ###---- Train model ----
 if (USE_TRAINED_MODEL) {
     pred = readRDS("predictor_svm.rds")
@@ -75,24 +76,24 @@ set.seed(1234)
 pred$conditionals = fit_conditionals(pred$data$get.x(), ctrl = ctr)
 
 ###---- Compute counterfactuals ----
-x.interest = credit[1,]
-pred$predict(x.interest)
-
-set.seed(1000)
-system.time({credit.cf = Counterfactuals$new(predictor = pred, 
-    x.interest = x.interest, 
-    target = c(0.5, 1), epsilon = 0, generations = best.params$generations, 
-    mu = best.params$mu, 
-    p.mut = best.params$p.mut, p.rec = best.params$p.rec, 
-    p.mut.gen = best.params$p.mut.gen, 
-    p.mut.use.orig = best.params$p.mut.use.orig, 
-    p.rec.gen = best.params$p.rec.gen, initialization = "icecurve",
-    p.rec.use.orig = best.params$p.rec.use.orig, track.infeas = TRUE)})
-
-# Get relative frequency of feature changes
-credit.cf$get_frequency()
-
-###---- Plots ----
-credit.cf$plot_parallel(features = c("duration", "credit.amount", "age"))
-credit.cf$plot_surface(features = c("duration", "credit.amount"))
-plot_hv(credit.cf, ylim = c(0.65, 0.75))
+    x.interest = credit[1,]
+    pred$predict(x.interest)
+    
+    set.seed(1000)
+    system.time({credit.cf = Counterfactuals$new(predictor = pred, 
+        x.interest = x.interest, 
+        target = c(0.5, 1), epsilon = 0, generations = best.params$generations, 
+        mu = best.params$mu, 
+        p.mut = best.params$p.mut, p.rec = best.params$p.rec, 
+        p.mut.gen = best.params$p.mut.gen, 
+        p.mut.use.orig = best.params$p.mut.use.orig, 
+        p.rec.gen = best.params$p.rec.gen, initialization = "icecurve",
+        p.rec.use.orig = best.params$p.rec.use.orig, track.infeas = TRUE)})
+    
+    # Get relative frequency of feature changes
+    credit.cf$get_frequency()
+    
+    ###---- Plots ----
+    credit.cf$plot_parallel(features = c("duration", "credit.amount", "age"))
+    credit.cf$plot_surface(features = c("duration", "credit.amount"))
+    plot_hv(credit.cf, ylim = c(0.65, 0.75))
