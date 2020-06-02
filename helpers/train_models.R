@@ -21,8 +21,8 @@ data_dir = file.path(current_dir, folder)
 dir.create(path = data_dir, showWarnings = FALSE)
 names_models = c("randomforest", "xgboost", "svm", "logreg", "neuralnet")
 
-RESAMPLING = hout
-TUNEITERS = 10
+RESAMPLING = cv5
+TUNEITERS = 100
 
 cpoFixNames = makeCPO("fixnames",
   cpo.train = NULL,
