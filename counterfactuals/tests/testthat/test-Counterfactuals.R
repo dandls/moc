@@ -266,7 +266,6 @@ test_that("different initialization strategies", {
 })
 
 test_that("conditional transformation trees mutator works", {
-  skip("doesn't seem to work?")
   mod_cond = mod$clone()
   ctr = partykit::ctree_control(maxdepth = 2L)
   mod_cond$conditionals = fit_conditionals(mod_cond$data$get.x(), ctrl = ctr)

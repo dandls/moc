@@ -13,6 +13,7 @@ data_dir = args[[4]]
 evals = readRDS(args[[3]])
 evals = (ceiling(quantile(evals, probs = 0.95)/100)*100)[[1]]
 #evals = 2L #SD
+
 cpus = 20
 evals = max(evals)
 PARALLEL = TRUE
@@ -62,8 +63,8 @@ targetRunnerParallel = function(experiment, exec.target.runner, scenario, target
   message(inst$task.id)
   gc()
   if (PARALLEL) {
-    parallelMap::parallelStartSocket(cpus = min(cpus, length(curexp)),
-      load.balancing = length(curexp) > cpus) # ParallelStartMulticore does not work for xgboost
+    parallelMap::parallelStartSocket(cpus = min(cpus, length(experiment)),
+      load.balancing = length(experiment) > cpus) # ParallelStartMulticore does not work for xgboost
     parallelMap::parallelSource("../helpers/libs_mlr.R", master = FALSE)
     parallelMap::parallelLibrary("pracma")
     parallelMap::parallelExport("evals", "data_dir")
