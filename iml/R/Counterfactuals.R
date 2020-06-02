@@ -380,7 +380,7 @@ Counterfactuals = R6::R6Class("Counterfactuals",
       
       pfPlot
     },
-    plot_parallel = function(features = NULL, row.ids = NULL, nr.solutions = NULL, type = "parallel") {
+    plot_parallel = function(features = NULL, row.ids = NULL, nr.solutions = NULL, type = "parallel", epsilon = NULL) {
       assert_true(type %in% c("parallel", "spider"))
       assert_character(features, null.ok = TRUE, min.len = 2L)
       assert_numeric(row.ids, null.ok = TRUE)
@@ -414,6 +414,10 @@ Counterfactuals = R6::R6Class("Counterfactuals",
       
       mycolors = c(gray.colors(nrow(cf)-1, start = 0.2, end = 0.8, gamma = 2.2), "blue")
       names(mycolors) <- rownames(cf)
+      
+      if (!is.null(epsilon)) {
+        cf = cf[cf$dist.target<=epsilon, ]
+      }
       if (type == "parallel") {
         cf$row.names = rownames(cf)
         param.set = self$.__enclos_env__$private$param.set
@@ -448,8 +452,10 @@ Counterfactuals = R6::R6Class("Counterfactuals",
       }
       return(p) 
     },
-    plot_surface = function (features = NULL, grid.size = 50L) {
+    plot_surface = function (features = NULL, grid.size = 50L, epsilon = NULL) {
       assert_character(features, null.ok = TRUE, min.len = 2L)
+      assert_integerish(grid.size, len = 1L)
+      assert_numeric(epsilon, len = 1L, null.ok = TRUE)
       
       if (is.null(features)) {
         features = self$predictor$data$feature.names
@@ -462,6 +468,11 @@ Counterfactuals = R6::R6Class("Counterfactuals",
       
       change.id = which(rowSums(self$results$counterfactuals.diff[, features] != 0) == cf$nr.changed)
       instances = cf[change.id, ]
+      
+      if (!is.null(epsilon)) {
+        instances = instances[instances$dist.target<=epsilon, ]
+      }
+      
       res = get_ice_curve_area(instance = self$x.interest, features = features, 
         predictor = self$predictor, param.set = private$param.set, 
         grid.size = grid.size)
