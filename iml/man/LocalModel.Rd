@@ -3,7 +3,9 @@
 \name{LocalModel}
 \alias{LocalModel}
 \title{LocalModel}
-\format{\code{\link{R6Class}} object.}
+\format{
+\code{\link{R6Class}} object.
+}
 \description{
 \code{LocalModel} fits locally weighted linear regression models (logistic regression for classification) to explain single predictions of a prediction model.
 }

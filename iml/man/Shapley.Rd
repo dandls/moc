@@ -3,7 +3,9 @@
 \name{Shapley}
 \alias{Shapley}
 \title{Prediction explanations with game theory}
-\format{\code{\link{R6Class}} object.}
+\format{
+\code{\link{R6Class}} object.
+}
 \description{
 \code{Shapley} computes feature contributions for single predictions with the Shapley value, an approach from cooperative game theory. 
 The features values of an instance cooperate to achieve the prediction. 

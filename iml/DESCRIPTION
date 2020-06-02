@@ -27,20 +27,7 @@ Imports: R6,
          foreach,
          prediction,
          gridExtra,
-         Formula, 
-         ParamHelpers, 
-      	 mosmafs, 
-      	 ecr, 
-      	 StatMatch, 
-      	 ggrepel,
-      	 trtf,
-         partykit,
-      	 variables, 
-      	 basefun,
-      	 mlt, 
-      	 ggExtra,
-      	 GGally, 
-      	 metR
+         Formula
 Suggests: randomForest,
           gower, 
           glmnet, 
@@ -65,5 +52,5 @@ Suggests: randomForest,
           mlr3
 License: MIT + file LICENSE
 Encoding: UTF-8
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.0
 VignetteBuilder: knitr

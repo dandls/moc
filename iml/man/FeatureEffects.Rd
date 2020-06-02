@@ -3,7 +3,9 @@
 \name{FeatureEffects}
 \alias{FeatureEffects}
 \title{Effect of all features on predictions}
-\format{\code{\link{R6Class}} object.}
+\format{
+\code{\link{R6Class}} object.
+}
 \description{
 \code{FeatureEffects} computes feature effects for multiple features at once.
 }
