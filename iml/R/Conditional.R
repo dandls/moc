@@ -12,6 +12,7 @@
 # added functions in cdens to process integers + save data_nodes as private$object
 # Set number of classes for trafotree to 10
 # explicitly use reshape2:: in reshape2::melt, because a warning is given otherwise
+# Instead of density --> logdensity --> more stable! 
 
 #### Some other changes (Martin): ####
 # sample() problematic for single integer values
@@ -79,8 +80,13 @@ Conditional = R6Class(
       cmodel = self$model
       if(inherits(cmodel, "trafotree")) {
         if (class(self$data$X[[self$feature]]) != "integer") {
-          conditionals = predict(cmodel, newdata = X, type = "density", q = xgrid)
-          densities = reshape2::melt(conditionals)$value
+          # conditionals = predict(cmodel, newdata = X, type = "density", q = xgrid)
+          # the following is more stable
+          probs.m = predict(cmodel, newdata = X, type = "logdensity", q = xgrid)
+          probs.m = probs.m - max(probs.m)
+          probs.m = exp(probs.m)
+          probs.m = probs.m/sum(probs.m)
+          densities = reshape2::melt(probs.m)$value
           densities = data.table(.dens = densities, .id.dist = rep(1:nrow(X), each = length(xgrid)),
             feature = rep(xgrid, times = nrow(X)))
         } else {
@@ -97,6 +103,11 @@ Conditional = R6Class(
             prob.df = data.frame(cbind(.dens = dens$y, .id.dist = i, feature = dens$x))
           })
           densities = do.call("rbind", probs.m)
+          ## might not always work 
+          # probs.m = diff(predict(cmodel, newdata = X, type = "distribution", q = xgrid))
+          # densities = reshape2::melt(probs.m)$value
+          # densities = data.table(.dens = densities, .id.dist = rep(1:nrow(X), each = length(xgrid)),
+          #   feature = rep(xgrid, times = nrow(X)))
         }
       } else if (self$data$feature.types[self$feature] == "categorical") {
         probs = predict(cmodel, newdata = X, type = "prob")
