@@ -53,13 +53,13 @@ trainLearner.classif.keraslogreg = function(.learner, .task, .subset, .weights =
   model = get_keras_model(layer_size = .learner$par.vals$layer_size,
     lr = .learner$par.vals$lr, input_shape = input_shape)
   es = callback_early_stopping(monitor='val_loss', patience=5L)
-  history = invoke(keras::fit,
+  history = keras::fit(
     object = model,
     x = x,
     y = y,
     epochs = .learner$par.vals$epochs,
     batch_size = .learner$par.vals$batch_size,
-    validation_split =0.2,
+    validation_split = 0.2,
     callbacks = list(es), verbose = 0L)
   list(model = model, history = history, target_labels = target_labels)
 }

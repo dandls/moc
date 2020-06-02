@@ -16,14 +16,15 @@ Sys.setenv('TF_CPP_MIN_LOG_LEVEL' = 2)
 
 cpus = parallel::detectCores()
 
-#--- Sample new observations ----
-# 5 for each dataset and model
-models_irace.5 = rep(models_irace, 5)
+#--- Use sampled observations ----
+# 10 for each dataset and model
+models_irace.10 = flatten_instances(models_irace)
 
 if (PARALLEL) {
   parallelMap::parallelStartSocket(cpus = cpus, load.balancing = TRUE) # ParallelStartMulticore does not work for xgboost
   parallelMap::parallelSource("../helpers/libs_mlr.R")
   parallelMap::parallelLibrary("pracma")
+  parallelMap::parallelExport("mu", "data_dir")
 
   ## parallelExport(
   ##   "Counterfactuals", "Predictor", "Conditional", "InterpretationMethod",
@@ -41,7 +42,7 @@ if (PARALLEL) {
 }
 tryCatch({
   set.seed(1234)
-  get_nr_generations = parallelMap(function(inst){
+  get_nr_generations = parallelMap::parallelMap(function(inst){
       # Sample data point as x.interest
       inst = initialize_instance(inst, data_dir)
       x.interest = inst$x.interest
@@ -49,13 +50,13 @@ tryCatch({
       # Receive counterfactuals
       cf = Counterfactuals$new(predictor = inst$predictor, target = target,
         x.interest = x.interest, mu = mu,
-        generations = list(mosmafsTermStagnationHV(10),
-          mosmafsTermGenerations(400))) #SD
+        generations = list(mosmafs::mosmafsTermStagnationHV(10),
+          mosmafs::mosmafsTermGenerations(400))) #SD
       # Save number of generations
       cat(sprintf("finished: %s/%s\n", inst$learner.id, inst$task.id))
 
       nrow(cf$log) - 1  # number of generations excludes the 0th generation
-  }, models_irace.5) #SD
+  }, models_irace.10) #SD
 }, finally = {
   if (PARALLEL) {
     parallelMap::parallelStop()

@@ -21,6 +21,9 @@ data_dir = file.path(current_dir, folder)
 dir.create(path = data_dir, showWarnings = FALSE)
 names_models = c("randomforest", "xgboost", "svm", "logreg", "neuralnet")
 
+RESAMPLING = hout
+TUNEITERS = 10
+
 cpoFixNames = makeCPO("fixnames",
   cpo.train = NULL,
   cpo.retrafo = {
@@ -174,7 +177,7 @@ task.learner.grid = tasks[learners[grid, on = c(learner.id = "lrn.ind")], on = c
 if (PARALLEL) {
   set.seed(123456, "L'Ecuyer-CMRG")
   parallelMap::parallelStartSocket(cpus, level = "mlr.tuneParams")
-  parallelMap::parallelSource("../helpers/libs_mlr.R")
+  parallelMap::parallelSource("../helpers/libs_mlr.R", level = "mlr.tuneParams")
 }
 tryCatch({
   task.learner.grid[,
@@ -183,11 +186,11 @@ tryCatch({
       cat(sprintf("Resampling task %s x learner %s\n", task.id[[row]], learner.id[[row]]))
       lrn = task.preproc.cpo[[row]] %>>% learner.preproc.cpo[[row]] %>>% learner[[row]]
       par.set = searchspace[[row]]
-      ctrl = makeTuneControlRandom(maxit = 100 * length(par.set$pars))
-      lrn.tuning = makeTuneWrapper(lrn, cv5, list(mlr::acc), par.set, ctrl, show.info = FALSE)
-      res = tuneParams(lrn, train.task[[row]], cv5, par.set = par.set, control = ctrl,
+      ctrl = makeTuneControlRandom(maxit = TUNEITERS * length(par.set$pars))
+      lrn.tuning = makeTuneWrapper(lrn, RESAMPLING, list(mlr::acc), par.set, ctrl, show.info = FALSE)
+      res = tuneParams(lrn, train.task[[row]], RESAMPLING, par.set = par.set, control = ctrl,
         show.info = FALSE)
-      list(performance = resample(lrn.tuning, train.task[[row]], cv5, list(mlr::acc))$aggr,
+      list(performance = resample(lrn.tuning, train.task[[row]], RESAMPLING, list(mlr::acc))$aggr,
         paramvals = list(res$x))
 
     }))]
@@ -201,7 +204,7 @@ if (PARALLEL) {
   set.seed(123456, "L'Ecuyer-CMRG")
   parallelMap::parallelStartSocket(cpus, load.balancing = TRUE)
   parallelMap::parallelSource("../helpers/libs_mlr.R")
-  parallelMap::parallelExport("task.learner.grid")
+  parallelMap::parallelExport("task.learner.grid", "data_dir", "SAVE_KERAS")
 }
 tryCatch({
   models_trained = parallelMap::parallelLapply(seq_len(nrow(task.learner.grid)), function(row) {

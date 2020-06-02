@@ -110,6 +110,7 @@ if (PARALLEL) {
   ## parallelLibrary("mosmafs", "ParamHelpers")
 }
 tryCatch({
+  set.seed(12345)
   irace_results = irace(scenario = tuner.config,
     parameters = convertParamSetToIrace(ps))
 }, finally = {
