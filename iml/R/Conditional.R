@@ -44,12 +44,15 @@ Conditional = R6Class(
     },
     csample_parametric = function(X, size){
       cmodel = self$model
+      x = self$data$X[[self$feature]]
       if (self$data$feature.types[[self$feature]] == "categorical") {
-        xgrid = unique(self$data$X[[self$feature]])
-      } else {
-        x = self$data$X[[self$feature]]
+        x = unique(x)
+      } else if (class(self$data$X[[self$feature]]) == "integer") {
+        len = min(max(x)- min(x)+1, 100)
+        xgrid = seq.int(min(x), max(x), length.out = len)
+       } else {
         xgrid = seq(from = min(x), to = max(x), length.out = 100)
-      }
+      } 
       dens = self$cdens(X, xgrid)
       xj_samples = lapply(1:nrow(X), function(i) {
         dens_i = dens[dens$.id.dist == i,]
@@ -81,11 +84,12 @@ Conditional = R6Class(
             private$data_nodes = self$cnode(self$data$X)
           }
           X_nodes = self$cnode(X)
+          len = min(max(xgrid)- min(xgrid)+1, 100)
           probs.m = lapply(1:nrow(X), function(i) {
             node = X_nodes[i, "node"]
             data_ids = which(private$data_nodes$node == node)
             vec = data.frame(self$data$X)[data_ids, self$feature]
-            dens = density(vec, n = 100, from = min(xgrid), to = max(xgrid))
+            dens = density(vec, n = len, from = min(xgrid), to = max(xgrid))
             prob.df = data.frame(cbind(.dens = dens$y, .id.dist = i, feature = dens$x))
           })
           densities = do.call("rbind", probs.m)

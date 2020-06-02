@@ -4,6 +4,8 @@ library("randomForest")
 library("mosmafs")
 data("Boston", package  = "MASS")
 Boston$chas = as.factor(Boston$chas)
+Boston$tax = as.integer(Boston$tax)
+Boston$black = as.integer(Boston$black)
 
 set.seed(1000)
 rf =  randomForest(medv ~ ., data = Boston)
@@ -266,7 +268,7 @@ test_that("different initialization strategies", {
 
 test_that("conditional transformation trees mutator works", {
   mod_cond = mod$clone()
-  ctr = ctree_control(maxdepth = 5L)
+  ctr = ctree_control(maxdepth = 2L)
   mod_cond$conditionals = fit_conditionals(mod_cond$data$get.x(), ctrl = ctr)
   set.seed(100)
   cf_cond = Counterfactuals$new(mod_cond, x.interest = x.interest, target = target, 

@@ -658,20 +658,12 @@ Counterfactuals = R6::R6Class("Counterfactuals",
             fixed.features = self$fixed.features, max.changed = self$max.changed)
         }, supported = "custom")
       } else {
-        single.mutator = suppressMessages(mosmafs::combine.operators(private$param.set,
-          numeric = ecr::setup(mosmafs::mutGaussScaled, p = self$p.mut.gen, sdev = sdev.l$numeric),
-          integer = ecr::setup(mosmafs::mutGaussIntScaled, p = self$p.mut.gen, sdev = sdev.l$integer),
-          discrete = ecr::setup(mosmafs::mutRandomChoice, p = self$p.mut.gen),
-          logical = ecr::setup(ecr::mutBitflip, p = self$p.mut.gen),
-          use.orig = ecr::setup(mosmafs::mutBitflipCHW, p = self$p.mut.use.orig),
-          .binary.discrete.as.logical = TRUE))
-        
         mutator = ecr::makeMutator(function(ind) {
-          # # Transform use.original 
-          # ind$use.orig = as.logical(mosmafs::mutBitflipCHW(as.integer(ind$use.orig), p = self$p.mut.use.orig)) #SD
-          # Transform as before
-          ind = transform_to_orig(single.mutator(ind), x.interest, delete.use.orig = FALSE, #SD single.mutator(ind)
-            fixed.features = self$fixed.features, max.changed = self$max.changed)
+          # Transform use.original 
+          ind$use.orig = as.logical(mosmafs::mutBitflipCHW(as.integer(ind$use.orig), p = self$p.mut.use.orig)) #SD
+          # Set back as before
+            ind = transform_to_orig(ind, x.interest, delete.use.orig = FALSE, 
+              fixed.features = self$fixed.features, max.changed = self$max.changed)
           ind.short = ind
           ind.short$use.orig = NULL
           # Select features to mutate: 
@@ -804,9 +796,16 @@ Counterfactuals = R6::R6Class("Counterfactuals",
       finalpop = finalpop[select.id, ]
       
       result = cbind(finalpop, fit)
-      if (!is.null(self$epsilon)) {
-        result = result[result$dist.target <= self$epsilon,]
-      }
+      
+      # # Remove counterfactuals that do not satisfy the soft constraint epsilon
+      # if (!is.null(self$epsilon)) {
+      #   feas.id = result$dist.target <= self$epsilon
+      #   if (any(feas.id)) {
+      #     result = result[feas.id,]
+      #   } else {
+      #     message("no counterfactual found that satisfies the constraint epsilon.")
+      #   }
+      # }
       return(result)
     },
     aggregate = function() {
