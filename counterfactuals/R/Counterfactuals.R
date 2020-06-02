@@ -803,9 +803,16 @@ Counterfactuals = R6::R6Class("Counterfactuals",
       finalpop = finalpop[select.id, ]
 
       result = cbind(finalpop, fit)
-      if (!is.null(self$epsilon)) {
-        result = result[result$dist.target <= self$epsilon,]
-      }
+
+      # # Remove counterfactuals that do not satisfy the soft constraint epsilon
+      # if (!is.null(self$epsilon)) {
+      #   feas.id = result$dist.target <= self$epsilon
+      #   if (any(feas.id)) {
+      #     result = result[feas.id,]
+      #   } else {
+      #     message("no counterfactual found that satisfies the constraint epsilon.")
+      #   }
+      # }
       return(result)
     },
     aggregate = function() {
