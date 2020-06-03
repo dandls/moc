@@ -22,7 +22,8 @@ dir.create(path = data_dir, showWarnings = FALSE)
 names_models = c("randomforest", "xgboost", "svm", "logreg", "neuralnet")
 
 RESAMPLING = cv5
-TUNEITERS = 100
+TUNEITERS = args[[5]]
+message(paste("Tuning iterations:", nrow(TUNEITERS)))
 
 cpoFixNames = makeCPO("fixnames",
   cpo.train = NULL,
@@ -128,9 +129,7 @@ if (length(subset.id) > 0) {
   grid = grid[-subset.id, ]
 }
 
-print(nrow(grid))
-#grid = grid[c(20:21),] #SD
-#grid = grid[c(1:4, 20), ] #SD
+message(paste("Size of tuning grid:", nrow(grid)))
 
 stopifnot(identical(names(lrn.list), names(hyper.pars)))
 stopifnot(identical(names(task_list), names(sampled.rows)))
