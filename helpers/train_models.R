@@ -12,6 +12,8 @@ SAVEINFO = as.logical(args[[1]])
 task_ids = readRDS(args[[2]])
 save_dir = args[[3]]
 folder = args[[4]]
+TUNEITERS = as.numeric(args[[5]])
+EVALUATE = as.logical(args[[6]])
 dir.create(path = "../saved_objects_rerun", showWarnings = FALSE)
 
 PARALLEL = TRUE
@@ -22,7 +24,7 @@ dir.create(path = data_dir, showWarnings = FALSE)
 names_models = c("randomforest", "xgboost", "svm", "logreg", "neuralnet")
 
 RESAMPLING = cv5
-TUNEITERS = as.numeric(args[[5]])
+
 message(paste("Tuning iterations:", nrow(TUNEITERS)))
 
 cpoFixNames = makeCPO("fixnames",
@@ -184,10 +186,18 @@ tryCatch({
       lrn = task.preproc.cpo[[row]] %>>% learner.preproc.cpo[[row]] %>>% learner[[row]]
       par.set = searchspace[[row]]
       ctrl = makeTuneControlRandom(maxit = TUNEITERS * length(par.set$pars))
-      lrn.tuning = makeTuneWrapper(lrn, RESAMPLING, list(mlr::acc), par.set, ctrl, show.info = FALSE)
+      if (EVALUATE) {
+        lrn.tuning = makeTuneWrapper(lrn, RESAMPLING, list(mlr::acc), par.set, ctrl, show.info = FALSE) #SD
+      }
       res = tuneParams(lrn, train.task[[row]], RESAMPLING, par.set = par.set, control = ctrl,
         show.info = FALSE)
-      list(performance = resample(lrn.tuning, train.task[[row]], RESAMPLING, list(mlr::acc))$aggr,
+      if (EVALUATE) {
+        performance = resample(lrn.tuning, train.task[[row]], RESAMPLING, list(mlr::acc))$aggr, #SD
+      } else {
+        performance = NA
+      }
+      list(
+        performance = performance,
         paramvals = list(res$x))
 
     }))]

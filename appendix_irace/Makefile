@@ -7,7 +7,7 @@ nr_evals_dir = ../saved_objects_rerun/irace/max_eval.rds
 all : train-models get-evals run-irace tune-evals
 
 train-models : 
-	R CMD BATCH '--args FALSE task_ids.rds $(model_dir) $(data_dir) 20' ../helpers/train_models.R
+	R CMD BATCH '--args FALSE task_ids.rds $(model_dir) $(data_dir) 20 FALSE' ../helpers/train_models.R
 	# Rscript ../helpers/train_models.R --savekeras TRUE --task_ids task_ids.rds --savedir $(model_dir) --data_dir $(data_dir)
 
 get-evals : 
