@@ -192,7 +192,7 @@ tryCatch({
       res = tuneParams(lrn, train.task[[row]], RESAMPLING, par.set = par.set, control = ctrl,
         show.info = FALSE)
       if (EVALUATE) {
-        performance = resample(lrn.tuning, train.task[[row]], RESAMPLING, list(mlr::acc))$aggr, #SD
+        performance = resample(lrn.tuning, train.task[[row]], RESAMPLING, list(mlr::acc))$aggr #SD
       } else {
         performance = NA
       }
