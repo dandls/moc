@@ -43,32 +43,30 @@ if (USE_TRAINED_MODEL) {
 } else {
   credit.task = makeClassifTask(id = "credit",
     data = credit, target = "risk")
-  n = getTaskSize(credit.task)
-  set.seed(1234)
-  train.set = sample(n, size = n*0.8)
-  test.set = seq(1, n)[-train.set]
-  train.task = subsetTask(credit.task, subset = train.set)
-  test.task = subsetTask(credit.task, subset = test.set)
   lrn = makeLearner("classif.svm", predict.type = "prob")
   credit.lrn = cpoScale() %>>% cpoDummyEncode() %>>% lrn
   param.set = pSS(
     cost: numeric[0.01, 1]
   )
-  ctrl = makeTuneControlRandom(maxit = 100L)
+  
+  TUNEITERS = 2L
+  RESAMPLING = cv5
+  
   if (PARALLEL) {
     parallelMap::parallelStartSocket(parallel::detectCores(), level = "mlr.tuneParams")
   }
-  tryCatch({
-    res = tuneParams(credit.lrn, train.task, cv5, par.set = param.set, control = ctrl,
-      show.info = FALSE)
-  }, finally = {
-    if (PARALLEL) {
-      parallelMap::parallelStop()
-    }
-  })
+  
+  ctrl = makeTuneControlRandom(maxit = TUNEITERS * length(param.set$pars))
+  lrn.tuning = makeTuneWrapper(lrn, RESAMPLING, list(mlr::acc), param.set, ctrl, show.info = FALSE)
+  res = tuneParams(lrn, credit.task, RESAMPLING, par.set = param.set, control = ctrl,
+    show.info = FALSE)
+  performance = resample(lrn.tuning, credit.task, RESAMPLING, list(mlr::acc))$aggr
+  
+  if (PARALLEL) {
+    parallelMap::parallelStop()
+  }
   credit.lrn = setHyperPars2(credit.lrn, res$x) # evtl exp
-  credit.model = mlr::train(credit.lrn, train.task)  # use mlr:: in case caret is loaded somewhere
-  perf.test = performance(predict(credit.model, test.task), acc)
+  credit.model = mlr::train(credit.lrn, credit.task)  # use mlr:: in case caret is loaded somewhere
 }
 
 pred = Predictor$new(model = credit.model, data = credit, class = "good",
