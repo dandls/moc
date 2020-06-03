@@ -22,7 +22,7 @@ dir.create(path = data_dir, showWarnings = FALSE)
 names_models = c("randomforest", "xgboost", "svm", "logreg", "neuralnet")
 
 RESAMPLING = cv5
-TUNEITERS = args[[5]]
+TUNEITERS = as.numeric(args[[5]])
 message(paste("Tuning iterations:", nrow(TUNEITERS)))
 
 cpoFixNames = makeCPO("fixnames",

@@ -73,10 +73,11 @@ targetRunnerParallel = function(experiment, exec.target.runner, scenario, target
       } else {
         pred = inst$predictor
       }
-
+      
       set.seed(curexp$seed)
       cf = Counterfactuals$new(predictor = pred, target = inst$target,
         mu = pars$mu, x.interest = inst$x.interest, p.mut = pars$p.mut,
+        epsilon = 0, 
         p.rec = pars$p.rec, p.mut.gen = pars$p.mut.gen,
         p.mut.use.orig = pars$p.mut.use.orig,
         p.rec.gen = pars$p.rec.gen,

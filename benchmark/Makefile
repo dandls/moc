@@ -1,6 +1,6 @@
-model_dir = ../saved_objects/benchmark/models_benchmark.rds
-data_dir = ../saved_objects/benchmark
-config_dir = ../saved_objects/best_configs.rds
+model_dir = ../saved_objects_rerun/benchmark/models_benchmark.rds
+data_dir = ../saved_objects_rerun/benchmark
+config_dir = ../saved_objects_rerun/best_configs.rds
 tasks_dir = ../helpers/benchmark_task_ids.rds
 
 all : train-models run-tweaking run-pair run-moc

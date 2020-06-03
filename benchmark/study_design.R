@@ -30,7 +30,7 @@ study_design = function(inst, best.config, save.dir = NULL) {
   # Calculate counterfactuals for each data point
   results_pred = mapply(FUN = function(x.interest, target, row.id) {
     if (target == 1) {
-      target = c(0.5, 1)
+      target = c(0.51, 1)
     } else {
       target = c(0, 0.5)
     }
