@@ -47,18 +47,6 @@ targetRunnerParallel = function(experiment, exec.target.runner, scenario, target
   stopifnot(length(unique(vapply(experiment, `[[`, numeric(1), "id.instance"))) == 1)
   inst = experiment[[1]]$instance
 
-  cond = any(unlist(lapply(experiment, function(exp) as.logical(exp$configuration$conditional))))
-  if (cond) {
-    conditional = readRDS(file.path(data_dir, inst$task.id, "conditional.rds"))
-  } else {
-    conditional = NULL
-  }
-
-  inst = initialize_instance(inst, data_dir)
-
-
-
-
   message(inst$learner.id)
   message(inst$task.id)
   gc()
@@ -67,24 +55,25 @@ targetRunnerParallel = function(experiment, exec.target.runner, scenario, target
       load.balancing = length(experiment) > cpus) # ParallelStartMulticore does not work for xgboost
     parallelMap::parallelSource("../helpers/libs_mlr.R", master = FALSE)
     parallelMap::parallelLibrary("pracma")
-    parallelMap::parallelExport("evals", "data_dir")
-    parallelMap::parallelExport("inst", "conditional")
+    parallelMap::parallelExport("evals", "data_dir", "inst")
   }
   tryCatch({
     hv_auc = parallelMap::parallelMap(function(curexp) {
 
-      if (inst$learner.id %in% c("logreg", "neuralnet")) {
-        inst = load_keras_model(inst, data_dir)
-      }
+      gc()
+
+      inst = initialize_instance(inst, data_dir)
 
       pars = curexp$configuration
 
-      if (is.logical(pars$conditional)) {
+      if (as.logical(pars$conditional)) {
+        conditionals <<- tryCatch(conditionals, error = function(e) readRDS(file.path(data_dir, inst$task.id, "conditional.rds")))
         pred = inst$predictor$clone()
-        pred$conditionals = conditional
+        pred$conditionals = conditionals
       } else {
         pred = inst$predictor
       }
+
       set.seed(curexp$seed)
       cf = Counterfactuals$new(predictor = pred, target = inst$target,
         mu = pars$mu, x.interest = inst$x.interest, p.mut = pars$p.mut,
@@ -94,6 +83,8 @@ targetRunnerParallel = function(experiment, exec.target.runner, scenario, target
         p.rec.use.orig = pars$p.rec.use.orig,
         initialization = pars$initialization,
         generations = list(mosmafs::mosmafsTermEvals(evals)))
+
+
       integral(approxfun(c(0, cf$log$evals), c(0, cf$log$fitness.domHV)),
         xmin = 0, xmax = evals)
     }, experiment)
