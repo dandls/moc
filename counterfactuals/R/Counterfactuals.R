@@ -414,7 +414,7 @@ Counterfactuals = R6::R6Class("Counterfactuals",
 
       mycolors = c(gray.colors(nrow(cf)-1, start = 0.2, end = 0.8, gamma = 2.2), "blue")
       names(mycolors) <- rownames(cf)
-      
+
       if (!is.null(epsilon)) {
         cf = cf[cf$dist.target<=epsilon, ]
       }
@@ -471,8 +471,8 @@ Counterfactuals = R6::R6Class("Counterfactuals",
       if (!is.null(epsilon)) {
         instances = instances[instances$dist.target<=epsilon, ]
       }
-      res = get_ice_curve_area(instance = self$x.interest, features = features, 
-        predictor = self$predictor, param.set = private$param.set, 
+      res = get_ice_curve_area(instance = self$x.interest, features = features,
+        predictor = self$predictor, param.set = private$param.set,
         grid.size = grid.size)
       x.interest = cbind(self$x.interest, pred = self$y.hat.interest)
       plot_ice_curve_area(res, predictor = self$predictor, instances,
@@ -592,6 +592,14 @@ Counterfactuals = R6::R6Class("Counterfactuals",
       # Strategy 3: Use training data as first population
       if (self$initialization == "traindata") {
         train.data = as.data.frame(private$dataSample, stringsAsFactors = FALSE)
+
+        train.data = train.data[head(sample.int(nrow(train.data)), 200), ]
+        for (rx in seq_len(nrow(train.data))) {
+          use.orig.feats = sample.int(length(self$x.interest), 1) - 1
+          use.orig = seq_along(self$x.interest) <= use.orig.feats
+          use.orig = sample(use.orig)
+          train.data[rx, use.orig] = self$x.interest[use.orig]
+        }
         fitness.train = fn(as.data.frame(train.data))
         if (nrow(train.data) > self$mu) {
           idx = select_nondom(fitness.train, self$mu, train.data , epsilon = self$epsilon,

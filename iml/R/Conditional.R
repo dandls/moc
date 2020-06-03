@@ -1,5 +1,5 @@
 # For a grid (grid.dat) of features (param features) creates a blown up
-# dataset with the marginals of features not in 'features'. 
+# dataset with the marginals of features not in 'features'.
 # The samples (n.sample.dist number of samples) for the marginals are drawn from dist.dat.
 #            If n.sample.dist is not set, the whole cartesian product between grid.dat and dist.dat is built
 # grid.dat only needs to contain the columns which are fixed. Decide here which grid points should be used.
@@ -39,13 +39,13 @@ Conditional = R6Class(
       xj_samples = lapply(1:nrow(X), function(i) {
         node = X_nodes[i, "node"]
         data_ids = which(private$data_nodes$node == node)
-        data_ids = setdiff(data_ids, i) 
+        data_ids = setdiff(data_ids, i)
         data_ids_sample = data_ids[sample.int(length(data_ids), size = size, replace = TRUE)]
         xj = self$data$X[data_ids_sample, self$feature, with = FALSE]
         data.frame(t(xj))
       })
       rbindlist(xj_samples)
-      
+
     },
     csample_parametric = function(X, size){
       cmodel = self$model
@@ -57,10 +57,10 @@ Conditional = R6Class(
         xgrid = seq.int(min(x), max(x), length.out = len)
        } else {
         xgrid = seq(from = min(x), to = max(x), length.out = 100)
-      } 
+      }
       dens = self$cdens(X, xgrid)
-      xj_samples = lapply(1:nrow(X), function(i) {
-        dens_i = dens[dens$.id.dist == i, , drop = FALSE]
+      xj_samples = lapply(1:nrow(X), function(irow) {
+        dens_i = dens[dens$.id.dist == irow, , drop = FALSE]
         xj = dens_i[[self$feature]][sample.int(nrow(dens_i), size = size, prob = dens_i[[".dens"]], replace = TRUE)]
         data.frame(t(xj))
       })
@@ -80,13 +80,12 @@ Conditional = R6Class(
       cmodel = self$model
       if(inherits(cmodel, "trafotree")) {
         if (class(self$data$X[[self$feature]]) != "integer") {
-          # conditionals = predict(cmodel, newdata = X, type = "density", q = xgrid)
-          # the following is more stable
           probs.m = predict(cmodel, newdata = X, type = "logdensity", q = xgrid)
-          probs.m = probs.m - max(probs.m)
-          probs.m = exp(probs.m)
-          probs.m = probs.m/sum(probs.m)
-          densities = reshape2::melt(probs.m)$value
+          probs.m = apply(conditionals, 2, function(col) {
+            col = exp(col - max(col))
+            col / sum(col)
+          })
+          densities = reshape2::melt(conditionals)$value
           densities = data.table(.dens = densities, .id.dist = rep(1:nrow(X), each = length(xgrid)),
             feature = rep(xgrid, times = nrow(X)))
         } else {
@@ -146,7 +145,7 @@ Conditional = R6Class(
       }
       cbind(node_df, quants)
     }
-  ), 
+  ),
   private = list(
     data_nodes = NULL,
     fit_conditional = function() {
@@ -170,9 +169,9 @@ Conditional = R6Class(
 
 
 #' Fit conditional models
-#' 
+#'
 #' Needed for conditional PDP and Feature Importance.
-#' 
+#'
 #' @param data data.frame with data for which to fit the conditional models
 #' @return list of Conditional R6 objects
 #' @importFrom partykit ctree_control
