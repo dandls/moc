@@ -2,8 +2,6 @@ context("Counterfactuals")
 
 data("Boston", package  = "MASS")
 Boston$chas = as.factor(Boston$chas)
-Boston$tax = as.integer(Boston$tax)
-Boston$black = as.integer(Boston$black)
 
 set.seed(1000)
 rf =  randomForest::randomForest(medv ~ ., data = Boston)
@@ -277,6 +275,6 @@ test_that("conditional transformation trees mutator works", {
     mu = 10, generations = 3))
   expr_orig = system.time(Counterfactuals$new(mod, x.interest = x.interest, target = target,
     mu = 10, generations = 3))
-  expect_true(expr_cond[3]>expr_orig[3]*5)
+  expect_true(expr_cond[3]>expr_orig[3]*3)
 })
 
