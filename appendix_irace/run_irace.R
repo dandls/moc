@@ -38,7 +38,7 @@ ps = pSS(
   p.mut.use.orig : numeric[0.05, 0.5],
   p.rec.gen : numeric[0.3, 1],
   p.rec.use.orig : numeric[0.3, 1],
-  initialization : discrete[random, icecurve, traindata],  #SD evtl traindata raus???
+  initialization : discrete[random, icecurve],  #SD evtl traindata raus???
   conditional : logical
 )
 
