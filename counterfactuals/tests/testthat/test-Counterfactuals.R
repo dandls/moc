@@ -277,3 +277,14 @@ test_that("conditional transformation trees mutator works", {
   expect_true(expr_cond[3]>expr_orig[3]*2)
 })
 
+test_that("do not use x.interest as part of observed data", {
+  mod = Predictor$new(rf, data = X[-1,])
+  
+  # Explain first instance
+  x.interest = X[1,]
+  x.interest$crim = max(X$crim+0.25)
+  pred  = mod$predict(x.interest)[[1]]
+
+  cf = Counterfactuals$new(mod, x.interest = x.interest, target = target,
+    mu = 30, generations = generations)
+})

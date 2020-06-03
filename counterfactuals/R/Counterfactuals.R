@@ -283,10 +283,15 @@ Counterfactuals = R6::R6Class("Counterfactuals",
       self$upper = upper
       self$track.infeas = track.infeas
       self$initialization = initialization
-
+      
+      # Check if column names of x.interest and observed data are identical
+      if(any(!(self$predictor$data$feature.names %in% colnames(x.interest)))) {
+        stop("colnames of x.interest must be identical to observed data")
+      }
+      
       # Define parameterset
       private$param.set= ParamHelpers::makeParamSet(
-        params = make_paramlist(predictor$data$get.x(),
+        params = make_paramlist(rbind(predictor$data$get.x(), x.interest[predictor$data$feature.names]),
           lower = lower, upper = upper))
 
       # Extract info from input.data
@@ -515,9 +520,6 @@ Counterfactuals = R6::R6Class("Counterfactuals",
     set_x_interest = function(x.interest) {
       assert_data_frame(x.interest, any.missing = FALSE, all.missing = FALSE,
         nrows = 1, null.ok = FALSE)
-      if(any(!(self$predictor$data$feature.names %in% colnames(x.interest)))) {
-        stop("colnames of x.interest must be identical to observed data")
-      }
       x.interest = x.interest[setdiff(colnames(x.interest), self$predictor$data$y.names)]
       if (any(colnames(x.interest) != self$predictor$data$feature.names)) {
         warning("columns of x.interest were reordered according to predictor$data$feature.names")
