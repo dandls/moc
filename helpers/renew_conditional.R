@@ -1,7 +1,4 @@
 renew_conditionals = function(instance, datapath, seed = 1234, save = TRUE) {
-  assert_list(instance)
-  assert_character(datapath)
-  assert_logical(save)
   dir.name = file.path(datapath, instance$task.id)
   ctr = partykit::ctree_control(maxdepth = 5L)
   set.seed(seed)
