@@ -684,9 +684,9 @@ Counterfactuals = R6::R6Class("Counterfactuals",
 
         mutator = ecr::makeMutator(function(ind) {
           # # Transform use.original
-          # ind$use.orig = as.logical(mosmafs::mutBitflipCHW(as.integer(ind$use.orig), p = self$p.mut.use.orig)) #SD
+          ind$use.orig = as.logical(mosmafs::mutBitflipCHW(as.integer(ind$use.orig), p = self$p.mut.use.orig)) #SD
           # Transform as before
-          ind = transform_to_orig(single.mutator(ind), x.interest, delete.use.orig = FALSE, #SD single.mutator(ind)
+          ind = transform_to_orig(ind, x.interest, delete.use.orig = FALSE, #SD single.mutator(ind)
             fixed.features = self$fixed.features, max.changed = self$max.changed)
           ind.short = ind
           ind.short$use.orig = NULL
