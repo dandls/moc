@@ -81,11 +81,11 @@ Conditional = R6Class(
       if(inherits(cmodel, "trafotree")) {
         if (class(self$data$X[[self$feature]]) != "integer") {
           probs.m = predict(cmodel, newdata = X, type = "logdensity", q = xgrid)
-          probs.m = apply(conditionals, 2, function(col) {
+          probs.m = apply(probs.m, 2, function(col) {
             col = exp(col - max(col))
             col / sum(col)
           })
-          densities = reshape2::melt(conditionals)$value
+          densities = reshape2::melt(probs.m)$value
           densities = data.table(.dens = densities, .id.dist = rep(1:nrow(X), each = length(xgrid)),
             feature = rep(xgrid, times = nrow(X)))
         } else {
