@@ -1,0 +1,1 @@
+{"no2_concentration":"numeric","cars_per_hour":"numeric","temperature_at_2m":"numeric","wind_speed":"numeric","temperature_diff_2m_25m":"numeric","wind_direction":"numeric","hour_of_day":"numeric","target":"binaryClass"}
