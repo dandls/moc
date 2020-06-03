@@ -57,6 +57,7 @@ sampled.rows = lapply(task_list, function(onetask) {
   xinterests = dat[sampled.rows, getTaskFeatureNames(onetask)]
   write.csv(xinterests, file = file.path(dir_name, "xinterests.csv"), row.names = FALSE)
   # Conditional
+  set.seed(1234)
   ctr = partykit::ctree_control(maxdepth = 5L)
   con = fit_conditionals(dat[-sampled.rows, getTaskFeatureNames(onetask)], ctrl = ctr)
   saveRDS(object = con, file = file.path(dir_name, paste0("conditional.rds")))
