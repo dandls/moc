@@ -5,6 +5,7 @@
 #--- Setup ----
 source("../helpers/libs_mlr.R")
 library("irace")
+library("pracma") # for integral
 
 args = commandArgs(trailingOnly=TRUE)
 read_dir = args[[1]]
