@@ -61,7 +61,7 @@ def counterfactual(openmlid,  ncf):
 
         # build a flipset for one individual
         datapoint = X.iloc[idx]
-        fs = flipset.Flipset(x = datapoint.get_values(), action_set = A, coefficients = w, intercept = b)
+        fs = flipset.Flipset(x = datapoint.to_numpy(), action_set = A, coefficients = w, intercept = b)
         fs.populate(enumeration_type = 'distinct_subsets', total_items = ncf)
         cf_df = fs.to_flat_df()
         cf_ids = np.unique(cf_df.index.values)
