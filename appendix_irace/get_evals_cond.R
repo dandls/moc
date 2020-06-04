@@ -21,7 +21,7 @@ cpus = parallel::detectCores()
 models_irace.10 = flatten_instances(models_irace)
 
 if (PARALLEL) {
-  parallelMap::parallelStartSocket(cpus = cpus, load.balancing = TRUE) # ParallelStartMulticore does not work for xgboost
+  parallelMap::parallelStartSocket(cpus = 20, load.balancing = TRUE) # ParallelStartMulticore does not work for xgboost
   parallelMap::parallelSource("../helpers/libs_mlr.R", master = FALSE)
   parallelMap::parallelLibrary("pracma")
   parallelMap::parallelExport("mu", "data_dir")
@@ -43,6 +43,7 @@ if (PARALLEL) {
 tryCatch({
   set.seed(1234)
   get_nr_generations = parallelMap::parallelMap(function(inst){
+    gc()
     # Sample data point as x.interest
     inst = initialize_instance(inst, data_dir)
     x.interest = inst$x.interest
