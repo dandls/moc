@@ -17,7 +17,7 @@ def counterfactual(openmlid,  ncf):
     if openmlid in ['cmc', 'tic-tac-toe', 'plasma_retinol', 'kr-vs-kp']:
         return Null
     random.seed(42)
-    folder = "../../saved_objects/data"
+    folder = "../../saved_objects_rerun/benchmark"
     folder = os.path.join(folder, openmlid)
     data_path = os.path.join(folder, "data_encoded_refcat.csv")
     model_path = os.path.join(folder, "logreg.h5")

@@ -16,7 +16,7 @@ from tensorflow import keras
 @click.option('--model', type=str, help = 'either neuralnet or logreg')
 @click.option('--ncf', type=int, help = 'Number of counterfactuals to compute')
 def counterfactual(openmlid, model, ncf):
-    folder = os.path.join("../../saved_objects/data/", openmlid)
+    folder = os.path.join("../../saved_objects_rerun/benchmark/", openmlid)
     # For the logistic regression, binary features are not one-hot encoded
     # This is necessary because recourse currently does not work with one-hot encoded features
     data_path = os.path.join(folder, "data_orig.csv")
