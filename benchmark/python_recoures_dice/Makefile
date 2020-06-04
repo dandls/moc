@@ -35,15 +35,16 @@ venv-recourse :
 	python3 -m venv venv-recourse
 
 install-recourse : venv-recourse
+	venv-recourse/bin/python3 /opt/ibm/ILOG/CPLEX_Studio1210/python/setup.py install
 	#git clone git@github.com:ustunb/actionable-recourse.git
 	venv-recourse/bin/pip3 install actionable-recourse
 	# Make sure to download ibm CPLEX and install it into /opt/ibm/ILOG
 	# There is a free academic / student version of CPLEX
 	venv-recourse/bin/python3 /opt/ibm/ILOG/CPLEX_Studio1210/python/setup.py install
 	#cd actionable-recourse; git reset --hard aaae8fa; ../venv-recourse/bin/python3 setup.py install
-	venv-dice/bin/pip install --upgrade pip
+	venv-recourse/bin/pip install --upgrade pip
 	venv-recourse/bin/pip3 install click 
-	venv-dice/bin/pip3 install --upgrade tensorflow
+	venv-recourse/bin/pip3 install --upgrade tensorflow
 
 recoursefiles := $(patsubst %data_orig.csv, %cf-recourse-logreg.csv,$(datafiles_logreg))
 
