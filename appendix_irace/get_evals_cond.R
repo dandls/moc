@@ -47,7 +47,7 @@ tryCatch({
     inst = initialize_instance(inst, data_dir)
     x.interest = inst$x.interest
     target = inst$target
-    conditionals <<- tryCatch(conditionals, error = function(e) readRDS(file.path(data_dir, inst$task.id, "conditional.rds")))
+    conditionals = readRDS(file.path(data_dir, inst$task.id, "conditional.rds"))
     pred = inst$predictor$clone()
     pred$conditionals = conditionals
     # Receive counterfactuals
