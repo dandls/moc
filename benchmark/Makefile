@@ -6,7 +6,7 @@ tasks_dir = ../helpers/benchmark_task_ids.rds
 all : train-models run-tweaking run-pair run-moc
 
 train-models :
-	R CMD BATCH '--args TRUE $(tasks_dir) $(model_dir) $(data_dir) 100' ../helpers/train_models.R
+	R CMD BATCH '--args TRUE $(tasks_dir) $(model_dir) $(data_dir) 100 TRUE' ../helpers/train_models.R
 	# Rscript ../helpers/train_models.R --savekeras TRUE --task_ids $(tasks_dir)  --savedir $(model_dir) --datadir $(data_dir)
 
 run-tweaking : 

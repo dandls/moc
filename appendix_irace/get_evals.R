@@ -49,7 +49,7 @@ tryCatch({
       target = inst$target
       # Receive counterfactuals
       cf = Counterfactuals$new(predictor = inst$predictor, target = target,
-        x.interest = x.interest, mu = mu,
+        x.interest = x.interest, mu = mu, epsilon = 0,
         generations = list(mosmafs::mosmafsTermStagnationHV(10),
           mosmafs::mosmafsTermGenerations(400))) #SD
       # Save number of generations
