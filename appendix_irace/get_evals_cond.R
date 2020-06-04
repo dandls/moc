@@ -21,11 +21,11 @@ cpus = parallel::detectCores()
 models_irace.10 = flatten_instances(models_irace)
 
 if (PARALLEL) {
-  parallelMap::parallelStartSocket(cpus = cpus, load.balancing = TRUE) # ParallelStartMulticore does not work for xgboost
+  parallelMap::parallelStartSocket(cpus = 20, load.balancing = TRUE) # ParallelStartMulticore does not work for xgboost
   parallelMap::parallelSource("../helpers/libs_mlr.R", master = FALSE)
   parallelMap::parallelLibrary("pracma")
   parallelMap::parallelExport("mu", "data_dir")
-
+  
   ## parallelExport(
   ##   "Counterfactuals", "Predictor", "Conditional", "InterpretationMethod",
   ##   "make_paramlist", "mu",
@@ -43,19 +43,23 @@ if (PARALLEL) {
 tryCatch({
   set.seed(1234)
   get_nr_generations = parallelMap::parallelMap(function(inst){
-      # Sample data point as x.interest
-      inst = initialize_instance(inst, data_dir)
-      x.interest = inst$x.interest
-      target = inst$target
-      # Receive counterfactuals
-      cf = Counterfactuals$new(predictor = inst$predictor, target = target,
-        x.interest = x.interest, mu = mu, epsilon = 0,
-        generations = list(mosmafs::mosmafsTermStagnationHV(10),
-          mosmafs::mosmafsTermGenerations(400))) #SD
-      # Save number of generations
-      cat(sprintf("finished: %s/%s\n", inst$learner.id, inst$task.id))
-
-      nrow(cf$log) - 1  # number of generations excludes the 0th generation
+    gc()
+    # Sample data point as x.interest
+    inst = initialize_instance(inst, data_dir)
+    x.interest = inst$x.interest
+    target = inst$target
+    conditionals = readRDS(file.path(data_dir, inst$task.id, "conditional.rds"))
+    pred = inst$predictor$clone()
+    pred$conditionals = conditionals
+    # Receive counterfactuals
+    cf = Counterfactuals$new(predictor = pred, target = target,
+      x.interest = x.interest, mu = mu, epsilon = 0,
+      generations = list(mosmafs::mosmafsTermStagnationHV(10),
+        mosmafs::mosmafsTermGenerations(400))) #SD
+    # Save number of generations
+    cat(sprintf("finished: %s/%s\n", inst$learner.id, inst$task.id))
+    
+    nrow(cf$log) - 1  # number of generations excludes the 0th generation
   }, models_irace.10) #SD
 }, finally = {
   if (PARALLEL) {

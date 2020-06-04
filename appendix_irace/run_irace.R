@@ -5,17 +5,16 @@
 #--- Setup ----
 source("../helpers/libs_mlr.R")
 library("irace")
+library("pracma") # for integral
 
 args = commandArgs(trailingOnly=TRUE)
 read_dir = args[[1]]
 save_dir = args[[2]]
 data_dir = args[[4]]
-evals = readRDS(args[[3]])
-evals = (ceiling(quantile(evals, probs = 0.95)/100)*100)[[1]]
-#evals = 2L #SD
+all_evals = readRDS(args[[3]])
+evals = (ceiling(quantile(all_evals, probs = 0.9)/1000)*1000)[[1]]
 
 cpus = 20
-evals = max(evals)
 PARALLEL = TRUE
 Sys.setenv('TF_CPP_MIN_LOG_LEVEL' = 2)
 
