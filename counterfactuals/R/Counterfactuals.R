@@ -851,11 +851,19 @@ Counterfactuals = R6::R6Class("Counterfactuals",
       pareto.set.diff.pf = pareto.set.diff.pf[order(pareto.set.diff.pf$dist.target, pareto.set.diff.pf$nr.changed,
         pareto.set.diff.pf$dist.x.interest),]
       rownames(pareto.set.diff.pf) = NULL
-
+      
+      # Extract counterfactuals equal to x.interest
+      xinterest.id = which(pareto.set.diff.pf$nr.changed == 0)
+      
+      if (nrow(pareto.set.pf) > 1 && length(xinterest.id) > 0) {
+        pareto.set.pf = pareto.set.pf[-xinterest.id,]
+        pareto.set.diff.pf = pareto.set.diff.pf[-xinterest.id,]
+      }
+      
       results = list()
       results$counterfactuals = pareto.set.pf
       results$counterfactuals.diff = pareto.set.diff.pf
-
+      
       return(results)
     },
     generatePlot = function(labels = FALSE, decimal.points = 3, nr.solutions = NULL,
