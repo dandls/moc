@@ -10,13 +10,16 @@ venv-dice :
 
 DiCE :
 	git clone https://github.com/microsoft/DiCE.git;
-	cd DiCE; git reset --hard 7bcb098;
+	cd DiCE; git reset --hard fed9d27;
+	# To install TF 1
+	cp requirements-dice.txt DiCE/requirements.txt
 
 install-dice : venv-dice
 	venv-dice/bin/pip3 install --upgrade pip
 	cd DiCE; ../venv-dice/bin/python3 setup.py install
 	venv-dice/bin/pip3 install click 
-	venv-dice/bin/pip3 install --upgrade tensorflow
+	venv-dice/bin/pip3 install IPython
+	#venv-dice/bin/pip3 install --upgrade tensorflow
 
 
 dicefiles-logreg := $(patsubst %data_orig.csv, %cf-dice-logreg.csv,$(datafiles_logreg))
