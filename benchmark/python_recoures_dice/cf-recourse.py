@@ -17,7 +17,7 @@ def counterfactual(openmlid,  ncf):
     if openmlid in ['cmc', 'tic-tac-toe', 'plasma_retinol', 'kr-vs-kp']:
         return Null
     random.seed(42)
-    folder = "../../saved_objects/data"
+    folder = "../../saved_objects_rerun/benchmark"
     folder = os.path.join(folder, openmlid)
     data_path = os.path.join(folder, "data_encoded_refcat.csv")
     model_path = os.path.join(folder, "logreg.h5")
@@ -61,7 +61,7 @@ def counterfactual(openmlid,  ncf):
 
         # build a flipset for one individual
         datapoint = X.iloc[idx]
-        fs = flipset.Flipset(x = datapoint.get_values(), action_set = A, coefficients = w, intercept = b)
+        fs = flipset.Flipset(x = datapoint.to_numpy(), action_set = A, coefficients = w, intercept = b)
         fs.populate(enumeration_type = 'distinct_subsets', total_items = ncf)
         cf_df = fs.to_flat_df()
         cf_ids = np.unique(cf_df.index.values)
