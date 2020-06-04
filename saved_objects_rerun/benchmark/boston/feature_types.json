@@ -1,0 +1,1 @@
+{"CRIM":"numeric","ZN":"numeric","INDUS":"numeric","CHAS":"factor","NOX":"numeric","RM":"numeric","AGE":"numeric","DIS":"numeric","RAD":"numeric","TAX":"numeric","PTRATIO":"numeric","B":"numeric","LSTAT":"numeric","target":"binaryClass"}
