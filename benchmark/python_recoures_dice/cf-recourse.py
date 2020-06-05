@@ -24,6 +24,10 @@ def counterfactual(openmlid,  ncf):
     feature_dic_path = os.path.join(folder, "feature_types.json")
     # File that contains the ids for which to compute counterfactuals
     cf_ids_infile = os.path.join(folder, "sampled_ids.txt")
+    with open(cf_ids_infile, "r") as f:
+        ids = f.readlines()
+    # Index starts at 0 in pandas dataframes
+    ids = [int(i) - 1 for i in ids]
     cf_outfile = os.path.join(folder, "cf-recourse-logreg.csv")
 
     df = pd.read_csv(data_path, sep = ",")
@@ -35,15 +39,11 @@ def counterfactual(openmlid,  ncf):
 
     y, X = df[outcome_name], df[features]
 
-    with open(cf_ids_infile, "r") as f:
-        ids = f.readlines()
-    # Index starts at 0 in pandas dataframes
-    ids = [int(i) - 1 for i in ids]
     if openmlid== "kr-vs-kp":
         cb = {f : [0,1] for f in features}
-        A = action_set.ActionSet(X, custom_bounds = cb)  ## matrix of features. ActionSet will learn default bounds and step-size.
+        A = action_set.ActionSet(X.copy().drop(ids), custom_bounds = cb)  ## matrix of features. ActionSet will learn default bounds and step-size.
     else:
-        A = action_set.ActionSet(X)
+        A = action_set.ActionSet(X.copy().drop(ids))
     model = keras.models.load_model(model_path)
     weights = model.get_weights()
     # Generate counterfactual examples
