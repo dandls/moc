@@ -3,7 +3,7 @@ import DiCE.dice_ml as dice_ml
 from DiCE.dice_ml.utils import helpers # helper functions
 import pandas as pd
 import os
-import tensorflow as tf 
+import tensorflow as tf
 import json
 import click
 import re
@@ -27,7 +27,7 @@ def counterfactual(openmlid, model, ncf):
     cf_outfile = os.path.join(folder, "cf-dice-" + model + ".csv")
     df = pd.read_csv(data_path, sep = ",")
     with open(feature_dic_path, "r") as json_file:
-    	feature_dic = json.load(json_file)
+        feature_dic = json.load(json_file)
     features = feature_dic.values()
     feature_types = feature_dic.get("type")
     numeric_features = [k for k, v in feature_dic.items() if v == 'numeric']
@@ -36,11 +36,11 @@ def counterfactual(openmlid, model, ncf):
         data_path_enc = os.path.join(folder, "data_encoded_refcat.csv")
         df_enc = pd.read_csv(data_path_enc, sep = ",")
         fnames = df_enc.columns
-        encoded_features = [f for f in fnames if f not in numeric_features] 
+        encoded_features = [f for f in fnames if f not in numeric_features]
         df = pd.concat([df[numeric_features], df_enc[encoded_features]], axis=1)
         # Bring columns into original order again
         df = df[fnames]
-        numeric_features = df.columns       
+        numeric_features = df.columns
         numeric_features = [nf for nf in numeric_features if not nf == outcome_name]
 
     with open(cf_ids_infile, "r") as f:
@@ -48,9 +48,9 @@ def counterfactual(openmlid, model, ncf):
     # Index starts at 0 in pandas dataframes
     ids = [int(i) - 1 for i in ids]
     if openmlid == "boston" and model == "logreg":
-    	ids = [i for i in ids if i not in [473, 103, 468, 337]]
+        ids = [i for i in ids if i not in [473, 103, 468, 337]]
     if openmlid == "boston" and model == "neuralnet":
-    	ids = [i for i in ids if i not in [473, 382]]
+        ids = [i for i in ids if i not in [473, 382]]
     d = dice_ml.Data(dataframe=df.copy(),
             continuous_features=numeric_features,
             outcome_name=outcome_name)
@@ -73,7 +73,7 @@ def counterfactual(openmlid, model, ncf):
     # Generate counterfactual examples
     cf_dataframes = []
     for idx in ids:
-        instance = df.copy().iloc[idx].to_dict() 
+        instance = df.copy().iloc[idx].to_dict()
         # The desired prediction is the opposite of the *predicted* outcome
         query_instance = d.prepare_query_instance(query_instance=instance, encode=True)
         query_instance = np.array([query_instance.iloc[0].values])
@@ -84,7 +84,7 @@ def counterfactual(openmlid, model, ncf):
             dclass = 1
         if mad_zero_flag:
             dice_exp = exp.generate_counterfactuals(instance, total_CFs=ncf, desired_class=dclass,
-	    	feature_weights = feature_weights, verbose = True)
+                feature_weights = feature_weights, verbose = True)
         else:
             dice_exp = exp.generate_counterfactuals(instance, total_CFs=ncf, desired_class=dclass, verbose = True)
         dice_cfs = dice_exp.final_cfs_df
@@ -93,7 +93,7 @@ def counterfactual(openmlid, model, ncf):
         date_obj = datetime.now()
         date_string = date_obj.strftime('%Y/%m/%d-%H:%M:%S')
         print(date_string + ' | row: ' + str(idx + 1) + ' | dataset: ' + openmlid + ' | model: ' + model)
-    
+
     cf_df = pd.concat(cf_dataframes)
     cf_df.to_csv(cf_outfile, index = False)
 
@@ -105,7 +105,7 @@ def get_mad(x, fallback = 0.1):
     '''
     x = standardize(x)
     mad = np.median(abs(x - np.median(x)))
-    return fallback if mad==0 else mad 
+    return fallback if mad==0 else mad
 
 def standardize(x):
     '''
