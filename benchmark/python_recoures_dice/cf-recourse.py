@@ -28,23 +28,23 @@ def counterfactual(openmlid,  ncf):
 
     df = pd.read_csv(data_path, sep = ",")
     with open(feature_dic_path, "r") as json_file:
-    	feature_dic = json.load(json_file)
+        feature_dic = json.load(json_file)
     features = df.columns
     outcome_name = feature_dic.get("target")
     features = [feature for feature in features if feature != outcome_name]
 
     y, X = df[outcome_name], df[features]
-    
+
     with open(cf_ids_infile, "r") as f:
         ids = f.readlines()
     # Index starts at 0 in pandas dataframes
     ids = [int(i) - 1 for i in ids]
     if openmlid== "kr-vs-kp":
-        cb = {f : [0,1] for f in features} 
+        cb = {f : [0,1] for f in features}
         A = action_set.ActionSet(X, custom_bounds = cb)  ## matrix of features. ActionSet will learn default bounds and step-size.
     else:
         A = action_set.ActionSet(X)
-    model = keras.models.load_model(model_path) 
+    model = keras.models.load_model(model_path)
     weights = model.get_weights()
     # Generate counterfactual examples
     prediction = model.predict(X.values).flatten()
@@ -74,7 +74,7 @@ def counterfactual(openmlid,  ncf):
                 x[feature] = x_new
                 x['row_ids'] = int(idx) + 1
             cf_dataframes.append(x.to_frame().T)
-   
+
     cf_df = pd.concat(cf_dataframes)
     # Rescale features to original scale
     numeric_features = [k for k, v in feature_dic.items() if v == 'numeric']
@@ -82,7 +82,7 @@ def counterfactual(openmlid,  ncf):
     dapath = os.path.join(folder, "data_orig.csv")
     dfo = pd.read_csv(dapath, sep = ",")
     for feat in numeric_features:
-        cf_df[feat] = cf_df[feat] * (max(dfo[feat]) - min(dfo[feat])) +  min(dfo[feat])  
+        cf_df[feat] = cf_df[feat] * (max(dfo[feat]) - min(dfo[feat])) +  min(dfo[feat])
     cf_df.to_csv(cf_outfile, index = False)
 
 if __name__=='__main__':
