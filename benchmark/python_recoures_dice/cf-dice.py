@@ -24,8 +24,12 @@ def counterfactual(openmlid, model, ncf):
     feature_dic_path = os.path.join(folder, "feature_types.json")
     # File that contains the ids for which to compute counterfactuals
     cf_ids_infile = os.path.join(folder, "sampled_ids.txt")
+    with open(cf_ids_infile, "r") as f:
+        ids = f.readlines()
+    # Index starts at 0 in pandas dataframes
+    ids = [int(i) - 1 for i in ids]
     cf_outfile = os.path.join(folder, "cf-dice-" + model + ".csv")
-    df = pd.read_csv(data_path, sep = ",")
+    full_df = pd.read_csv(data_path, sep = ",")
     with open(feature_dic_path, "r") as json_file:
         feature_dic = json.load(json_file)
     features = feature_dic.values()
@@ -37,20 +41,14 @@ def counterfactual(openmlid, model, ncf):
         df_enc = pd.read_csv(data_path_enc, sep = ",")
         fnames = df_enc.columns
         encoded_features = [f for f in fnames if f not in numeric_features]
-        df = pd.concat([df[numeric_features], df_enc[encoded_features]], axis=1)
+        full_df = pd.concat([full_df[numeric_features], df_enc[encoded_features]], axis=1)
         # Bring columns into original order again
-        df = df[fnames]
-        numeric_features = df.columns
+        full_df = full_df[fnames]
+        numeric_features = full_df.columns
         numeric_features = [nf for nf in numeric_features if not nf == outcome_name]
 
-    with open(cf_ids_infile, "r") as f:
-        ids = f.readlines()
-    # Index starts at 0 in pandas dataframes
-    ids = [int(i) - 1 for i in ids]
-    if openmlid == "boston" and model == "logreg":
-        ids = [i for i in ids if i not in [473, 103, 468, 337]]
-    if openmlid == "boston" and model == "neuralnet":
-        ids = [i for i in ids if i not in [473, 382]]
+    df = full_df.copy()
+    df = df.drop(ids)
     d = dice_ml.Data(dataframe=df.copy(),
             continuous_features=numeric_features,
             outcome_name=outcome_name)
@@ -73,7 +71,7 @@ def counterfactual(openmlid, model, ncf):
     # Generate counterfactual examples
     cf_dataframes = []
     for idx in ids:
-        instance = df.copy().iloc[idx].to_dict()
+        instance = full_df.copy().iloc[idx].to_dict()
         # The desired prediction is the opposite of the *predicted* outcome
         query_instance = d.prepare_query_instance(query_instance=instance, encode=True)
         query_instance = np.array([query_instance.iloc[0].values])
