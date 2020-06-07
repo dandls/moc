@@ -18,6 +18,6 @@ run-irace :
 	# Rscript run_irace.R --readdir $(model_dir) --savedir $(irace_result_dir) --evaldir $(nr_evals_dir) --data_dir $(data_dir)
 
 get-generations : 
-	R CMD BATCH '--args  $(model_dir) $(config_dir) $(irace_result_dir) $(nr_evals_dir)' get_generations.R
+	R CMD BATCH '--args  $(model_dir) $(data_dir) $(irace_result_dir) $(config_dir)' get_generations.R
 	# Rscript get_generations.R --readdir $(model_dir) --savedir $(config_dir) --iracedir $(irace_result_dir) --gendir "../saved_objects/max_generations.rds"
 
