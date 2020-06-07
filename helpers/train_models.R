@@ -4,7 +4,6 @@
 
 #---Setup----
 source("../helpers/libs_mlr.R")
-set.seed(1234)
 
 # Collect arguments
 args = commandArgs(trailingOnly=TRUE)
@@ -14,6 +13,7 @@ save_dir = args[[3]]
 folder = args[[4]]
 TUNEITERS = as.numeric(args[[5]])
 EVALUATE = as.logical(args[[6]])
+set.seed(as.numeric(args[[7]]))
 dir.create(path = "../saved_objects_rerun", showWarnings = FALSE)
 
 PARALLEL = TRUE
