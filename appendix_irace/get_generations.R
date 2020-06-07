@@ -27,7 +27,7 @@ best_params[num_id] = round(best_params[num_id], 3)
 # Sample datapoint, extract target and find number of generations 
 # the hypervolume did not increase for 10 generations
 if (PARALLEL) {
-  parallelMap::parallelStartSocket(cpus = cpus, load.balancing = TRUE) # ParallelStartMulticore does not work for xgboost
+  parallelMap::parallelStartSocket(cpus = 20, load.balancing = TRUE) # ParallelStartMulticore does not work for xgboost
   parallelMap::parallelSource("../helpers/libs_mlr.R", master = FALSE)
   parallelMap::parallelExport("best_params", "data_dir")
   
