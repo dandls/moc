@@ -12,8 +12,8 @@ train-models :
 run-tweaking : 
 	Rscript featuretweaking/run_feature_tweaking.R --readdir $(model_dir) --datadir $(data_dir) --configdir $(config_dir)
 
-run-pair : 	
-	Rscript run_pair.R 	--readdir $(model_dir) --datadir $(data_dir)
+run-pair :
+	R CMD BATCH '--args  $(model_dir) $(data_dir)' run_pair.R
   
 run-moc : 
 	R CMD BATCH '--args $(model_dir) $(config_dir) $(data_dir) ' run_moc.R

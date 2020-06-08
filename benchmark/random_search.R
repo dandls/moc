@@ -8,7 +8,7 @@ random_search = function(predictor, x.interest, target, mu,
   
   # Extract info from predictor 
   param.set = ParamHelpers::makeParamSet(
-    params = make_paramlist(predictor$data$get.x()))
+    params = counterfactuals:::make_paramlist(predictor$data$get.x()))
   x.interest = x.interest[setdiff(colnames(x.interest), 
     predictor$data$y.names)]
   
@@ -44,7 +44,7 @@ random_search = function(predictor, x.interest, target, mu,
   max.iterations = max.iterations + 1
   
   candidates = lapply(candidates, function(x) {
-    x = transform_to_orig(x, x.interest.char, delete.use.orig = FALSE)
+    x = counterfactuals:::transform_to_orig(x, x.interest.char, delete.use.orig = FALSE)
   })
   
   # Evaluate candidates
@@ -52,16 +52,16 @@ random_search = function(predictor, x.interest, target, mu,
     has.simple.signature = FALSE, par.set = param.set, n.objectives = 4, 
     noisy = TRUE, ref.point = ref.point,
     fn = function(x, fidelity = NULL) {
-      fitness_fun(x, x.interest = x.interest, target = target, 
+      counterfactuals:::fitness_fun(x, x.interest = x.interest, target = target, 
         predictor = predictor, train.data = train.data, range = range)
     })
   fn = mosmafs::setMosmafsVectorized(fn)
-  res  = initEcr(fitness.fun = fn, population = candidates)
+  res  = mosmafs::initEcr(fitness.fun = fn, population = candidates)
   
   # Match counterfactuals and fitness values 
   nondom.fitness = res$pareto.front
   names(nondom.fitness) = obj.nam
-  nondom.pop = listToDf(res$pareto.set, param.set)
+  nondom.pop = mosmafs::listToDf(res$pareto.set, param.set)
   nondom.pop[, grep("use.orig", names(nondom.pop))] = NULL
   nondom = cbind(nondom.pop, nondom.fitness)
   if (!is.null(epsilon)) {
@@ -72,9 +72,9 @@ random_search = function(predictor, x.interest, target, mu,
   }
   
   # Calculate hypervolume and diversity over generations
-  pop = listToDf(res$last.population, param.set)
+  pop = mosmafs::listToDf(res$last.population, param.set)
   pop[, grep("use.orig", names(pop))] = NULL
-  fitness = getPopulations(res$log)[[1]]$fitness
+  fitness = ecr::getPopulations(res$log)[[1]]$fitness
   len = ncol(fitness)
   folds = seq(mu, len, len/max.iterations)
   for (fold in folds) {
