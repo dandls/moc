@@ -10,6 +10,7 @@ study_design = function(inst, best.config, save.dir = NULL) {
   
   # Get xinterest/xorig as list
   path = file.path(save.dir, inst$task.id)
+  dir.create(file.path(path, "moc"), showWarnings = FALSE)
   sampled.rows = read.delim(file.path(path, "sampled_ids.txt"), header = FALSE)[,1][1:5] #SD
   dt.x.interests = dt[sampled.rows,]
   list.x.interests = split(as.data.frame(dt.x.interests), seq(length(sampled.rows)))
@@ -35,7 +36,7 @@ study_design = function(inst, best.config, save.dir = NULL) {
       target = c(0, 0.5)
     }
     epsilon = 0
-    browser()
+
     ## MOC without modifications
     # as recommended by parameter tuning
     cf.irace = Counterfactuals$new(predictor = pred, x.interest = x.interest, 
@@ -76,21 +77,21 @@ study_design = function(inst, best.config, save.dir = NULL) {
     gc()
     
     
-    ## MOC with ice curve variance #SD
-    # cf.irace.ice = Counterfactuals$new(predictor = pred, x.interest = x.interest,
-    #   target = target, mu = best.config$mu, epsilon = epsilon,
-    #   generations = best.config$generations, p.mut = best.config$p.mut,
-    #   p.rec = best.config$p.rec, p.mut.gen = best.config$p.mut.gen,
-    #   p.mut.use.orig = best.config$p.mut.use.orig,
-    #   p.rec.gen = best.config$p.rec.gen,
-    #   p.rec.use.orig = best.config$p.rec.use.orig,
-    #   initialization = "icecurve")
-    # 
-    # res = add_rows(res, cf.irace.ice$results$counterfactuals, "mocice")
-    # df = add_columns(df, cf.irace.ice, "mocice")
-    # 
-    # rm(cf.irace.ice)
-    # gc()
+    ## MOC with ice curve variance 
+    cf.irace.ice = Counterfactuals$new(predictor = pred, x.interest = x.interest,
+      target = target, mu = best.config$mu, epsilon = epsilon,
+      generations = best.config$generations, p.mut = best.config$p.mut,
+      p.rec = best.config$p.rec, p.mut.gen = best.config$p.mut.gen,
+      p.mut.use.orig = best.config$p.mut.use.orig,
+      p.rec.gen = best.config$p.rec.gen,
+      p.rec.use.orig = best.config$p.rec.use.orig,
+      initialization = "icecurve")
+
+    res = add_rows(res, cf.irace.ice$results$counterfactuals, "mocice")
+    df = add_columns(df, cf.irace.ice, "mocice")
+
+    rm(cf.irace.ice)
+    gc()
     
     ## MOC with modified mutator
     if (is.list(pred.con$conditionals)) {
@@ -110,23 +111,23 @@ study_design = function(inst, best.config, save.dir = NULL) {
       rm(cf.irace.con)
       gc()
 
-      # # MOC with modified mutator and ice curve variance #SD
-      # cf.irace.con.ice = Counterfactuals$new(predictor = pred.con,
-      #   x.interest = x.interest,
-      #   target = target, mu = best.config$mu, epsilon = epsilon,
-      #   generations = best.config$generations, p.mut = best.config$p.mut,
-      #   p.rec = best.config$p.rec, p.mut.gen = best.config$p.mut.gen,
-      #   p.mut.use.orig = best.config$p.mut.use.orig,
-      #   p.rec.gen = best.config$p.rec.gen,
-      #   p.rec.use.orig = best.config$p.rec.use.orig,
-      #   initialization = "icecurve")
-      # 
-      # df = add_columns(df, cf.irace.con.ice, "mocmod")
-      # res = add_rows(res, cf.irace.con.ice$results$counterfactuals, 
-      #     "mocmod")
-      # 
-      # rm(cf.irace.con.ice)
-      # gc()
+      # MOC with modified mutator and ice curve variance #SD
+      cf.irace.con.ice = Counterfactuals$new(predictor = pred.con,
+        x.interest = x.interest,
+        target = target, mu = best.config$mu, epsilon = epsilon,
+        generations = best.config$generations, p.mut = best.config$p.mut,
+        p.rec = best.config$p.rec, p.mut.gen = best.config$p.mut.gen,
+        p.mut.use.orig = best.config$p.mut.use.orig,
+        p.rec.gen = best.config$p.rec.gen,
+        p.rec.use.orig = best.config$p.rec.use.orig,
+        initialization = "icecurve")
+
+      df = add_columns(df, cf.irace.con.ice, "mocmod")
+      res = add_rows(res, cf.irace.con.ice$results$counterfactuals,
+          "mocmod")
+
+      rm(cf.irace.con.ice)
+      gc()
     }
 
     res$row_ids = row.id
