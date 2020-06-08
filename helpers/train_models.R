@@ -172,16 +172,18 @@ learners[,
 task.learner.grid = tasks[learners[grid, on = c(learner.id = "lrn.ind")], on = c(openml.id = "task.id")]
 
 ### Evaluate Performance
-if (PARALLEL) {
-  set.seed(123456, "L'Ecuyer-CMRG")
-  parallelMap::parallelStartSocket(20L, level = "mlr.tuneParams")
-  parallelMap::parallelSource("../helpers/libs_mlr.R", level = "mlr.tuneParams", master = FALSE)
-}
 tryCatch({
   task.learner.grid[,
     c("performance", "paramvals") := data.table::rbindlist(lapply(seq_len(nrow(task.learner.grid)), function(row) {
+      
       k_clear_session()
       gc()
+      
+      if (PARALLEL) {
+        set.seed(123456, "L'Ecuyer-CMRG")
+        parallelMap::parallelStartSocket(20L, level = "mlr.tuneParams")
+        parallelMap::parallelSource("../helpers/libs_mlr.R", level = "mlr.tuneParams", master = FALSE)
+      }
       cat(sprintf("Resampling task %s x learner %s\n", task.id[[row]], learner.id[[row]]))
       lrn = task.preproc.cpo[[row]] %>>% learner.preproc.cpo[[row]] %>>% learner[[row]]
       par.set = searchspace[[row]]
@@ -196,15 +198,18 @@ tryCatch({
       } else {
         performance = NA
       }
+      if (PARALLEL) {
+        parallelMap::parallelStop()
+      }
       list(
         performance = performance,
         paramvals = list(res$x))
 
     }))]
 }, finally = {
-  if (PARALLEL) {
-    parallelMap::parallelStop()
-  }
+  # if (PARALLEL) {
+  #   parallelMap::parallelStop()
+  # }
 })
 
 k_clear_session()
