@@ -6,6 +6,7 @@ args = commandArgs(trailingOnly=TRUE)
 instances = readRDS(args[2])
 data.path = args[4]
 best.config = readRDS(args[6])
+library(checkmate)
 
 ktree = NULL 
 obj.nams = c("dist.target", "dist.x.interest", "nr.changed", "dist.train")
@@ -20,19 +21,26 @@ feature_tweaking = function(pred) {
   
   # Load info from folder
   path = file.path(data.path, pred$task.id)
-  row.ids = read.delim(file.path(path, "sampled_ids.txt"), header = FALSE)[,1]
+  # row.ids = read.delim(file.path(path, "sampled_ids.txt"), header = FALSE)[,1]
   df.raw = as.data.frame(pred$predictor$data$get.x())
   map = mlrCPO::cpoScale() %>>% mlrCPO::cpoDummyEncode()
   df = mlrCPO::applyCPO(map, df.raw)
+  retraf = retrafo(df)
+  state =  getCPOTrainedState(retrafo(df.raw %>>% mlrCPO::cpoScale()))  ###TODO!!!
   df = df[, !(names(df) %in% pred$predictor$data$y.names)]
   df.classes = sapply(df, class)
-  center = jsonlite::read_json(file.path(path, "feature_center.json"))
-  scale = jsonlite::read_json(file.path(path, "feature_scale.json"))
-  x.interests = df[row.ids, ]
+  
+  center = state$control$center
+  scale = state$control$scale
   
   # Get model
   mod = pred$predictor$model$learner.model$next.model$learner.model
   class(mod) = "randomForest"
+  
+  # Extract x.interests
+  # flat.instances = flatten_instances(list(pred))
+  x.interests = pred$sampled.rows %>>% retraf
+  row.names(x.interests) = as.numeric(row.names(x.interests)) + 1L
   
   # Calculate cfexps 
   targets = predict(mod, newdata = x.interests)
@@ -42,7 +50,7 @@ feature_tweaking = function(pred) {
   es.rf <- set.eSatisfactory(rules, epsiron = 0.5)
   class1.id = which(targets == target.class[1])
   class2.id = which(targets == target.class[2])
-
+  
   if (length(class1.id) > 0) {
     res.sug.class1 = tweak(es.rf, mod, newdata = x.interests[class1.id,], 
       label.from = target.class[1], label.to = target.class[2], .dopar = TRUE)$suggest

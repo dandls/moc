@@ -64,7 +64,7 @@ cfexps = lapply(instances, function(inst) {
     print(paste("max:", max(pred.dt), "min :", min(pred.dt)))
   }
   # Save results
-  name.file = paste("cf", "pair", inst$learner.id, sep = "-")
+  name.file = paste("cf", "whatif", inst$learner.id, sep = "-")
   pathtofile = file.path(path, paste(name.file, ".csv", sep = ""))
   write.csv(res.cf, pathtofile, row.names = FALSE)
   return(res.cf)

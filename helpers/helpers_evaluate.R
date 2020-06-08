@@ -34,21 +34,12 @@ evaluate_cfexp = function(cf, instance, id = "dice", remove.dom = FALSE, data.di
 
   # Get information from predictor to calculate fitness
   row_ids = unique(cf$row_ids)
-  x.interests = as.data.frame(train.data[row_ids, ])
-  targets = ifelse(pred$predict(
-    newdata = as.data.frame(x.interests)) < 0.5, 1, 0)[,1]
-  param.set = ParamHelpers::makeParamSet(
-    params = make_paramlist(train.data))
-  range = ParamHelpers::getUpper(param.set) -
-    ParamHelpers::getLower(param.set)
-  range[ParamHelpers::getParamIds(param.set)
-    [ParamHelpers::getParamTypes(param.set) == "discrete"]]  = NA
-  range = range[pred$data$feature.names]
-  list.x.interests = split(x.interests, seq(nrow(x.interests)))
+  flat.inst = flatten_instances(list(instance))
 
   # Transform entries of counterfactuals that should be discrete to characters
-  id.char = unlist(lapply(param.set$pars, FUN = function(par) par$type == "discrete"))
-  cf[names(id.char)[id.char]] = data.frame(lapply(cf[names(id.char)[id.char]], as.character), stringsAsFactors = FALSE)
+  id.char = unlist(lapply(instance$predictor$data$feature.types, FUN = function(par) par == "categorical"))
+  cf[names(id.char)[id.char]] = data.frame(lapply(cf[names(id.char)[id.char]], as.character), 
+    stringsAsFactors = FALSE)
 
   id.int = which(sapply(cf[, instance$predictor$data$feature.names], is.integer))
   cf[, id.int] = sapply(cf[, id.int],  as.numeric)
@@ -57,21 +48,27 @@ evaluate_cfexp = function(cf, instance, id = "dice", remove.dom = FALSE, data.di
   cf$prediction = NULL
 
   # Calculate fitness for each x.interest & target
-  res.row = mapply(function(x.interest, target, row_id) {
+  res.row = mapply(function(oneinst) {
+    row_id = as.numeric(row.names(oneinst$sampled.rows)) + 1L
     x = cf[cf$row_ids == (row_id), names(cf) != "row_ids"]
     # Remove duplicated rows
     dup.idx = which(duplicated(x))
     if (length(dup.idx) > 1L) {
       x = x[-dup.idx,]
     }
-
-    # Transform target to range
-    if (target == 1) {
-      target = c(0.5, 1)
-    } else {
-      target = c(0, 0.5)
-    }
-
+    oneinst = initialize_instance(oneinst, data.dir = data.dir)
+    x.interest = oneinst$x.interest
+    target = oneinst$target
+    
+    # Parameter set
+    param.set = ParamHelpers::makeParamSet(
+      params = counterfactuals:::make_paramlist(rbind(train.data, x.interest)))
+    range = ParamHelpers::getUpper(param.set) -
+      ParamHelpers::getLower(param.set)
+    range[ParamHelpers::getParamIds(param.set)
+      [ParamHelpers::getParamTypes(param.set) == "discrete"]]  = NA
+    range = range[pred$data$feature.names]
+    
     # Convert characters to factors
     x.list = split(x, seq(nrow(x)))
     x.list = lapply(x.list, function(x) {
@@ -84,9 +81,9 @@ evaluate_cfexp = function(cf, instance, id = "dice", remove.dom = FALSE, data.di
       trafoValue(param.set, obs)
     })
     x <- listToDf(x.list, param.set)
-
+    
     # Calculate objective values
-    fitness = fitness_fun(x = x,
+    fitness = counterfactuals:::fitness_fun(x = x,
       x.interest = x.interest, target = target,
       predictor = pred, train.data = train.data,
       range = range, identical.strategy = TRUE)
@@ -103,7 +100,7 @@ evaluate_cfexp = function(cf, instance, id = "dice", remove.dom = FALSE, data.di
     nondom = cbind(x[nondom.id, ], nondom.fitness)
     nondom$row_ids = row_id
     return(nondom)
-  }, list.x.interests, targets, row_ids, SIMPLIFY = FALSE)
+  }, flat.inst, SIMPLIFY = FALSE)
   return(do.call(rbind, res.row))
 }
 
