@@ -17,6 +17,8 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 'help.start()' for an HTML browser interface to help.
 Type 'q()' to quit R.
 
+[Previously saved workspace restored]
+
 > ####################################
 > ## Train Models
 > ####################################
@@ -31,7 +33,6 @@ Registered S3 method overwritten by 'GGally':
 Loading required package: ParamHelpers
 'mlr' is in maintenance mode since July 2019. Future development
 efforts will go into its successor 'mlr3' (<https://mlr3.mlr-org.com>).
-> 
 > # Collect arguments
 > args = commandArgs(trailingOnly=TRUE)
 > SAVEINFO = as.logical(args[[1]])
@@ -67,47 +68,47 @@ Tuning iterations:
 > task_list = lapply(task_ids, function(x) {
 +   OpenML::getOMLTask(task.id = x)
 + })
-Downloading from 'http://www.openml.org/api/v1/task/9971' to '/tmp/RtmpIHm132/cache/tasks/9971/task.xml'.
-Downloading from 'https://www.openml.org/api_splits/get/9971/Task_9971_splits.arff' to '/tmp/RtmpIHm132/cache/tasks/9971/datasplits.arff'
-Downloading from 'http://www.openml.org/api/v1/data/1480' to '/tmp/RtmpIHm132/cache/datasets/1480/description.xml'.
-Downloading from 'https://www.openml.org/data/v1/download/1590565/ilpd.arff' to '/tmp/RtmpIHm132/cache/datasets/1480/dataset.arff'
+Downloading from 'http://www.openml.org/api/v1/task/9971' to '/tmp/RtmpWuNrgF/cache/tasks/9971/task.xml'.
+Downloading from 'https://www.openml.org/api_splits/get/9971/Task_9971_splits.arff' to '/tmp/RtmpWuNrgF/cache/tasks/9971/datasplits.arff'
+Downloading from 'http://www.openml.org/api/v1/data/1480' to '/tmp/RtmpWuNrgF/cache/datasets/1480/description.xml'.
+Downloading from 'https://www.openml.org/data/v1/download/1590565/ilpd.arff' to '/tmp/RtmpWuNrgF/cache/datasets/1480/dataset.arff'
 Loading required package: readr
-Downloading from 'http://www.openml.org/api/v1/task/3' to '/tmp/RtmpIHm132/cache/tasks/3/task.xml'.
-Downloading from 'https://www.openml.org/api_splits/get/3/Task_3_splits.arff' to '/tmp/RtmpIHm132/cache/tasks/3/datasplits.arff'
-Downloading from 'http://www.openml.org/api/v1/data/3' to '/tmp/RtmpIHm132/cache/datasets/3/description.xml'.
-Downloading from 'https://www.openml.org/data/v1/download/3/kr-vs-kp.arff' to '/tmp/RtmpIHm132/cache/datasets/3/dataset.arff'
-Downloading from 'http://www.openml.org/api/v1/task/3778' to '/tmp/RtmpIHm132/cache/tasks/3778/task.xml'.
-Downloading from 'https://www.openml.org/api_splits/get/3778/Task_3778_splits.arff' to '/tmp/RtmpIHm132/cache/tasks/3778/datasplits.arff'
-Downloading from 'http://www.openml.org/api/v1/data/915' to '/tmp/RtmpIHm132/cache/datasets/915/description.xml'.
-Downloading from 'https://www.openml.org/data/v1/download/53449/plasma_retinol.arff' to '/tmp/RtmpIHm132/cache/datasets/915/dataset.arff'
-Downloading from 'http://www.openml.org/api/v1/task/3913' to '/tmp/RtmpIHm132/cache/tasks/3913/task.xml'.
-Downloading from 'https://www.openml.org/api_splits/get/3913/Task_3913_splits.arff' to '/tmp/RtmpIHm132/cache/tasks/3913/datasplits.arff'
-Downloading from 'http://www.openml.org/api/v1/data/1063' to '/tmp/RtmpIHm132/cache/datasets/1063/description.xml'.
-Downloading from 'https://www.openml.org/data/v1/download/53946/kc2.arff' to '/tmp/RtmpIHm132/cache/datasets/1063/dataset.arff'
-Downloading from 'http://www.openml.org/api/v1/task/145804' to '/tmp/RtmpIHm132/cache/tasks/145804/task.xml'.
-Downloading from 'https://www.openml.org/api_splits/get/145804/Task_145804_splits.arff' to '/tmp/RtmpIHm132/cache/tasks/145804/datasplits.arff'
-Downloading from 'http://www.openml.org/api/v1/data/50' to '/tmp/RtmpIHm132/cache/datasets/50/description.xml'.
-Downloading from 'https://www.openml.org/data/v1/download/50/tic-tac-toe.arff' to '/tmp/RtmpIHm132/cache/datasets/50/dataset.arff'
-Downloading from 'http://www.openml.org/api/v1/task/3918' to '/tmp/RtmpIHm132/cache/tasks/3918/task.xml'.
-Downloading from 'https://www.openml.org/api_splits/get/3918/Task_3918_splits.arff' to '/tmp/RtmpIHm132/cache/tasks/3918/datasplits.arff'
-Downloading from 'http://www.openml.org/api/v1/data/1068' to '/tmp/RtmpIHm132/cache/datasets/1068/description.xml'.
-Downloading from 'https://www.openml.org/data/v1/download/53951/pc1.arff' to '/tmp/RtmpIHm132/cache/datasets/1068/dataset.arff'
-Downloading from 'http://www.openml.org/api/v1/task/3718' to '/tmp/RtmpIHm132/cache/tasks/3718/task.xml'.
-Downloading from 'https://www.openml.org/api_splits/get/3718/Task_3718_splits.arff' to '/tmp/RtmpIHm132/cache/tasks/3718/datasplits.arff'
-Downloading from 'http://www.openml.org/api/v1/data/853' to '/tmp/RtmpIHm132/cache/datasets/853/description.xml'.
-Downloading from 'https://www.openml.org/data/v1/download/53387/boston.arff' to '/tmp/RtmpIHm132/cache/datasets/853/dataset.arff'
-Downloading from 'http://www.openml.org/api/v1/task/3749' to '/tmp/RtmpIHm132/cache/tasks/3749/task.xml'.
-Downloading from 'https://www.openml.org/api_splits/get/3749/Task_3749_splits.arff' to '/tmp/RtmpIHm132/cache/tasks/3749/datasplits.arff'
-Downloading from 'http://www.openml.org/api/v1/data/886' to '/tmp/RtmpIHm132/cache/datasets/886/description.xml'.
-Downloading from 'https://www.openml.org/data/v1/download/53420/no2.arff' to '/tmp/RtmpIHm132/cache/datasets/886/dataset.arff'
-Downloading from 'http://www.openml.org/api/v1/task/145976' to '/tmp/RtmpIHm132/cache/tasks/145976/task.xml'.
-Downloading from 'https://www.openml.org/api_splits/get/145976/Task_145976_splits.arff' to '/tmp/RtmpIHm132/cache/tasks/145976/datasplits.arff'
-Downloading from 'http://www.openml.org/api/v1/data/37' to '/tmp/RtmpIHm132/cache/datasets/37/description.xml'.
-Downloading from 'https://www.openml.org/data/v1/download/37/diabetes.arff' to '/tmp/RtmpIHm132/cache/datasets/37/dataset.arff'
-Downloading from 'http://www.openml.org/api/v1/task/3846' to '/tmp/RtmpIHm132/cache/tasks/3846/task.xml'.
-Downloading from 'https://www.openml.org/api_splits/get/3846/Task_3846_splits.arff' to '/tmp/RtmpIHm132/cache/tasks/3846/datasplits.arff'
-Downloading from 'http://www.openml.org/api/v1/data/983' to '/tmp/RtmpIHm132/cache/datasets/983/description.xml'.
-Downloading from 'https://www.openml.org/data/v1/download/53517/cmc.arff' to '/tmp/RtmpIHm132/cache/datasets/983/dataset.arff'
+Downloading from 'http://www.openml.org/api/v1/task/3' to '/tmp/RtmpWuNrgF/cache/tasks/3/task.xml'.
+Downloading from 'https://www.openml.org/api_splits/get/3/Task_3_splits.arff' to '/tmp/RtmpWuNrgF/cache/tasks/3/datasplits.arff'
+Downloading from 'http://www.openml.org/api/v1/data/3' to '/tmp/RtmpWuNrgF/cache/datasets/3/description.xml'.
+Downloading from 'https://www.openml.org/data/v1/download/3/kr-vs-kp.arff' to '/tmp/RtmpWuNrgF/cache/datasets/3/dataset.arff'
+Downloading from 'http://www.openml.org/api/v1/task/3778' to '/tmp/RtmpWuNrgF/cache/tasks/3778/task.xml'.
+Downloading from 'https://www.openml.org/api_splits/get/3778/Task_3778_splits.arff' to '/tmp/RtmpWuNrgF/cache/tasks/3778/datasplits.arff'
+Downloading from 'http://www.openml.org/api/v1/data/915' to '/tmp/RtmpWuNrgF/cache/datasets/915/description.xml'.
+Downloading from 'https://www.openml.org/data/v1/download/53449/plasma_retinol.arff' to '/tmp/RtmpWuNrgF/cache/datasets/915/dataset.arff'
+Downloading from 'http://www.openml.org/api/v1/task/3913' to '/tmp/RtmpWuNrgF/cache/tasks/3913/task.xml'.
+Downloading from 'https://www.openml.org/api_splits/get/3913/Task_3913_splits.arff' to '/tmp/RtmpWuNrgF/cache/tasks/3913/datasplits.arff'
+Downloading from 'http://www.openml.org/api/v1/data/1063' to '/tmp/RtmpWuNrgF/cache/datasets/1063/description.xml'.
+Downloading from 'https://www.openml.org/data/v1/download/53946/kc2.arff' to '/tmp/RtmpWuNrgF/cache/datasets/1063/dataset.arff'
+Downloading from 'http://www.openml.org/api/v1/task/145804' to '/tmp/RtmpWuNrgF/cache/tasks/145804/task.xml'.
+Downloading from 'https://www.openml.org/api_splits/get/145804/Task_145804_splits.arff' to '/tmp/RtmpWuNrgF/cache/tasks/145804/datasplits.arff'
+Downloading from 'http://www.openml.org/api/v1/data/50' to '/tmp/RtmpWuNrgF/cache/datasets/50/description.xml'.
+Downloading from 'https://www.openml.org/data/v1/download/50/tic-tac-toe.arff' to '/tmp/RtmpWuNrgF/cache/datasets/50/dataset.arff'
+Downloading from 'http://www.openml.org/api/v1/task/3918' to '/tmp/RtmpWuNrgF/cache/tasks/3918/task.xml'.
+Downloading from 'https://www.openml.org/api_splits/get/3918/Task_3918_splits.arff' to '/tmp/RtmpWuNrgF/cache/tasks/3918/datasplits.arff'
+Downloading from 'http://www.openml.org/api/v1/data/1068' to '/tmp/RtmpWuNrgF/cache/datasets/1068/description.xml'.
+Downloading from 'https://www.openml.org/data/v1/download/53951/pc1.arff' to '/tmp/RtmpWuNrgF/cache/datasets/1068/dataset.arff'
+Downloading from 'http://www.openml.org/api/v1/task/3718' to '/tmp/RtmpWuNrgF/cache/tasks/3718/task.xml'.
+Downloading from 'https://www.openml.org/api_splits/get/3718/Task_3718_splits.arff' to '/tmp/RtmpWuNrgF/cache/tasks/3718/datasplits.arff'
+Downloading from 'http://www.openml.org/api/v1/data/853' to '/tmp/RtmpWuNrgF/cache/datasets/853/description.xml'.
+Downloading from 'https://www.openml.org/data/v1/download/53387/boston.arff' to '/tmp/RtmpWuNrgF/cache/datasets/853/dataset.arff'
+Downloading from 'http://www.openml.org/api/v1/task/3749' to '/tmp/RtmpWuNrgF/cache/tasks/3749/task.xml'.
+Downloading from 'https://www.openml.org/api_splits/get/3749/Task_3749_splits.arff' to '/tmp/RtmpWuNrgF/cache/tasks/3749/datasplits.arff'
+Downloading from 'http://www.openml.org/api/v1/data/886' to '/tmp/RtmpWuNrgF/cache/datasets/886/description.xml'.
+Downloading from 'https://www.openml.org/data/v1/download/53420/no2.arff' to '/tmp/RtmpWuNrgF/cache/datasets/886/dataset.arff'
+Downloading from 'http://www.openml.org/api/v1/task/145976' to '/tmp/RtmpWuNrgF/cache/tasks/145976/task.xml'.
+Downloading from 'https://www.openml.org/api_splits/get/145976/Task_145976_splits.arff' to '/tmp/RtmpWuNrgF/cache/tasks/145976/datasplits.arff'
+Downloading from 'http://www.openml.org/api/v1/data/37' to '/tmp/RtmpWuNrgF/cache/datasets/37/description.xml'.
+Downloading from 'https://www.openml.org/data/v1/download/37/diabetes.arff' to '/tmp/RtmpWuNrgF/cache/datasets/37/dataset.arff'
+Downloading from 'http://www.openml.org/api/v1/task/3846' to '/tmp/RtmpWuNrgF/cache/tasks/3846/task.xml'.
+Downloading from 'https://www.openml.org/api_splits/get/3846/Task_3846_splits.arff' to '/tmp/RtmpWuNrgF/cache/tasks/3846/datasplits.arff'
+Downloading from 'http://www.openml.org/api/v1/data/983' to '/tmp/RtmpWuNrgF/cache/datasets/983/description.xml'.
+Downloading from 'https://www.openml.org/data/v1/download/53517/cmc.arff' to '/tmp/RtmpWuNrgF/cache/datasets/983/dataset.arff'
 > names(task_list) = task_ids
 > task_list = lapply(task_list, function(task.oml) {
 +   t = OpenML::convertOMLTaskToMlr(task.oml)$mlr.task
@@ -261,17 +262,18 @@ Size of tuning grid: 46
 > task.learner.grid = tasks[learners[grid, on = c(learner.id = "lrn.ind")], on = c(openml.id = "task.id")]
 > 
 > ### Evaluate Performance
-> if (PARALLEL) {
-+   set.seed(123456, "L'Ecuyer-CMRG")
-+   parallelMap::parallelStartSocket(20L, level = "mlr.tuneParams")
-+   parallelMap::parallelSource("../helpers/libs_mlr.R", level = "mlr.tuneParams", master = FALSE)
-+ }
-Starting parallelization in mode=socket with cpus=20.
-Sourcing files on slaves: ../helpers/libs_mlr.R
 > tryCatch({
 +   task.learner.grid[,
 +     c("performance", "paramvals") := data.table::rbindlist(lapply(seq_len(nrow(task.learner.grid)), function(row) {
-+ 
++       
++       k_clear_session()
++       gc()
++       
++       if (PARALLEL) {
++         set.seed(123456, "L'Ecuyer-CMRG")
++         parallelMap::parallelStartSocket(20L, level = "mlr.tuneParams")
++         parallelMap::parallelSource("../helpers/libs_mlr.R", level = "mlr.tuneParams", master = FALSE)
++       }
 +       cat(sprintf("Resampling task %s x learner %s\n", task.id[[row]], learner.id[[row]]))
 +       lrn = task.preproc.cpo[[row]] %>>% learner.preproc.cpo[[row]] %>>% learner[[row]]
 +       par.set = searchspace[[row]]
@@ -286,16 +288,21 @@ Sourcing files on slaves: ../helpers/libs_mlr.R
 +       } else {
 +         performance = NA
 +       }
++       if (PARALLEL) {
++         parallelMap::parallelStop()
++       }
 +       list(
 +         performance = performance,
 +         paramvals = list(res$x))
 + 
 +     }))]
 + }, finally = {
-+   if (PARALLEL) {
-+     parallelMap::parallelStop()
-+   }
++   # if (PARALLEL) {
++   #   parallelMap::parallelStop()
++   # }
 + })
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
 Resampling task ilpd x learner randomforest
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
@@ -303,24 +310,27 @@ Resampling: cross-validation
 Measures:             acc       
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 1:    0.7192982 
+[Resample] iter 1:    0.6929825 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 2:    0.6347826 
+[Resample] iter 2:    0.7130435 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 3:    0.6608696 
+[Resample] iter 3:    0.6782609 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 4:    0.6228070 
+[Resample] iter 4:    0.6929825 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 5:    0.6608696 
+[Resample] iter 5:    0.6869565 
 
 
-Aggregated Result: acc.test.mean=0.6597254
+Aggregated Result: acc.test.mean=0.6928452
 
 
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
 Resampling task kr-vs-kp x learner randomforest
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
@@ -328,24 +338,27 @@ Resampling: cross-validation
 Measures:             acc       
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 1:    0.9811617 
+[Resample] iter 1:    0.9937206 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 2:    0.9874411 
+[Resample] iter 2:    0.9795918 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 3:    0.9952904 
+[Resample] iter 3:    0.9937304 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 4:    0.9921507 
+[Resample] iter 4:    0.9905808 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 5:    0.9780564 
+[Resample] iter 5:    0.9921507 
 
 
-Aggregated Result: acc.test.mean=0.9868201
+Aggregated Result: acc.test.mean=0.9899549
 
 
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
 Resampling task plasma_retinol x learner randomforest
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
@@ -353,24 +366,27 @@ Resampling: cross-validation
 Measures:             acc       
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 1:    0.6229508 
+[Resample] iter 1:    0.5573770 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 2:    0.4754098 
+[Resample] iter 2:    0.5081967 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 3:    0.5409836 
+[Resample] iter 3:    0.5573770 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 4:    0.6065574 
+[Resample] iter 4:    0.4754098 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 5:    0.5081967 
+[Resample] iter 5:    0.5737705 
 
 
-Aggregated Result: acc.test.mean=0.5508197
+Aggregated Result: acc.test.mean=0.5344262
 
 
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
 Resampling task kc2 x learner randomforest
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
@@ -378,24 +394,27 @@ Resampling: cross-validation
 Measures:             acc       
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 1:    0.7745098 
+[Resample] iter 1:    0.9117647 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 2:    0.7941176 
+[Resample] iter 2:    0.7475728 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
 [Resample] iter 3:    0.7843137 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 4:    0.7669903 
+[Resample] iter 4:    0.8725490 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 5:    0.8543689 
+[Resample] iter 5:    0.7572816 
 
 
-Aggregated Result: acc.test.mean=0.7948601
+Aggregated Result: acc.test.mean=0.8146964
 
 
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
 Resampling task tic-tac-toe x learner randomforest
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
@@ -403,24 +422,27 @@ Resampling: cross-validation
 Measures:             acc       
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 1:    1.0000000 
+[Resample] iter 1:    0.9947090 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 2:    0.9684211 
+[Resample] iter 2:    0.9894737 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 3:    1.0000000 
+[Resample] iter 3:    0.9736842 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 4:    0.9576720 
+[Resample] iter 4:    1.0000000 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 5:    0.9789474 
+[Resample] iter 5:    0.9841270 
 
 
-Aggregated Result: acc.test.mean=0.9810081
+Aggregated Result: acc.test.mean=0.9883988
 
 
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
 Resampling task pc1 x learner randomforest
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
@@ -428,24 +450,27 @@ Resampling: cross-validation
 Measures:             acc       
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 1:    0.9454545 
+[Resample] iter 1:    0.9227273 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 2:    0.9406393 
+[Resample] iter 2:    0.9223744 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 3:    0.9409091 
+[Resample] iter 3:    0.9545455 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 4:    0.9181818 
+[Resample] iter 4:    0.9363636 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 5:    0.9090909 
+[Resample] iter 5:    0.9318182 
 
 
-Aggregated Result: acc.test.mean=0.9308551
+Aggregated Result: acc.test.mean=0.9335658
 
 
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
 Resampling task boston x learner randomforest
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
@@ -453,24 +478,27 @@ Resampling: cross-validation
 Measures:             acc       
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 1:    0.8989899 
+[Resample] iter 1:    0.9292929 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 2:    0.8383838 
+[Resample] iter 2:    0.8686869 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 3:    0.8600000 
+[Resample] iter 3:    0.8484848 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 4:    0.8686869 
+[Resample] iter 4:    0.9292929 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 5:    0.9090909 
+[Resample] iter 5:    0.9000000 
 
 
-Aggregated Result: acc.test.mean=0.8750303
+Aggregated Result: acc.test.mean=0.8951515
 
 
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
 Resampling task no2 x learner randomforest
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
@@ -478,24 +506,27 @@ Resampling: cross-validation
 Measures:             acc       
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 1:    0.6326531 
+[Resample] iter 1:    0.6428571 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 2:    0.6122449 
+[Resample] iter 2:    0.6020408 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 3:    0.6530612 
+[Resample] iter 3:    0.5612245 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 4:    0.6224490 
+[Resample] iter 4:    0.7142857 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 5:    0.6122449 
+[Resample] iter 5:    0.6224490 
 
 
-Aggregated Result: acc.test.mean=0.6265306
+Aggregated Result: acc.test.mean=0.6285714
 
 
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
 Resampling task diabetes x learner randomforest
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
@@ -503,24 +534,27 @@ Resampling: cross-validation
 Measures:             acc       
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 1:    0.7565789 
+[Resample] iter 1:    0.7483444 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 2:    0.7631579 
+[Resample] iter 2:    0.7434211 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
 [Resample] iter 3:    0.7631579 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 4:    0.7350993 
+[Resample] iter 4:    0.7763158 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 5:    0.7814570 
+[Resample] iter 5:    0.7880795 
 
 
-Aggregated Result: acc.test.mean=0.7598902
+Aggregated Result: acc.test.mean=0.7638637
 
 
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
 Resampling task cmc x learner randomforest
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
@@ -528,24 +562,27 @@ Resampling: cross-validation
 Measures:             acc       
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 1:    0.6723549 
+[Resample] iter 1:    0.7191781 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 2:    0.6962457 
+[Resample] iter 2:    0.6952055 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 3:    0.7465753 
+[Resample] iter 3:    0.6689420 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 4:    0.7201365 
+[Resample] iter 4:    0.7303754 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 5:    0.6678082 
+[Resample] iter 5:    0.6723549 
 
 
-Aggregated Result: acc.test.mean=0.7006242
+Aggregated Result: acc.test.mean=0.6972112
 
 
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
 Resampling task ilpd x learner xgboost
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
@@ -553,24 +590,27 @@ Resampling: cross-validation
 Measures:             acc       
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 1:    0.6666667 
+[Resample] iter 1:    0.7105263 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 2:    0.6695652 
+[Resample] iter 2:    0.6434783 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 3:    0.6754386 
+[Resample] iter 3:    0.7043478 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 4:    0.6695652 
+[Resample] iter 4:    0.6403509 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 5:    0.7130435 
+[Resample] iter 5:    0.6521739 
 
 
-Aggregated Result: acc.test.mean=0.6788558
+Aggregated Result: acc.test.mean=0.6701754
 
 
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
 Resampling task kr-vs-kp x learner xgboost
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
@@ -578,24 +618,27 @@ Resampling: cross-validation
 Measures:             acc       
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 1:    0.9921507 
+[Resample] iter 1:    0.9952904 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 2:    0.9952978 
+[Resample] iter 2:    0.9890110 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 3:    1.0000000 
+[Resample] iter 3:    0.9968652 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 4:    0.9952904 
+[Resample] iter 4:    0.9921507 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 5:    0.9874411 
+[Resample] iter 5:    0.9952904 
 
 
-Aggregated Result: acc.test.mean=0.9940360
+Aggregated Result: acc.test.mean=0.9937215
 
 
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
 Resampling task plasma_retinol x learner xgboost
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
@@ -606,21 +649,24 @@ Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements 
 [Resample] iter 1:    0.5737705 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 2:    0.5737705 
+[Resample] iter 2:    0.4754098 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 3:    0.5573770 
+[Resample] iter 3:    0.5737705 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 4:    0.5901639 
+[Resample] iter 4:    0.5081967 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 5:    0.4918033 
+[Resample] iter 5:    0.4754098 
 
 
-Aggregated Result: acc.test.mean=0.5573770
+Aggregated Result: acc.test.mean=0.5213115
 
 
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
 Resampling task kc2 x learner xgboost
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
@@ -628,24 +674,27 @@ Resampling: cross-validation
 Measures:             acc       
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 1:    0.8155340 
+[Resample] iter 1:    0.8725490 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 2:    0.7549020 
+[Resample] iter 2:    0.7669903 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 3:    0.7864078 
+[Resample] iter 3:    0.7254902 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 4:    0.8823529 
+[Resample] iter 4:    0.8431373 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 5:    0.7843137 
+[Resample] iter 5:    0.8155340 
 
 
-Aggregated Result: acc.test.mean=0.8047021
+Aggregated Result: acc.test.mean=0.8047401
 
 
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
 Resampling task tic-tac-toe x learner xgboost
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
@@ -653,275 +702,28 @@ Resampling: cross-validation
 Measures:             acc       
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 1:    0.9841270 
+[Resample] iter 1:    1.0000000 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
 [Resample] iter 2:    0.9842105 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 3:    1.0000000 
+[Resample] iter 3:    0.9894737 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 4:    1.0000000 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 5:    0.9842105 
-
-
-Aggregated Result: acc.test.mean=0.9905096
-
-
-Resampling task pc1 x learner xgboost
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-Resampling: cross-validation
-Measures:             acc       
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 1:    0.9132420 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 2:    0.9545455 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 3:    0.9227273 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 4:    0.9181818 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 5:    0.9136364 
-
-
-Aggregated Result: acc.test.mean=0.9244666
-
-
-Resampling task boston x learner xgboost
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-Resampling: cross-validation
-Measures:             acc       
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 1:    0.8400000 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 2:    0.8989899 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 3:    0.9090909 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 4:    0.8989899 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 5:    0.9090909 
-
-
-Aggregated Result: acc.test.mean=0.8912323
-
-
-Resampling task no2 x learner xgboost
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-Resampling: cross-validation
-Measures:             acc       
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 1:    0.6122449 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 2:    0.5306122 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 3:    0.5612245 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 4:    0.7346939 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 5:    0.6020408 
-
-
-Aggregated Result: acc.test.mean=0.6081633
-
-
-Resampling task diabetes x learner xgboost
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-Resampling: cross-validation
-Measures:             acc       
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 1:    0.7763158 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 2:    0.7549669 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 3:    0.6776316 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 4:    0.7086093 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 5:    0.7697368 
-
-
-Aggregated Result: acc.test.mean=0.7374521
-
-
-Resampling task cmc x learner xgboost
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-Resampling: cross-validation
-Measures:             acc       
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 1:    0.6962457 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 2:    0.7303754 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 3:    0.7406143 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 4:    0.7191781 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 5:    0.6575342 
-
-
-Aggregated Result: acc.test.mean=0.7087896
-
-
-Resampling task ilpd x learner svm
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-Resampling: cross-validation
-Measures:             acc       
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 1:    0.6173913 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 2:    0.6000000 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 3:    0.6608696 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 4:    0.6403509 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 5:    0.6140351 
-
-
-Aggregated Result: acc.test.mean=0.6265294
-
-
-Resampling task kr-vs-kp x learner svm
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-Resampling: cross-validation
-Measures:             acc       
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 1:    0.9733124 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 2:    0.9356358 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 3:    0.9937206 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 4:    0.9717868 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 5:    0.9811617 
-
-
-Aggregated Result: acc.test.mean=0.9711235
-
-
-Resampling task plasma_retinol x learner svm
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-Resampling: cross-validation
-Measures:             acc       
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 1:    0.6721311 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 2:    0.5737705 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 3:    0.5409836 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 4:    0.5901639 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 5:    0.6393443 
-
-
-Aggregated Result: acc.test.mean=0.6032787
-
-
-Resampling task kc2 x learner svm
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-Resampling: cross-validation
-Measures:             acc       
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 1:    0.8235294 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 2:    0.7281553 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 3:    0.8039216 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 4:    0.8529412 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 5:    0.8155340 
-
-
-Aggregated Result: acc.test.mean=0.8048163
-
-
-Resampling task tic-tac-toe x learner svm
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-Resampling: cross-validation
-Measures:             acc       
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 1:    0.9789474 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 2:    0.9735450 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 3:    0.9684211 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 4:    0.9842105 
+[Resample] iter 4:    0.9947368 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
 [Resample] iter 5:    0.9841270 
 
 
-Aggregated Result: acc.test.mean=0.9778502
+Aggregated Result: acc.test.mean=0.9905096
 
 
-Resampling task pc1 x learner svm
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
+Resampling task pc1 x learner xgboost
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
 Resampling: cross-validation
@@ -931,21 +733,304 @@ Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements 
 [Resample] iter 1:    0.9227273 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 2:    0.9041096 
+[Resample] iter 2:    0.9269406 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 3:    0.9090909 
+[Resample] iter 3:    0.9409091 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 4:    0.9363636 
+[Resample] iter 4:    0.9272727 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 5:    0.9227273 
+[Resample] iter 5:    0.9136364 
 
 
-Aggregated Result: acc.test.mean=0.9190037
+Aggregated Result: acc.test.mean=0.9262972
 
 
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
+Resampling task boston x learner xgboost
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+Resampling: cross-validation
+Measures:             acc       
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 1:    0.8686869 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 2:    0.9191919 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 3:    0.8989899 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 4:    0.8900000 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 5:    0.8686869 
+
+
+Aggregated Result: acc.test.mean=0.8891111
+
+
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
+Resampling task no2 x learner xgboost
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+Resampling: cross-validation
+Measures:             acc       
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 1:    0.6224490 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 2:    0.5408163 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 3:    0.5510204 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 4:    0.6224490 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 5:    0.6326531 
+
+
+Aggregated Result: acc.test.mean=0.5938776
+
+
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
+Resampling task diabetes x learner xgboost
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+Resampling: cross-validation
+Measures:             acc       
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 1:    0.7350993 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 2:    0.7500000 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 3:    0.7500000 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 4:    0.7565789 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 5:    0.7152318 
+
+
+Aggregated Result: acc.test.mean=0.7413820
+
+
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
+Resampling task cmc x learner xgboost
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+Resampling: cross-validation
+Measures:             acc       
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 1:    0.7294521 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 2:    0.7363014 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 3:    0.7235495 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 4:    0.7064846 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 5:    0.7098976 
+
+
+Aggregated Result: acc.test.mean=0.7211370
+
+
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
+Resampling task ilpd x learner svm
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+Resampling: cross-validation
+Measures:             acc       
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 1:    0.6140351 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 2:    0.6521739 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 3:    0.5739130 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 4:    0.6695652 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 5:    0.7543860 
+
+
+Aggregated Result: acc.test.mean=0.6528146
+
+
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
+Resampling task kr-vs-kp x learner svm
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+Resampling: cross-validation
+Measures:             acc       
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 1:    0.9780220 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 2:    0.9780220 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 3:    0.9467085 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 4:    0.9827316 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 5:    0.9795918 
+
+
+Aggregated Result: acc.test.mean=0.9730152
+
+
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
+Resampling task plasma_retinol x learner svm
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+Resampling: cross-validation
+Measures:             acc       
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 1:    0.6557377 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 2:    0.5737705 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 3:    0.6065574 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 4:    0.4754098 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 5:    0.5901639 
+
+
+Aggregated Result: acc.test.mean=0.5803279
+
+
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
+Resampling task kc2 x learner svm
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+Resampling: cross-validation
+Measures:             acc       
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 1:    0.8627451 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 2:    0.7572816 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 3:    0.7058824 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 4:    0.8235294 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 5:    0.7961165 
+
+
+Aggregated Result: acc.test.mean=0.7891110
+
+
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
+Resampling task tic-tac-toe x learner svm
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+Resampling: cross-validation
+Measures:             acc       
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 1:    0.9894180 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 2:    0.9789474 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 3:    0.9684211 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 4:    0.9947368 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 5:    0.9841270 
+
+
+Aggregated Result: acc.test.mean=0.9831300
+
+
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
+Resampling task pc1 x learner svm
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+Resampling: cross-validation
+Measures:             acc       
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 1:    0.9090909 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 2:    0.9315068 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 3:    0.9227273 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 4:    0.9318182 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 5:    0.8772727 
+
+
+Aggregated Result: acc.test.mean=0.9144832
+
+
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
 Resampling task boston x learner svm
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
@@ -953,24 +1038,27 @@ Resampling: cross-validation
 Measures:             acc       
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 1:    0.8989899 
+[Resample] iter 1:    0.9191919 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 2:    0.8585859 
+[Resample] iter 2:    0.8282828 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 3:    0.8484848 
+[Resample] iter 3:    0.8282828 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 4:    0.8500000 
+[Resample] iter 4:    0.8989899 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 5:    0.8888889 
+[Resample] iter 5:    0.8800000 
 
 
-Aggregated Result: acc.test.mean=0.8689899
+Aggregated Result: acc.test.mean=0.8709495
 
 
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
 Resampling task no2 x learner svm
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
@@ -978,24 +1066,27 @@ Resampling: cross-validation
 Measures:             acc       
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 1:    0.5510204 
+[Resample] iter 1:    0.6428571 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 2:    0.6224490 
+[Resample] iter 2:    0.5510204 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 3:    0.6020408 
+[Resample] iter 3:    0.5102041 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 4:    0.6224490 
+[Resample] iter 4:    0.6122449 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 5:    0.5510204 
+[Resample] iter 5:    0.5714286 
 
 
-Aggregated Result: acc.test.mean=0.5897959
+Aggregated Result: acc.test.mean=0.5775510
 
 
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
 Resampling task diabetes x learner svm
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
@@ -1003,24 +1094,27 @@ Resampling: cross-validation
 Measures:             acc       
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 1:    0.7086093 
+[Resample] iter 1:    0.7218543 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 2:    0.7565789 
+[Resample] iter 2:    0.7500000 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 3:    0.7105263 
+[Resample] iter 3:    0.7828947 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 4:    0.7549669 
+[Resample] iter 4:    0.7500000 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 5:    0.7565789 
+[Resample] iter 5:    0.7483444 
 
 
-Aggregated Result: acc.test.mean=0.7374521
+Aggregated Result: acc.test.mean=0.7506187
 
 
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
 Resampling task cmc x learner svm
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
@@ -1028,24 +1122,27 @@ Resampling: cross-validation
 Measures:             acc       
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 1:    0.6712329 
+[Resample] iter 1:    0.6952055 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 2:    0.6552901 
+[Resample] iter 2:    0.6643836 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 3:    0.6780822 
+[Resample] iter 3:    0.6552901 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 4:    0.6860068 
+[Resample] iter 4:    0.6791809 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
 [Resample] iter 5:    0.6689420 
 
 
-Aggregated Result: acc.test.mean=0.6719108
+Aggregated Result: acc.test.mean=0.6726004
 
 
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
 Resampling task ilpd x learner logreg
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
@@ -1053,52 +1150,56 @@ Resampling: cross-validation
 Measures:             acc       
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 1:    0.5877193 
+[Resample] iter 1:    0.5614035 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 2:    0.4695652 
+[Resample] iter 2:    0.5826087 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 3:    0.5877193 
+WARNING:tensorflow:Method (on_train_batch_end) is slow compared to the batch update (0.189991). Check your callbacks.
+[Resample] iter 3:    0.3826087 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 4:    0.4695652 
+[Resample] iter 4:    0.5877193 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 5:    0.4956522 
+[Resample] iter 5:    0.5565217 
 
 
-Aggregated Result: acc.test.mean=0.5220442
+Aggregated Result: acc.test.mean=0.5341724
 
 
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
 Resampling task kc2 x learner logreg
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-WARNING:tensorflow:Method (on_train_batch_end) is slow compared to the batch update (0.339329). Check your callbacks.
-WARNING:tensorflow:Method (on_train_batch_end) is slow compared to the batch update (0.170303). Check your callbacks.
 Resampling: cross-validation
 Measures:             acc       
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 1:    0.8039216 
+[Resample] iter 1:    0.7450980 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-WARNING:tensorflow:Method (on_test_batch_begin) is slow compared to the batch update (0.167209). Check your callbacks.
-[Resample] iter 2:    0.7549020 
+[Resample] iter 2:    0.7864078 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 3:    0.8058252 
+[Resample] iter 3:    0.6960784 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 4:    0.7156863 
+[Resample] iter 4:    0.7549020 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 5:    0.7378641 
+[Resample] iter 5:    0.7766990 
 
 
-Aggregated Result: acc.test.mean=0.7636398
+Aggregated Result: acc.test.mean=0.7518370
 
 
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
 Resampling task pc1 x learner logreg
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
@@ -1106,115 +1207,123 @@ Resampling: cross-validation
 Measures:             acc       
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 1:    0.9318182 
+[Resample] iter 1:    0.9181818 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 2:    0.9000000 
+WARNING:tensorflow:Method (on_train_batch_end) is slow compared to the batch update (0.170634). Check your callbacks.
+[Resample] iter 2:    0.8812785 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-WARNING:tensorflow:Method (on_train_batch_end) is slow compared to the batch update (0.153285). Check your callbacks.
-[Resample] iter 3:    0.9000000 
+[Resample] iter 3:    0.9272727 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 4:    0.8767123 
+[Resample] iter 4:    0.8954545 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 5:    0.9181818 
-
-
-Aggregated Result: acc.test.mean=0.9053425
-
-
-Resampling task boston x learner logreg
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-WARNING:tensorflow:Method (on_train_batch_begin) is slow compared to the batch update (0.135792). Check your callbacks.
-WARNING:tensorflow:Method (on_train_batch_end) is slow compared to the batch update (0.257824). Check your callbacks.
-WARNING:tensorflow:Method (on_train_batch_end) is slow compared to the batch update (0.128973). Check your callbacks.
-Resampling: cross-validation
-Measures:             acc       
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-WARNING:tensorflow:Method (on_train_batch_end) is slow compared to the batch update (0.130247). Check your callbacks.
-WARNING:tensorflow:Method (on_train_batch_end) is slow compared to the batch update (0.309463). Check your callbacks.
-WARNING:tensorflow:Method (on_train_batch_end) is slow compared to the batch update (0.154784). Check your callbacks.
-[Resample] iter 1:    0.8686869 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 2:    0.8686869 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-WARNING:tensorflow:Method (on_train_batch_end) is slow compared to the batch update (0.296147). Check your callbacks.
-WARNING:tensorflow:Method (on_train_batch_end) is slow compared to the batch update (0.148152). Check your callbacks.
-WARNING:tensorflow:Method (on_test_batch_begin) is slow compared to the batch update (0.150552). Check your callbacks.
-[Resample] iter 3:    0.8282828 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 4:    0.8900000 
-Exporting objects to slaves for mode socket: .mlr.slave.options
-Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-WARNING:tensorflow:Method (on_test_batch_end) is slow compared to the batch update (0.156831). Check your callbacks.
 [Resample] iter 5:    0.9090909 
 
 
-Aggregated Result: acc.test.mean=0.8729495
+Aggregated Result: acc.test.mean=0.9062557
 
 
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
+Resampling task boston x learner logreg
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+Resampling: cross-validation
+Measures:             acc       
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 1:    0.8484848 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+WARNING:tensorflow:Method (on_train_batch_end) is slow compared to the batch update (0.276848). Check your callbacks.
+WARNING:tensorflow:Method (on_train_batch_end) is slow compared to the batch update (0.138503). Check your callbacks.
+WARNING:tensorflow:Method (on_train_batch_end) is slow compared to the batch update (0.132084). Check your callbacks.
+[Resample] iter 2:    0.8787879 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+[Resample] iter 3:    0.8888889 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+WARNING:tensorflow:Method (on_test_batch_end) is slow compared to the batch update (0.125982). Check your callbacks.
+WARNING:tensorflow:Method (on_test_batch_begin) is slow compared to the batch update (0.124919). Check your callbacks.
+[Resample] iter 4:    0.8500000 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
+WARNING:tensorflow:Method (on_train_batch_end) is slow compared to the batch update (0.282599). Check your callbacks.
+WARNING:tensorflow:Method (on_train_batch_end) is slow compared to the batch update (0.141346). Check your callbacks.
+[Resample] iter 5:    0.8585859 
+
+
+Aggregated Result: acc.test.mean=0.8649495
+
+
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
 Resampling task no2 x learner logreg
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-WARNING:tensorflow:Method (on_train_batch_begin) is slow compared to the batch update (0.155136). Check your callbacks.
+WARNING:tensorflow:Method (on_test_batch_end) is slow compared to the batch update (0.100897). Check your callbacks.
 Resampling: cross-validation
 Measures:             acc       
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 1:    0.4897959 
+[Resample] iter 1:    0.5102041 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-WARNING:tensorflow:Method (on_test_batch_begin) is slow compared to the batch update (0.329920). Check your callbacks.
-[Resample] iter 2:    0.5102041 
+WARNING:tensorflow:Method (on_train_batch_end) is slow compared to the batch update (0.161190). Check your callbacks.
+[Resample] iter 2:    0.5306122 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 3:    0.4591837 
+[Resample] iter 3:    0.6122449 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 4:    0.5204082 
+[Resample] iter 4:    0.5510204 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 5:    0.5612245 
+[Resample] iter 5:    0.5408163 
 
 
-Aggregated Result: acc.test.mean=0.5081633
+Aggregated Result: acc.test.mean=0.5489796
 
 
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
 Resampling task diabetes x learner logreg
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-WARNING:tensorflow:Method (on_test_batch_end) is slow compared to the batch update (0.172374). Check your callbacks.
 Resampling: cross-validation
 Measures:             acc       
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 1:    0.5394737 
+[Resample] iter 1:    0.6357616 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 2:    0.6291391 
+[Resample] iter 2:    0.5460526 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 3:    0.6907895 
+WARNING:tensorflow:Method (on_train_batch_end) is slow compared to the batch update (0.154856). Check your callbacks.
+WARNING:tensorflow:Method (on_test_batch_begin) is slow compared to the batch update (0.186193). Check your callbacks.
+[Resample] iter 3:    0.6973684 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-WARNING:tensorflow:Method (on_train_batch_end) is slow compared to the batch update (0.284776). Check your callbacks.
-WARNING:tensorflow:Method (on_train_batch_end) is slow compared to the batch update (0.142467). Check your callbacks.
-[Resample] iter 4:    0.4966887 
+[Resample] iter 4:    0.6052632 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 100.
-[Resample] iter 5:    0.6578947 
+[Resample] iter 5:    0.6754967 
 
 
-Aggregated Result: acc.test.mean=0.6027971
+Aggregated Result: acc.test.mean=0.6319885
 
 
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
 Resampling task ilpd x learner neuralnet
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
@@ -1222,27 +1331,29 @@ Resampling: cross-validation
 Measures:             acc       
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
-WARNING:tensorflow:Method (on_test_batch_end) is slow compared to the batch update (0.193260). Check your callbacks.
-[Resample] iter 1:    0.6086957 
+WARNING:tensorflow:Method (on_train_batch_end) is slow compared to the batch update (0.295709). Check your callbacks.
+WARNING:tensorflow:Method (on_train_batch_end) is slow compared to the batch update (0.147915). Check your callbacks.
+[Resample] iter 1:    0.5652174 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
-WARNING:tensorflow:Method (on_test_batch_end) is slow compared to the batch update (0.398069). Check your callbacks.
-WARNING:tensorflow:Method (on_test_batch_end) is slow compared to the batch update (0.199113). Check your callbacks.
-[Resample] iter 2:    0.5438596 
+[Resample] iter 2:    0.5217391 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
-[Resample] iter 3:    0.5913043 
+[Resample] iter 3:    0.5877193 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
-[Resample] iter 4:    0.5438596 
+[Resample] iter 4:    0.6052632 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
-[Resample] iter 5:    0.6695652 
+[Resample] iter 5:    0.6173913 
 
 
-Aggregated Result: acc.test.mean=0.5914569
+Aggregated Result: acc.test.mean=0.5794661
 
 
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
 Resampling task kr-vs-kp x learner neuralnet
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
@@ -1250,73 +1361,323 @@ Resampling: cross-validation
 Measures:             acc       
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
-[Resample] iter 1:    0.9858713 
+WARNING:tensorflow:Method (on_test_batch_begin) is slow compared to the batch update (0.299423). Check your callbacks.
+[Resample] iter 1:    0.9843014 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
-[Resample] iter 2:    0.9890282 
+WARNING:tensorflow:Method (on_train_batch_end) is slow compared to the batch update (0.181529). Check your callbacks.
+[Resample] iter 2:    0.9921507 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
-[Resample] iter 3:    0.9921507 
+[Resample] iter 3:    0.9858713 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
-[Resample] iter 4:    0.9952904 
+[Resample] iter 4:    0.9937304 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
-[Resample] iter 5:    0.9890110 
+WARNING:tensorflow:Method (on_test_batch_begin) is slow compared to the batch update (0.289322). Check your callbacks.
+[Resample] iter 5:    0.9874411 
 
 
-Aggregated Result: acc.test.mean=0.9902703
+Aggregated Result: acc.test.mean=0.9886990
 
 
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
 Resampling task plasma_retinol x learner neuralnet
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
-WARNING:tensorflow:Method (on_train_batch_begin) is slow compared to the batch update (0.167922). Check your callbacks.
 Resampling: cross-validation
 Measures:             acc       
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
-[Resample] iter 1:    0.5409836 
+[Resample] iter 1:    0.5901639 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
-[Resample] iter 2:    0.6065574 
+WARNING:tensorflow:Method (on_train_batch_begin) is slow compared to the batch update (0.145865). Check your callbacks.
+[Resample] iter 2:    0.5409836 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
-[Resample] iter 3:    0.6557377 
+[Resample] iter 3:    0.6229508 
 Exporting objects to slaves for mode socket: .mlr.slave.options
 Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
-terminate called after throwing an instance of 'std::system_error'
-  what():  Resource temporarily unavailable
-terminate called after throwing an instance of 'std::system_error'
-  what():  Resource temporarily unavailable
-terminate called after throwing an instance of 'std::system_error'
-  what():  Resource temporarily unavailable
-terminate called after throwing an instance of 'std::system_error'
-  what():  Resource temporarily unavailable
-terminate called after throwing an instance of 'std::system_error'
-  what():  Resource temporarily unavailable
-terminate called after throwing an instance of 'std::system_error'
-  what():  Resource temporarily unavailable
-terminate called after throwing an instance of 'std::system_error'
-  what():  Resource temporarily unavailable
-terminate called after throwing an instance of 'std::system_error'
-  what():  Resource temporarily unavailable
-terminate called after throwing an instance of 'std::system_error'
-  what():  Resource temporarily unavailable
-terminate called after throwing an instance of 'std::system_error'
-  what():  Resource temporarily unavailable
-terminate called after throwing an instance of 'std::system_error'
-  what():  Resource temporarily unavailable
-terminate called after throwing an instance of 'std::system_error'
-  what():  Resource temporarily unavailable
-terminate called after throwing an instance of 'std::system_error'
-  what():  Resource temporarily unavailable
-terminate called after throwing an instance of 'std::system_error'
-  what():  Resource temporarily unavailable
-Error in unserialize(node$con) : error reading from connection
-Calls: tryCatch ... FUN -> recvData -> recvData.SOCKnode -> unserialize
-In addition: Warning message:
+[Resample] iter 4:    0.5573770 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
+[Resample] iter 5:    0.4590164 
+
+
+Aggregated Result: acc.test.mean=0.5540984
+
+
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
+Resampling task kc2 x learner neuralnet
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
+WARNING:tensorflow:Method (on_test_batch_begin) is slow compared to the batch update (0.107496). Check your callbacks.
+Resampling: cross-validation
+Measures:             acc       
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
+WARNING:tensorflow:Method (on_train_batch_end) is slow compared to the batch update (0.328437). Check your callbacks.
+WARNING:tensorflow:Method (on_train_batch_end) is slow compared to the batch update (0.165499). Check your callbacks.
+WARNING:tensorflow:Method (on_train_batch_end) is slow compared to the batch update (0.178577). Check your callbacks.
+[Resample] iter 1:    0.6764706 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
+[Resample] iter 2:    0.7184466 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
+[Resample] iter 3:    0.6274510 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
+[Resample] iter 4:    0.8058252 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
+WARNING:tensorflow:Method (on_test_batch_begin) is slow compared to the batch update (0.361232). Check your callbacks.
+[Resample] iter 5:    0.7745098 
+
+
+Aggregated Result: acc.test.mean=0.7205406
+
+
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
+Resampling task tic-tac-toe x learner neuralnet
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
+WARNING:tensorflow:Method (on_test_batch_end) is slow compared to the batch update (0.112465). Check your callbacks.
+Resampling: cross-validation
+Measures:             acc       
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
+[Resample] iter 1:    0.9470899 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
+[Resample] iter 2:    0.9682540 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
+[Resample] iter 3:    0.9894737 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
+[Resample] iter 4:    0.9526316 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
+WARNING:tensorflow:Method (on_train_batch_end) is slow compared to the batch update (0.143547). Check your callbacks.
+[Resample] iter 5:    1.0000000 
+
+
+Aggregated Result: acc.test.mean=0.9714898
+
+
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
+Resampling task pc1 x learner neuralnet
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
+Resampling: cross-validation
+Measures:             acc       
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
+[Resample] iter 1:    0.8681818 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
+[Resample] iter 2:    0.8909091 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
+[Resample] iter 3:    0.9269406 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
+WARNING:tensorflow:Method (on_train_batch_begin) is slow compared to the batch update (0.142275). Check your callbacks.
+WARNING:tensorflow:Method (on_train_batch_end) is slow compared to the batch update (0.155327). Check your callbacks.
+[Resample] iter 4:    0.9136364 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
+[Resample] iter 5:    0.7954545 
+
+
+Aggregated Result: acc.test.mean=0.8790245
+
+
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
+Resampling task boston x learner neuralnet
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
+Resampling: cross-validation
+Measures:             acc       
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
+WARNING:tensorflow:Method (on_train_batch_end) is slow compared to the batch update (0.186233). Check your callbacks.
+WARNING:tensorflow:Method (on_test_batch_begin) is slow compared to the batch update (0.326486). Check your callbacks.
+[Resample] iter 1:    0.8282828 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
+[Resample] iter 2:    0.8989899 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
+[Resample] iter 3:    0.8888889 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
+[Resample] iter 4:    0.8989899 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
+[Resample] iter 5:    0.8200000 
+
+
+Aggregated Result: acc.test.mean=0.8670303
+
+
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
+Resampling task no2 x learner neuralnet
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
+Resampling: cross-validation
+Measures:             acc       
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
+WARNING:tensorflow:Method (on_train_batch_end) is slow compared to the batch update (0.155231). Check your callbacks.
+[Resample] iter 1:    0.5306122 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
+WARNING:tensorflow:Method (on_test_batch_end) is slow compared to the batch update (0.371950). Check your callbacks.
+WARNING:tensorflow:Method (on_test_batch_end) is slow compared to the batch update (0.186057). Check your callbacks.
+[Resample] iter 2:    0.5408163 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
+[Resample] iter 3:    0.5204082 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
+[Resample] iter 4:    0.6122449 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
+WARNING:tensorflow:Method (on_train_batch_begin) is slow compared to the batch update (0.162692). Check your callbacks.
+[Resample] iter 5:    0.4795918 
+
+
+Aggregated Result: acc.test.mean=0.5367347
+
+
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
+Resampling task diabetes x learner neuralnet
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
+Resampling: cross-validation
+Measures:             acc       
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
+[Resample] iter 1:    0.7019868 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
+[Resample] iter 2:    0.6291391 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
+[Resample] iter 3:    0.7105263 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
+WARNING:tensorflow:Method (on_train_batch_end) is slow compared to the batch update (0.142733). Check your callbacks.
+[Resample] iter 4:    0.7434211 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
+[Resample] iter 5:    0.6315789 
+
+
+Aggregated Result: acc.test.mean=0.6833304
+
+
+Stopped parallelization. All cleaned up.
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
+Resampling task cmc x learner neuralnet
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
+Resampling: cross-validation
+Measures:             acc       
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
+WARNING:tensorflow:Method (on_train_batch_end) is slow compared to the batch update (0.200275). Check your callbacks.
+[Resample] iter 1:    0.6450512 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
+[Resample] iter 2:    0.6860068 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
+[Resample] iter 3:    0.7020548 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
+[Resample] iter 4:    0.7133106 
+Exporting objects to slaves for mode socket: .mlr.slave.options
+Mapping in parallel: mode = socket; level = mlr.tuneParams; cpus = 20; elements = 200.
+[Resample] iter 5:    0.6472603 
+
+
+Aggregated Result: acc.test.mean=0.6787367
+
+
+Stopped parallelization. All cleaned up.
+Warning message:
 In svm.default(d$data, d$target, probability = .learner$predict.type ==  :
   Variable(s) ‘spcopt’ and ‘spcopf’ constant. Cannot scale data.
+> 
+> k_clear_session()
+> 
+> if (PARALLEL) {
++   set.seed(123456, "L'Ecuyer-CMRG")
++   parallelMap::parallelStartSocket(20L, load.balancing = TRUE)
++   parallelMap::parallelSource("../helpers/libs_mlr.R", master = FALSE)
++   parallelMap::parallelExport("task.learner.grid", "data_dir")
++ }
+Starting parallelization in mode=socket with cpus=20.
+Sourcing files on slaves: ../helpers/libs_mlr.R
+Exporting objects to slaves for mode socket: task.learner.grid,data_dir
+> tryCatch({
++   models_trained = parallelMap::parallelLapply(seq_len(nrow(task.learner.grid)), function(row) {
++     with(task.learner.grid, {
++       dir_name = file.path(data_dir, task.id[[row]])
++ 
++ 
++       lrn = task.preproc.cpo[[row]] %>>% learner.preproc.cpo[[row]] %>>% learner[[row]]
++       lrn = setHyperPars(lrn, par.vals = paramvals[[row]])
++ 
++       mod = mlr::train(lrn, train.task[[row]])
++ 
++       pred = Predictor$new(mod, data = getTaskData(train.task[[row]]),
++         class = getTaskDesc(train.task[[row]])$positive)
++       # Save keras models --> read into python
++       if (learner.id[[row]] == "logreg") {
++         keras.mod =  mod$learner.model$next.model$learner.model$model
++         save_model_hdf5(keras.mod, filepath = file.path(dir_name, "logreg.h5"))
++       }
++       if (learner.id[[row]] == "neuralnet") {
++         keras.mod =  mod$learner.model$next.model$learner.model$model
++         save_model_hdf5(keras.mod, filepath = file.path(dir_name, "neuralnet.h5"))
++       }
++       list(predictor = pred, task.id = task.id[[row]],
++         learner.id = learner.id[[row]],
++         sampled.rows = getTaskData(task[[row]], subset = sampled.rows[[row]], target.extra = TRUE)$data,
++         performance = performance[[row]])
++     })
++   })
++ }, finally = {
++   if (PARALLEL) {
++     parallelMap::parallelStop()
++   }
++ })
+Mapping in parallel (load balanced): mode = socket; level = NA; cpus = 20; elements = 46.
 Stopped parallelization. All cleaned up.
-Execution halted
+> 
+> saveRDS(models_trained, save_dir)
+> 
+> proc.time()
+     user    system   elapsed 
+  804.119   176.567 28725.620 
