@@ -385,7 +385,7 @@ Counterfactuals = R6::R6Class("Counterfactuals",
 
       pfPlot
     },
-    plot_parallel = function(features = NULL, row.ids = NULL, nr.solutions = NULL, type = "parallel", epsilon = NULL) {
+    plot_parallel = function(features = NULL, row.ids = NULL, nr.solutions = NULL, type = "parallel", epsilon = NULL, plot.x.interest = TRUE) {
       assert_true(type %in% c("parallel", "spider"))
       assert_character(features, null.ok = TRUE, min.len = 2L)
       assert_numeric(row.ids, null.ok = TRUE)
@@ -410,14 +410,22 @@ Counterfactuals = R6::R6Class("Counterfactuals",
         row.ids = 1:nrow(cf)
       }
       cf = cf[, features]
-      cf = rbind(cf, self$x.interest[, features]) ## add x.original
+      nrrows = nrow(cf)
+      if (plot.x.interest) {
+        cf = rbind(cf, self$x.interest[, features]) ## add x.original
+      }
       char.id = sapply(cf, is.character)
       cf[, char.id] = sapply(cf[, char.id], as.numeric)
 
       factor.id = sapply(cf, is.factor)
       cf[, factor.id] = sapply(cf[, factor.id], unclass)
-
-      mycolors = c(gray.colors(nrow(cf)-1, start = 0.2, end = 0.8, gamma = 2.2), "blue")
+      
+      
+      mycolors = gray.colors(nrrows, start = 0.2, end = 0.8, gamma = 2.2)
+        
+      if (plot.x.interest) {
+        mycolors = c(mycolors, "blue")
+      }
       names(mycolors) <- rownames(cf)
 
       if (!is.null(epsilon)) {

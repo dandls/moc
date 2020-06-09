@@ -16,6 +16,7 @@ subset_instances = function(instances, task = NULL, learner = NULL) {
 # Evaluate counterfactuals of dice, recourse and tweaking
 # Remove dominated counterfactuals from set if wanted (default FALSE)
 evaluate_cfexp = function(cf, instance, id = "dice", remove.dom = FALSE, data.dir) {
+  browser()
   # Get training data
   train.data = data.frame(instance$predictor$data$get.x())
 
