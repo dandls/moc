@@ -4,7 +4,7 @@
 
 study_design = function(inst, best.config, save.dir = NULL) {
   message(paste(inst$task.id, inst$learner.id, sep = "/"))
-  browser()
+  
   # Get data 
   dt = inst$predictor$data$get.x()
   
@@ -25,7 +25,6 @@ study_design = function(inst, best.config, save.dir = NULL) {
   
   # Calculate counterfactuals for each data point
   results_pred = mapply(FUN = function(oneinst) {
-    browser()
     oneinst = initialize_instance(oneinst, save.dir)
     x.interest = oneinst$x.interest
     target = oneinst$target
@@ -46,11 +45,12 @@ study_design = function(inst, best.config, save.dir = NULL) {
     ref.point = cf.irace$.__enclos_env__$private$ref.point
     range = cf.irace$.__enclos_env__$private$range
     train.data = as.data.frame(dt)
+    param.set = cf.irace$.__enclos_env__$private$param.set
     obj.nam = cf.irace$.__enclos_env__$private$obj.names
     
     random = random_search(predictor = pred, x.interest = x.interest, 
-        target = target, mu = best.config$mu, ref.point = ref.point, 
-        range = range, epsilon = epsilon, max.iterations = best.config$generations, 
+        target = target, mu = best.config$mu, ref.point = ref.point, param.set = param.set, 
+        range = range, max.iterations = best.config$generations, 
         train.data = train.data, obj.nam = obj.nam)
     
     # Extract counterfactuals 

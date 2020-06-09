@@ -3,20 +3,11 @@
 ###########################################
 
 random_search = function(predictor, x.interest, target, mu,
-  ref.point, range, epsilon = NULL, max.iterations = 500, train.data,
+  ref.point, range, param.set = param.set, max.iterations = 500, train.data,
     obj.nam, param.set.init = NULL) {
   
-  # Extract info from predictor 
-  param.set = ParamHelpers::makeParamSet(
-    params = counterfactuals:::make_paramlist(predictor$data$get.x()))
   x.interest = x.interest[setdiff(colnames(x.interest), 
     predictor$data$y.names)]
-  
-  range = ParamHelpers::getUpper(param.set) - 
-    ParamHelpers::getLower(param.set)
-  range[ParamHelpers::getParamIds(param.set)
-    [ParamHelpers::getParamTypes(param.set) == "discrete"]]  = NA
-  range = range[predictor$data$feature.names]
   
   i = sapply(x.interest, is.factor)
   x.interest.char = x.interest
@@ -64,12 +55,12 @@ random_search = function(predictor, x.interest, target, mu,
   nondom.pop = mosmafs::listToDf(res$pareto.set, param.set)
   nondom.pop[, grep("use.orig", names(nondom.pop))] = NULL
   nondom = cbind(nondom.pop, nondom.fitness)
-  if (!is.null(epsilon)) {
-    feas.idx = nondom$dist.target <= epsilon
-    if (any(feas.idx)) {
-      nondom = nondom[feas.idx,]
-    } 
-  }
+  # if (!is.null(epsilon)) {
+  #   feas.idx = nondom$dist.target <= epsilon
+  #   if (any(feas.idx)) {
+  #     nondom = nondom[feas.idx,]
+  #   } 
+  # }
   
   # Calculate hypervolume and diversity over generations
   pop = mosmafs::listToDf(res$last.population, param.set)

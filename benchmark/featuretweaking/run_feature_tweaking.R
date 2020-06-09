@@ -4,7 +4,7 @@
 source("featuretweaking/libs_featuretweaking.R")
 args = commandArgs(trailingOnly=TRUE)
 instances = readRDS(args[2])
-data.path = args[4]
+data.dir = args[4]
 best.config = readRDS(args[6])
 library(checkmate)
 
@@ -16,11 +16,12 @@ message(paste("ktree is:", ktree))
 
 #--- Calculate cfexps ----
 feature_tweaking = function(pred) {
+  browser()
   message(pred$task.id)
   assert_true(pred$learner.id == "randomforest")
   
   # Load info from folder
-  path = file.path(data.path, pred$task.id)
+  path = file.path(data.dir, pred$task.id)
   # row.ids = read.delim(file.path(path, "sampled_ids.txt"), header = FALSE)[,1]
   df.raw = as.data.frame(pred$predictor$data$get.x())
   map = mlrCPO::cpoScale() %>>% mlrCPO::cpoDummyEncode()
@@ -78,7 +79,7 @@ feature_tweaking = function(pred) {
   }
   
   # evaluate cfexp and revert dummy encoding
-  cf = evaluate_cfexp(cf, pred, id = "tweaking", remove.dom = FALSE, data.dir = data.path)
+  cf = evaluate_cfexp(cf, pred, id = "tweaking", remove.dom = FALSE, data.dir = data.dir)
   # Save results
   name.file = paste("cf", "tweaking", pred$learner.id, sep = "-")
   pathtofile = file.path(path, paste(name.file, ".csv", sep = ""))
