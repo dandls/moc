@@ -16,7 +16,6 @@ subset_instances = function(instances, task = NULL, learner = NULL) {
 # Evaluate counterfactuals of dice, recourse and tweaking
 # Remove dominated counterfactuals from set if wanted (default FALSE)
 evaluate_cfexp = function(cf, instance, id = "dice", remove.dom = FALSE, data.dir) {
-  browser()
   # Get training data
   train.data = data.frame(instance$predictor$data$get.x())
 
@@ -78,8 +77,8 @@ evaluate_cfexp = function(cf, instance, id = "dice", remove.dom = FALSE, data.di
       return(x)
     })
     x.list <- lapply(x.list, function(obs) {
-      obstest <- valuesFromNames(param.set, obs)
-      trafoValue(param.set, obs)
+      obstest <- mosmafs::valuesFromNames(param.set, obs)
+      ParamHelpers::trafoValue(param.set, obs)
     })
     x <- listToDf(x.list, param.set)
     
@@ -229,7 +228,7 @@ subset_results = function(cfexps, nr.solutions, strategy = "crowdingdist", epsil
   } else if (strategy == "random") {
     idx = sample.int(nrow(cfexps), nr.solutions)
   }
-  if (left > 0) {
+  if (any(feas.id) && left > 0) {
     return(rbind(cfexps.subset, cfexps[idx,]))
   }
   return(cfexps[idx,])
@@ -247,4 +246,11 @@ relative_coverage = function(pf1, pf2) {
   ranking = ecr::doNondominatedSorting(cbind(pf1, pf2))$ranks
   rank1 = ranking[1:n1]
   return(vapply(rank1, FUN.VALUE = logical(1), function(x) all(x > 1)))
+}
+
+# binomial test
+biotest = function(x, n) {
+  p = binom.test(x = round(x*n), n = n, p = 0.5,alternative = "greater")$p.value
+  if (p < 0.05) return("*")
+  return("")
 }
