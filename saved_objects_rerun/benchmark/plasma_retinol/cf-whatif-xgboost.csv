@@ -1,0 +1,11 @@
+"AGE","SEX","SMOKSTAT","QUETELET","VITUSE","CALORIES","FAT","FIBER","ALCOHOL","CHOLESTEROL","BETADIET","RETDIET","BETAPLASMA","row_ids"
+46,"Female","Former",25.89669,"No",2263.6,98.2,19.4,2.6,306.5,2572,1261,164,273
+42,"Female","Never",36.59729,"Yes_fairly_often",1434.9,59.3,11.2,0,281.1,1214,1119,188,315
+55,"Female","Former",25.42584,"Yes_not_often",2307.8,111,18.4,3.4,487.8,2627,1627,95,199
+46,"Female","Former",25.89669,"No",2263.6,98.2,19.4,2.6,306.5,2572,1261,164,99
+39,"Female","Never",21.17809,"Yes_fairly_often",1829.2,79,15.6,0,178.4,2787,1210,170,168
+54,"Female","Never",24.95499,"Yes_fairly_often",1392.2,47.8,12.9,0,87.5,849,962,74,112
+48,"Female","Never",20.21771,"Yes_fairly_often",1738.9,63.5,12.2,0.5,205.9,4504,294,159,313
+45,"Female","Former",20.23978,"Yes_fairly_often",1827.7,71.2,10.4,2,267.5,2375,1284,219,119
+53,"Male","Current_Smoker",25.14062,"No",2798.2,125.9,17.7,7,239,2110,1458,53,89
+32,"Female","Never",20.05597,"Yes_fairly_often",2703.4,120.6,11.4,0.1,284.3,1218,978,159,257
