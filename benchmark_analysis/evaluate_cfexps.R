@@ -9,8 +9,15 @@
 #--- Setup ----
 source("../helpers/libs_mlr.R")
 source("../helpers/helpers_evaluate.R")
-instances = readRDS("../saved_objects/benchmark/models_benchmark.rds")
-data.path = "../saved_objects/benchmark"
+library(BBmisc)
+library(stringr)
+library(checkmate)
+library(ParamHelpers)
+library(mosmafs)
+library(ggplot2)
+data.path = "../saved_objects_rerun/benchmark"
+instances = readRDS(file.path(data.path, "models_benchmark.rds"))
+
 obj.nams = c("dist.target", "dist.x.interest", "nr.changed", "dist.train")
 task_ids = readRDS("../helpers/benchmark_task_ids.rds")
 task.names = list.dirs(path = data.path, full.names = FALSE, recursive = FALSE)
@@ -46,7 +53,6 @@ print(tab)
 # --- Create a results data frame for each task  
 # Read in datasets NSGA-II --> MOC 
 moc.cf = lapply(task.names, function(task.nam) {
-  
     ### NSGA-II + Random Search
     csv.path = file.path(data.path, task.nam, "moc")
     # Get csv files with 'cf' in name 
@@ -136,9 +142,11 @@ cov = lapply(others.cf, function(res) {
     coverage = data.frame(matrix(rep(NA, 3), ncol = 3L))
     names(coverage) = c("dice", "recourse", "tweaking")
     for (meth in unique(res$method)) {
-        coverage[meth] = paste(round(sum(res$dominated[res$method == meth], na.rm = TRUE)/
-            sum(!is.na(res$dominated[res$method == meth])), 2), " (", 
-          sum(!is.na(res$dominated[res$method == meth])), ")", sep = "")
+      nr = sum(!is.na(res$dominated[res$method == meth]))
+      nr.cov = sum(res$dominated[res$method == meth], na.rm = TRUE)
+      sign = biotest(nr.cov/nr, nr)
+        coverage[meth] = paste(round(nr.cov/nr, 2),  sign," (", 
+         nr, ")", sep = "")
     }
     return(coverage)
 })
@@ -173,6 +181,15 @@ boxplot.list = mapply(function(other, moc, task.name) {
 }, others.cf, moc.cf, task.names, SIMPLIFY = FALSE)
 
 names(boxplot.list) = task.names
+
+pdf("results/boxplots_other.pdf", width = 5.6, height = 5)
+boxplot.list[-which(names(boxplot.list) %in% c("diabetes", "no2"))][1:8]
+dev.off()
+
+pdf("results/boxplots_showed.pdf", width = 5.6, height = 5)
+boxplot.list["diabetes"]
+boxplot.list["no2"]
+dev.off()
 
 # --- Compare different versions of MOC ----
 # Define dictonary of task and number of features
@@ -214,14 +231,31 @@ res.log = lapply(task.names, function(task.nam) {
   # rename ngsa2 to moc
   return(res.df)
 })
-
+names(res.log) = task.names
 df.log = do.call(rbind, res.log)
 
 # Plot results
 plot_results(df.log, type = "hv", methods = NULL, xlim = c(0, 60), subset.col = "task", 
+  pdf.file = "results/benchmarkres_hv.pdf",
     width = 9, height = 8, line.width = 0.6, ncol = 2)
 
 plot_results(df.log, type = "rank", methods = NULL, line.width = 0.7,
-    ylab = "ranks w.r.t domhv",
-  ylim = c(0.63, 0.87), width = 4.5, height = 2, xlim = c(0, 60), subset.col = NULL)
+    pdf.file = "results/benchmarkres_ranks.pdf",
+    ylab = "ranks w.r.t domhv", width = 4.5, height = 2, xlim = c(0, 60), subset.col = NULL)
 
+#### Check
+nr.rows = mapply(function(other, moc) {
+  moc = moc[moc$method == "mocmod",]
+  other$dominated = NULL
+  df = rbind(other, moc)
+  
+  nr.sol = aggregate(df[, 1],
+    by = list(df$method, df$learner, df$row_ids),
+    FUN = length)
+  agm = aggregate(df$row_ids, by = list(df$method, df$learner), 
+    FUN = function(x) length(unique(x)))
+  agm$task = moc$task[1]
+  return(agm)
+}, others.cf[-1], moc.cf[-1], SIMPLIFY = FALSE)
+nr.rows.df = do.call("rbind", nr.rows)
+assert_true(all(nr.rows.df$x == 10))
