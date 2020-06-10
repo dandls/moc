@@ -3,9 +3,9 @@
 #--- Setup ----
 source("featuretweaking/libs_featuretweaking.R")
 args = commandArgs(trailingOnly=TRUE)
-instances = readRDS(args[2])
-data.dir = args[4]
-best.config = readRDS(args[6])
+instances = readRDS(args[1])
+data.dir = args[2]
+best.config = readRDS(args[3])
 library(checkmate)
 
 ktree = NULL 
