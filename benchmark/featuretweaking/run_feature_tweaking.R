@@ -16,7 +16,6 @@ message(paste("ktree is:", ktree))
 
 #--- Calculate cfexps ----
 feature_tweaking = function(pred) {
-  browser()
   message(pred$task.id)
   assert_true(pred$learner.id == "randomforest")
   

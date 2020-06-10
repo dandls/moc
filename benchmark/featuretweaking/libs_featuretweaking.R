@@ -1,6 +1,6 @@
 ### NEEDED PACKAGES ####
 
-packages = c("jsonlite")
+packages = c("jsonlite", "randomForest")
 
 new.packages = packages[!(packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)

@@ -10,7 +10,7 @@ train-models :
 	# Rscript ../helpers/train_models.R --savekeras TRUE --task_ids $(tasks_dir)  --savedir $(model_dir) --datadir $(data_dir)
 
 run-tweaking : 
-	R CMD BATCH  '--args (model_dir) $(data_dir) $(config_dir)' featuretweaking/run_feature_tweaking.R
+	R CMD BATCH  '--args $(model_dir) $(data_dir) $(config_dir)' featuretweaking/run_feature_tweaking.R
 
 run-pair :
 	R CMD BATCH '--args  $(model_dir) $(data_dir)' run_pair.R
