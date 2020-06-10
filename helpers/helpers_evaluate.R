@@ -254,3 +254,12 @@ biotest = function(x, n) {
   if (p < 0.05) return("*")
   return("")
 }
+
+# combine boxplots
+combine_plots = function(plist) {
+  id = seq(1, length(plist), 2)
+  for (i in id) {
+    plist[[i]] = plist[[i]] + theme(strip.text.y = element_blank())
+  }
+  ggarrange(plotlist = plist, common.legend = TRUE, ncol = 2L, nrow = length(plist)/2)
+}

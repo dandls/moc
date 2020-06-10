@@ -15,6 +15,7 @@ library(checkmate)
 library(ParamHelpers)
 library(mosmafs)
 library(ggplot2)
+library(ggpubr)
 data.path = "../saved_objects_rerun/benchmark"
 instances = readRDS(file.path(data.path, "models_benchmark.rds"))
 
@@ -103,7 +104,7 @@ others.cf = lapply(task.names, function(task.nam) {
         csv.nam.s = str_remove(string = csv.nam, pattern = csv.path)
         method.nam = str_remove(str_extract(string = csv.nam.s, pattern = "\\-[:alpha:]*"), "\\-")
         # Evaluate counterfactuals / calculate objective values
-        if (method.nam %in% c("recourse", "dice", "pair")) {
+        if (method.nam %in% c("recourse", "dice", "whatif")) {
             instance = subset_instances(instances, task = task.nam, learner = lrn.nam)[[1]]
             cf = evaluate_cfexp(cf = cf, instance = instance, id = method.nam, remove.dom = TRUE, 
               data.dir = data.path)
@@ -137,7 +138,7 @@ names(others.cf) = task.names
 # --- Calculate coverage rate ----
 cov = lapply(others.cf, function(res) {
     res = res[res$dist.target == 0, ]
-    res = res[res$method != "pair", ]
+    res = res[res$method != "whatif", ]
     methods = unique(res$method)
     coverage = data.frame(matrix(rep(NA, 3), ncol = 3L))
     names(coverage) = c("dice", "recourse", "tweaking")
@@ -171,25 +172,22 @@ boxplot.list = mapply(function(other, moc, task.name) {
   no.nondom$variable = "no.nondom"
   names(no.nondom)[1:3] = c("method", "learner", "value")
   all = rbind(df.melt, no.nondom)
+  all$task = task.name
   ggplot(data= all , aes(x = method, y = value)) +
-    #ggtitle(task.name) +
-    theme_bw() + 
-    geom_boxplot() + facet_grid(variable ~ learner, scales = "free") +
-    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
-    xlab("") 
-  
+    ggtitle(task.name) +
+    theme_bw() +
+    geom_boxplot(aes(fill = method)) + facet_grid(variable ~ learner, scales = "free") +
+    theme(axis.text.x = element_blank(), axis.ticks.x = element_blank()) +
+    scale_fill_grey(start = 0.4, end = 1, aesthetics = "fill") +
+    xlab("") + ylab("")
 }, others.cf, moc.cf, task.names, SIMPLIFY = FALSE)
 
-names(boxplot.list) = task.names
 
-pdf("results/boxplots_other.pdf", width = 5.6, height = 5)
-boxplot.list[-which(names(boxplot.list) %in% c("diabetes", "no2"))][1:8]
-dev.off()
+others = combine_plots(boxplot.list[-which(names(boxplot.list) %in% c("diabetes", "no2"))])
+ggsave("results/boxplots_other.pdf", plot = others, width = 10, height = 17)
 
-pdf("results/boxplots_showed.pdf", width = 5.6, height = 5)
-boxplot.list["diabetes"]
-boxplot.list["no2"]
-dev.off()
+showed = combine_plots(boxplot.list[c("diabetes", "no2")])
+ggsave("results/boxplots_showed.pdf", plot = showed, width = 10, height = 4.5)
 
 # --- Compare different versions of MOC ----
 # Define dictonary of task and number of features
