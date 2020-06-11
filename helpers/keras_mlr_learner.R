@@ -102,7 +102,7 @@ initialize_instance = function(inst, data.dir) {
   x.interest = inst$sampled.rows
   inst$predictor$predict(newdata = x.interest)
   # target = ifelse(inst$predictor$predict(newdata = x.interest) < 0.5, 1, 0)
-  if (inst$predictor$predict(newdata = x.interest)[[1]] < 0.5) {
+  if (inst$predictor$predict(newdata = x.interest)[[1]] <= 0.5) {
     target = c(0.5 + .Machine$double.eps/2, 1)
   } else {
     target = c(0, 0.5)
