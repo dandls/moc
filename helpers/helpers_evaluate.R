@@ -256,10 +256,20 @@ biotest = function(x, n) {
 }
 
 # combine boxplots
-combine_plots = function(plist) {
+combine_plots = function(plist, shared.y = FALSE) {
   id = seq(1, length(plist), 2)
   for (i in id) {
-    plist[[i]] = plist[[i]] + theme(strip.text.y = element_blank())
+    plist[[i]] = plist[[i]] + theme(axis.text.x = element_blank(), 
+      axis.ticks.x = element_blank())
+    #plist[[i]] = plist[[i]] + theme(strip.text.y = element_blank())
   }
-  ggarrange(plotlist = plist, common.legend = TRUE, ncol = 2L, nrow = length(plist)/2)
+  if (shared.y) {
+    id.y = seq(1, length(plist)- 1, 2)+1
+    for (j in id.y) {
+      # plist[[j]] = plist[[j]] + theme(axis.text.y = element_blank(), 
+      #   axis.ticks.y = element_blank())
+      plist[[j]] = plist[[j]] + theme(strip.text.x = element_blank())
+    }
+  }
+  ggarrange(plotlist = plist, ncol = length(plist)/2, nrow = 2L)
 }

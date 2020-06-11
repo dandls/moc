@@ -54,32 +54,38 @@ print(tab)
 # --- Create a results data frame for each task  
 # Read in datasets NSGA-II --> MOC 
 moc.cf = lapply(task.names, function(task.nam) {
-    ### NSGA-II + Random Search
-    csv.path = file.path(data.path, task.nam, "moc")
-    # Get csv files with 'cf' in name 
-    csv.nams = list.files(path = csv.path, pattern = "cf-", recursive = TRUE, full.names = TRUE)
-    res.list = lapply (csv.nams, function(csv.nam) {
-        cf = read.csv(file = csv.nam)
-        lrn.nam =  str_remove(str_extract(string = csv.nam, 
-            pattern = "[:alpha:]*.csv"), ".csv")
-        csv.nam.s = str_remove(string = csv.nam, pattern = csv.path)
-        method.nam = str_remove(str_extract(string = csv.nam.s, pattern = "\\-[:alpha:]*"), "\\-")
-        combis = unique(cf[, c("method", "row_ids")])
-        itlist = split(combis, seq(nrow(combis)))
-        
-        subset = lapply(itlist, function(it) {
-          return(subset_results(cf[cf$method == it$method & cf$row_ids == it$row_ids, ], 10, strategy = "random"))
-        })
-        cf = do.call(rbind, subset)
-        rownames(cf) = NULL
-        cf$learner = lrn.nam
-        return(cf)
-    })
-    res.df = do.call(rbind, res.list)
-    res.df$task = task.nam
-    return(res.df)
+  ### NSGA-II + Random Search
+  csv.path = file.path(data.path, task.nam, "moc")
+  # Get csv files with 'cf' in name 
+  csv.nams = list.files(path = csv.path, pattern = "cf-", recursive = TRUE, full.names = TRUE)
+  res.list = lapply (csv.nams, function(csv.nam) {
+    cf = read.csv(file = csv.nam)
+    lrn.nam =  str_remove(str_extract(string = csv.nam, 
+      pattern = "[:alpha:]*.csv"), ".csv")
+    csv.nam.s = str_remove(string = csv.nam, pattern = csv.path)
+    method.nam = str_remove(str_extract(string = csv.nam.s, pattern = "\\-[:alpha:]*"), "\\-")
+    cf$learner = lrn.nam
+    return(cf)
+  })
+  res.df = do.call(rbind, res.list)
+  res.df$task = task.nam
+  return(res.df)
 })
 names(moc.cf) = task.names
+
+moc.cf.subset = lapply(moc.cf, function(cf) {
+  combis = unique(cf[, c("method", "row_ids", "learner")])
+  itlist = split(combis, seq(nrow(combis)))
+  
+  subset = lapply(itlist, function(it) {
+    return(subset_results(cf[cf$method == it$method & cf$row_ids == it$row_ids & cf$learner == it$learner, ], 
+      10, strategy = "random"))
+  })
+  cf = do.call(rbind, subset)
+  rownames(cf) = NULL
+  return(cf)
+})
+names(moc.cf.subset) = task.names
 
 moc.cf.cov = lapply(moc.cf, function(cf) {
   cf = cf[cf$dist.target == 0, ]
@@ -90,66 +96,67 @@ names(moc.cf.cov) = task.names
 # Read in results others
 # Calculate coverage by matching results of moc
 others.cf = lapply(task.names, function(task.nam) {
-    ### NSGA-II + Random Search
-    csv.path = file.path(data.path, task.nam)
-    # Get csv files with 'cf' in name 
-    csv.nams = list.files(path = csv.path, pattern = "cf-", recursive = FALSE, full.names = TRUE)
-    # Match results of moc 
-    mocres = moc.cf.cov[[task.nam]]
-    mocres = mocres[(mocres$method == "mocmod"),]
-    res.list = lapply (csv.nams, function(csv.nam) {
-        cf = read.csv(file = csv.nam)
-        lrn.nam =  str_remove(str_extract(string = csv.nam, 
-            pattern = "[:alpha:]*.csv"), ".csv")
-        csv.nam.s = str_remove(string = csv.nam, pattern = csv.path)
-        method.nam = str_remove(str_extract(string = csv.nam.s, pattern = "\\-[:alpha:]*"), "\\-")
-        # Evaluate counterfactuals / calculate objective values
-        if (method.nam %in% c("recourse", "dice", "whatif")) {
-            instance = subset_instances(instances, task = task.nam, learner = lrn.nam)[[1]]
-            cf = evaluate_cfexp(cf = cf, instance = instance, id = method.nam, remove.dom = TRUE, 
-              data.dir = data.path)
-            cf$method = method.nam
-        }
-        if (method.nam %in% c("tweaking")) { 
-            cf$method = method.nam
-        }
-        cf$learner = lrn.nam
-        # Get indicator if dominated
-        cf$dominated = NA
-        mocmod = mocres[(mocres$learner == lrn.nam),]
-        for (row.id in unique(cf$row_ids)) {
-            cf.moc = mocmod[mocmod$row_ids == row.id, obj.nams]
-            if (nrow(cf.moc) > 0) {
-                dom.ind = relative_coverage(pf1 = cf[cf$row_ids == row.id, obj.nams], 
-                    pf2 = cf.moc)
-                cf[cf$row_ids == row.id, "dominated"] = dom.ind
-            }
-        }
-        return(cf)
-    })
-    res.df = do.call(rbind, res.list)
-    if (nrow(res.df) > 0) {
-     res.df$task = task.nam
-    } 
-    return(res.df)
+  ### NSGA-II + Random Search
+  csv.path = file.path(data.path, task.nam)
+  # Get csv files with 'cf' in name 
+  csv.nams = list.files(path = csv.path, pattern = "cf-", recursive = FALSE, full.names = TRUE)
+  # csv.nams = csv.nams[stringr::str_detect(csv.nams, "whatif")] #SD!!!!
+  # Match results of moc 
+  mocres = moc.cf.cov[[task.nam]]
+  mocres = mocres[(mocres$method == "mocmod"),]
+  res.list = lapply (csv.nams, function(csv.nam) {
+    cf = read.csv(file = csv.nam)
+    lrn.nam =  str_remove(str_extract(string = csv.nam, 
+      pattern = "[:alpha:]*.csv"), ".csv")
+    csv.nam.s = str_remove(string = csv.nam, pattern = csv.path)
+    method.nam = str_remove(str_extract(string = csv.nam.s, pattern = "\\-[:alpha:]*"), "\\-")
+    # Evaluate counterfactuals / calculate objective values
+    if (method.nam %in% c("recourse", "dice", "whatif")) {
+      instance = subset_instances(instances, task = task.nam, learner = lrn.nam)[[1]]
+      cf = evaluate_cfexp(cf = cf, instance = instance, id = method.nam, remove.dom = TRUE, 
+        data.dir = data.path)
+      cf$method = method.nam
+    }
+    if (method.nam %in% c("tweaking")) { 
+      cf$method = method.nam
+    }
+    cf$learner = lrn.nam
+    # Get indicator if dominated
+    cf$dominated = NA
+    mocmod = mocres[(mocres$learner == lrn.nam),]
+    for (row.id in unique(cf$row_ids)) {
+      cf.moc = mocmod[mocmod$row_ids == row.id, obj.nams]
+      if (nrow(cf.moc) > 0) {
+        dom.ind = relative_coverage(pf1 = cf[cf$row_ids == row.id, obj.nams], 
+          pf2 = cf.moc)
+        cf[cf$row_ids == row.id, "dominated"] = dom.ind
+      }
+    }
+    return(cf)
+  })
+  res.df = do.call(rbind, res.list)
+  if (nrow(res.df) > 0) {
+    res.df$task = task.nam
+  } 
+  return(res.df)
 })
 names(others.cf) = task.names
 
 # --- Calculate coverage rate ----
 cov = lapply(others.cf, function(res) {
-    res = res[res$dist.target == 0, ]
-    res = res[res$method != "whatif", ]
-    methods = unique(res$method)
-    coverage = data.frame(matrix(rep(NA, 3), ncol = 3L))
-    names(coverage) = c("dice", "recourse", "tweaking")
-    for (meth in unique(res$method)) {
-      nr = sum(!is.na(res$dominated[res$method == meth]))
-      nr.cov = sum(res$dominated[res$method == meth], na.rm = TRUE)
-      sign = biotest(nr.cov/nr, nr)
-        coverage[meth] = paste(round(nr.cov/nr, 2),  sign," (", 
-         nr, ")", sep = "")
-    }
-    return(coverage)
+  res = res[res$dist.target == 0, ]
+  res = res[res$method != "whatif", ]
+  methods = unique(res$method)
+  coverage = data.frame(matrix(rep(NA, 3), ncol = 3L))
+  names(coverage) = c("dice", "recourse", "tweaking")
+  for (meth in unique(res$method)) {
+    nr = sum(!is.na(res$dominated[res$method == meth]))
+    nr.cov = sum(res$dominated[res$method == meth], na.rm = TRUE)
+    sign = biotest(nr.cov/nr, nr)
+    coverage[meth] = paste(round(nr.cov/nr, 2),  sign," (", 
+      nr, ")", sep = "")
+  }
+  return(coverage)
 })
 cov.df = do.call("rbind", cov)
 cov.df = cov.df[order(rownames(cov.df)),]
@@ -176,18 +183,19 @@ boxplot.list = mapply(function(other, moc, task.name) {
   ggplot(data= all , aes(x = method, y = value)) +
     ggtitle(task.name) +
     theme_bw() +
+    # coord_flip() + # SD
     geom_boxplot(aes(fill = method)) + facet_grid(variable ~ learner, scales = "free") +
-    theme(axis.text.x = element_blank(), axis.ticks.x = element_blank()) +
-    scale_fill_grey(start = 0.4, end = 1, aesthetics = "fill") +
-    xlab("") + ylab("")
-}, others.cf, moc.cf, task.names, SIMPLIFY = FALSE)
+  #   theme(axis.text.x = element_blank(), axis.ticks.x = element_blank()) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)) + #SD
+    xlab("") + ylab("") + theme(legend.position = "none")
+}, others.cf, moc.cf.subset, task.names, SIMPLIFY = FALSE)
 
 
 others = combine_plots(boxplot.list[-which(names(boxplot.list) %in% c("diabetes", "no2"))])
-ggsave("results/boxplots_other.pdf", plot = others, width = 10, height = 17)
+ggsave("results/boxplots_other.pdf", plot = others, width = 10, height = 18.5)
 
-showed = combine_plots(boxplot.list[c("diabetes", "no2")])
-ggsave("results/boxplots_showed.pdf", plot = showed, width = 10, height = 4.5)
+showed = combine_plots(boxplot.list[c("diabetes", "no2")], shared.y = TRUE)
+ggsave("results/boxplots_showed.pdf", plot = showed, width = 5, height = 10)
 
 # --- Compare different versions of MOC ----
 # Define dictonary of task and number of features
@@ -205,7 +213,6 @@ res.log = lapply(task.names, function(task.nam) {
   res.list = lapply (csv.nams, function(csv.nam) {
     lrn.nam =  str_remove(str_extract(string = csv.nam, 
       pattern = "[:alpha:]*.csv"), ".csv")
-    
     # Read csv file 
     log = read.csv(file = csv.nam)
     
@@ -233,15 +240,25 @@ names(res.log) = task.names
 df.log = do.call(rbind, res.log)
 
 # Plot results
-plot_results(df.log, type = "hv", methods = NULL, xlim = c(0, 60), subset.col = "task", 
+plot_results(df.log, type = "hv", methods = NULL, xlim = c(0, 175), subset.col = "task", 
   pdf.file = "results/benchmarkres_hv.pdf",
-    width = 9, height = 8, line.width = 0.6, ncol = 2)
+  width = 9, height = 8, line.width = 0.6, ncol = 2)
 
 plot_results(df.log, type = "rank", methods = NULL, line.width = 0.7,
-    pdf.file = "results/benchmarkres_ranks.pdf",
-    ylab = "ranks w.r.t domhv", width = 4.5, height = 2, xlim = c(0, 60), subset.col = NULL)
+  pdf.file = "results/benchmarkres_ranks.pdf",
+  ylab = "ranks w.r.t domhv", width = 4.5, height = 2, xlim = c(0, 175), subset.col = NULL)
+
+plot_results(df.log, type = "rank", methods = NULL, xlim = c(0, 175), subset.col = "task", 
+  pdf.file = "results/benchmarkres_ranks_tasks.pdf",
+  width = 9, height = 8, line.width = 0.6, ncol = 2)
+
+plot_results(df.log, type = "rank", methods = NULL, xlim = c(0, 175), subset.col = c("task", "learner"), 
+  pdf.file = "results/benchmarkres_ranks_tasks_learner.pdf",
+  width = 9, height = 30, line.width = 0.6, ncol = 2)
+
 
 #### Check
+# 10 found? 
 nr.rows = mapply(function(other, moc) {
   moc = moc[moc$method == "mocmod",]
   other$dominated = NULL
@@ -257,3 +274,25 @@ nr.rows = mapply(function(other, moc) {
 }, others.cf[-1], moc.cf[-1], SIMPLIFY = FALSE)
 nr.rows.df = do.call("rbind", nr.rows)
 assert_true(all(nr.rows.df$x == 10))
+
+# Missing HVs
+id.res = lapply(task.names, function(task.nam) {
+  ### NSGA-II + Random Search
+  csv.path = file.path(data.path, task.nam, "moc")
+  # Get csv files with 'cf' in name 
+  csv.nams = list.files(path = csv.path, pattern = "log-", recursive = TRUE, full.names = TRUE)
+  csv.nams = csv.nams[!grepl("(tweaking)", csv.nams)] ### TO DO! 
+  res.list = lapply (csv.nams, function(csv.nam) {
+    lrn.nam =  str_remove(str_extract(string = csv.nam, 
+      pattern = "[:alpha:]*.csv"), ".csv")
+    
+    # Read csv file 
+    log = read.csv(file = csv.nam)
+    det = which(apply(log[, names(log)[str_detect(names(log), "hv")]] == 0, MARGIN = 1, FUN = any))
+    if(length(det) > 0) {
+      return(paste("csv: ", csv.nam, "row.ids:", unique(log$row_ids[det])))
+    } else NULL
+  })
+  return(res.list)
+})
+
