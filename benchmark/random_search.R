@@ -69,8 +69,7 @@ random_search = function(predictor, x.interest, target, mu,
   len = ncol(fitness)
   folds = seq(mu, len, len/max.iterations)
   for (fold in folds) {
-    hv = c(hv, ecr::computeHV(fitness[, 1:fold], ref.point)/
-        ecr::computeHV(matrix(rep(0, nrow(fitness))), ref.point))
+    hv = c(hv, ecr::computeHV(fitness[, 1:fold], ref.point))
   }
   
   return(list(cf = nondom, log = data.frame(hv_random = hv)))

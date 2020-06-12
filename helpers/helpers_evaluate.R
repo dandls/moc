@@ -203,7 +203,7 @@ plot_results = function(df, type = "hv", methods = NULL, subset.col = "learner",
 }
 
 # Subset number of solutions of MOC
-subset_results = function(cfexps, nr.solutions, strategy = "crowdingdist", epsilon = 0) {
+subset_results = function(cfexps, nr.solutions, strategy = "random", epsilon = 0) {
   if (nr.solutions > nrow(cfexps)) {
     return(cfexps)
   }
@@ -216,14 +216,17 @@ subset_results = function(cfexps, nr.solutions, strategy = "crowdingdist", epsil
       return(cfexps.subset)
     } else if (left > 0) {
       nr.solutions = left
-      cfexps = cfexps[-feas.id,]
+      cfexps = cfexps[-which(feas.id),]
     } else if (left < 0) {
       cfexps = cfexps.subset
     }
   }
-  if (strategy == "crowdingdist") {
-    ods = computeCrowdingDistanceR(fitness = t(cfexps[, obj.nams]),
+  if (strategy == "crowdingdistx") {
+    ods = counterfactuals:::computeCrowdingDistanceR(fitness = t(cfexps[, obj.nams]),
       candidates = cfexps[, !names(cfexps) %in% c(obj.nams, "pred", "method", "row_ids")])
+    idx = head(order(ods, decreasing = TRUE), nr.solutions)
+  } else if (strategy == "crowdingdistecr") {
+    ods = ecr::computeCrowdingDistance(t(cfexps[, obj.nams]))
     idx = head(order(ods, decreasing = TRUE), nr.solutions)
   } else if (strategy == "random") {
     idx = sample.int(nrow(cfexps), nr.solutions)
