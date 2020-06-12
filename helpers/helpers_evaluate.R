@@ -18,7 +18,7 @@ subset_instances = function(instances, task = NULL, learner = NULL) {
 evaluate_cfexp = function(cf, instance, id = "dice", remove.dom = FALSE, data.dir) {
   # Get training data
   train.data = data.frame(instance$predictor$data$get.x())
-
+  
   # Load keras model if necessary
   if (instance$learner.id %in% c("logreg", "neuralnet")) {
     instance = load_keras_model(instance, data.dir = data.dir)
@@ -31,22 +31,22 @@ evaluate_cfexp = function(cf, instance, id = "dice", remove.dom = FALSE, data.di
     }
   }
   pred = instance$predictor
-
+  
   # Get information from predictor to calculate fitness
   row_ids = unique(cf$row_ids)
   flat.inst = flatten_instances(list(instance))
-
+  
   # Transform entries of counterfactuals that should be discrete to characters
   id.char = unlist(lapply(instance$predictor$data$feature.types, FUN = function(par) par == "categorical"))
   cf[names(id.char)[id.char]] = data.frame(lapply(cf[names(id.char)[id.char]], as.character), 
     stringsAsFactors = FALSE)
-
+  
   id.int = which(sapply(cf[, instance$predictor$data$feature.names], is.integer))
   cf[, id.int] = sapply(cf[, id.int],  as.numeric)
-
+  
   cf = cf[, !(names(cf) %in% pred$data$y.names)]
   cf$prediction = NULL
-
+  
   # Calculate fitness for each x.interest & target
   res.row = mapply(function(oneinst) {
     row_id = as.numeric(row.names(oneinst$sampled.rows)) + 1L
@@ -87,7 +87,7 @@ evaluate_cfexp = function(cf, instance, id = "dice", remove.dom = FALSE, data.di
       x.interest = x.interest, target = target,
       predictor = pred, train.data = train.data,
       range = range, identical.strategy = TRUE)
-
+    
     # only keep nondominated solutions if remove.dom TRUE
     if (ncol(fitness) > 1 & remove.dom) {
       nondom.id = nondominated(fitness)
@@ -131,11 +131,11 @@ revert_dummy <-function(var,indata, origvar){
 plot_results = function(df, type = "hv", methods = NULL, subset.col = "learner",
   pdf.file = NULL, ylim = NULL, width = 6, height = 2.7, xlim = c(0, 40),
   ylab = "dominated hypervolume", line.width = 0.4, ncol = 2) {
-
+  
   assert_true(type %in% c("hv", "div", "rank"))
   assert_character(methods, null.ok = TRUE)
   assert_character(subset.col, null.ok = TRUE)
-
+  
   # Extract info given by type and methods
   gen = df$generation
   by.subset_vector = !is.null(subset.col)
@@ -153,16 +153,16 @@ plot_results = function(df, type = "hv", methods = NULL, subset.col = "learner",
   }
   names(df) = str_remove(names(df), needed.cols)
   df$generation = gen
-
+  
   # Seperate by subset vector if given (e.g. by dataset or predictor type)
   if (by.subset_vector) {
     df$subset_vector = pred
     id.vars = c("generation", "subset_vector")
-
+    
   } else {
     id.vars = c("generation")
   }
-
+  
   # Prepare for plotting
   df.melt <- reshape2::melt(df, id.vars=id.vars)
   names(df.melt) = c(id.vars, "method", "value")
@@ -193,7 +193,7 @@ plot_results = function(df, type = "hv", methods = NULL, subset.col = "learner",
     p  = p + facet_wrap(~ subset_vector, scales = "free", ncol = ncol) +
       theme(legend.position="bottom", legend.spacing=unit(-.1,"cm"))
   }
-
+  
   # Save if info given
   if (!is.null(pdf.file)) {
     ggsave(filename = pdf.file, p,
@@ -204,42 +204,50 @@ plot_results = function(df, type = "hv", methods = NULL, subset.col = "learner",
 
 # Subset number of solutions of MOC
 subset_results = function(cfexps, nr.solutions, strategy = "random", epsilon = 0) {
+  assert_character(strategy)
+  assert_true(strategy %in% c("random", "hvcontr"))
   if (nr.solutions > nrow(cfexps)) {
     return(cfexps)
   }
   assert_integerish(nr.solutions, lower = 1)
-  feas.id = cfexps$dist.target <= epsilon
-  if (any(feas.id)) {
-    cfexps.subset = cfexps[feas.id,]
-    left = nr.solutions - nrow(cfexps.subset)
+  feas.id = which(cfexps$dist.target <= epsilon)
+  best = c()
+  if (length(feas.id) > 0) {
+    left = nr.solutions - length(feas.id)
     if (left == 0) {
-      return(cfexps.subset)
+      return(cfexps[feas.id,])
     } else if (left > 0) {
       nr.solutions = left
-      cfexps = cfexps[-which(feas.id),]
+      best = feas.id
     } else if (left < 0) {
-      cfexps = cfexps.subset
+      cfexps = cfexps[feas.id,]
     }
-  }
-  if (strategy == "crowdingdistx") {
-    ods = counterfactuals:::computeCrowdingDistanceR(fitness = t(cfexps[, obj.nams]),
-      candidates = cfexps[, !names(cfexps) %in% c(obj.nams, "pred", "method", "row_ids")])
-    idx = head(order(ods, decreasing = TRUE), nr.solutions)
-  } else if (strategy == "crowdingdistecr") {
-    ods = ecr::computeCrowdingDistance(t(cfexps[, obj.nams]))
-    idx = head(order(ods, decreasing = TRUE), nr.solutions)
+  } 
+  if (strategy == "hvcontr") {
+    idx = hv_contribution(t(cfexps[, obj.nams]), nr.solutions = nr.solutions, 
+      best = best)
   } else if (strategy == "random") {
-    idx = sample.int(nrow(cfexps), nr.solutions)
-  }
-  if (any(feas.id) && left > 0) {
-    return(rbind(cfexps.subset, cfexps[idx,]))
+    remaining = seq_len(nrow(cfexps))
+    if (length(best) > 0) remaining = remaining[-best]
+    idx = c(best, sample(remaining, nr.solutions))
   }
   return(cfexps[idx,])
 }
 
+hv_contribution = function(fitness, nr.solutions, best) {
+  ref.point = c(0.5, 1, max(fitness[3,]), 1)
+  for (i in seq_len(nr.solutions)) {
+    best = c(best, which.max(apply(fitness, 2, 
+      function(obs) computeHV(cbind(fitness[,best], obs), ref.point = ref.point)
+      )))
+  }
+  return(best)
+}
+
+
 # Calculate relative coverage of pf2 (MOC) over pf1(other methods)
 relative_coverage = function(pf1, pf2) {
-
+  
   assertTRUE(all(class(pf1) == class(pf2)))
   if(is.data.frame(pf2) && is.data.frame(pf2)) {
     pf1 = as.matrix(t(pf1))
@@ -262,17 +270,20 @@ biotest = function(x, n) {
 combine_plots = function(plist, shared.y = FALSE) {
   id = seq(1, length(plist), 2)
   for (i in id) {
-    plist[[i]] = plist[[i]] + theme(axis.text.x = element_blank(), 
-      axis.ticks.x = element_blank())
-    #plist[[i]] = plist[[i]] + theme(strip.text.y = element_blank())
+    #plist[[i]] = plist[[i]] + theme(axis.text.x = element_blank(), 
+    #  axis.ticks.x = element_blank())
+    plist[[i]] = plist[[i]] + theme(strip.text.y = element_blank())
   }
   if (shared.y) {
     id.y = seq(1, length(plist)- 1, 2)+1
     for (j in id.y) {
-      # plist[[j]] = plist[[j]] + theme(axis.text.y = element_blank(), 
-      #   axis.ticks.y = element_blank())
-      plist[[j]] = plist[[j]] + theme(strip.text.x = element_blank())
+      plist[[j]] = plist[[j]] + theme(axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
+      #plist[[j]] = plist[[j]] + theme(strip.text.x = element_blank())
     }
   }
-  ggarrange(plotlist = plist, ncol = length(plist)/2, nrow = 2L)
+  ggarrange(plotlist = plist, ncol = 2L, nrow = length(plist)/2)
 }
+
+
+

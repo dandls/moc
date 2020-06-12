@@ -79,7 +79,7 @@ moc.cf.subset = lapply(moc.cf, function(cf) {
   
   subset = lapply(itlist, function(it) {
     return(subset_results(cf[cf$method == it$method & cf$row_ids == it$row_ids & cf$learner == it$learner, ], 
-      10, strategy = "random"))
+      10, strategy = "hvcontr"))
   })
   cf = do.call(rbind, subset)
   rownames(cf) = NULL
@@ -87,7 +87,7 @@ moc.cf.subset = lapply(moc.cf, function(cf) {
 })
 names(moc.cf.subset) = task.names
 
-moc.cf.cov = lapply(moc.cf, function(cf) {
+moc.cf.cov = lapply(moc.cf.subset, function(cf) {
   cf = cf[cf$dist.target == 0, ]
   return(cf)
 })
@@ -152,7 +152,8 @@ cov = lapply(others.cf, function(res) {
   for (meth in unique(res$method)) {
     nr = sum(!is.na(res$dominated[res$method == meth]))
     nr.cov = sum(res$dominated[res$method == meth], na.rm = TRUE)
-    sign = biotest(nr.cov/nr, nr)
+   # sign = biotest(nr.cov/nr, nr)
+    sign = ""
     coverage[meth] = paste(round(nr.cov/nr, 2),  sign," (", 
       nr, ")", sep = "")
   }
@@ -185,7 +186,7 @@ boxplot.list = mapply(function(other, moc, task.name) {
     theme_bw() +
     # coord_flip() + # SD
     geom_boxplot(aes(fill = method)) + facet_grid(variable ~ learner, scales = "free") +
-  #   theme(axis.text.x = element_blank(), axis.ticks.x = element_blank()) +
+  theme(axis.text.x = element_blank(), axis.ticks.x = element_blank()) +
     theme(axis.text.x = element_text(angle = 60, hjust = 1)) + #SD
     xlab("") + ylab("") + theme(legend.position = "none")
 }, others.cf, moc.cf.subset, task.names, SIMPLIFY = FALSE)
@@ -195,7 +196,7 @@ others = combine_plots(boxplot.list[-which(names(boxplot.list) %in% c("diabetes"
 ggsave("results/boxplots_other.pdf", plot = others, width = 10, height = 18.5)
 
 showed = combine_plots(boxplot.list[c("diabetes", "no2")], shared.y = TRUE)
-ggsave("results/boxplots_showed.pdf", plot = showed, width = 5, height = 10)
+ggsave("results/boxplots_showed.pdf", plot = showed, width = 10, height = 5)
 
 # --- Compare different versions of MOC ----
 # Define dictonary of task and number of features
