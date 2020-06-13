@@ -282,7 +282,7 @@ combine_plots = function(plist, shared.y = FALSE) {
       #plist[[j]] = plist[[j]] + theme(strip.text.x = element_blank())
     }
   }
-  ggarrange(plotlist = plist, ncol = 2L, nrow = length(plist)/2)
+  return(plist)
 }
 
 

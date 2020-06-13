@@ -25,7 +25,7 @@ task.names = list.dirs(path = data.path, full.names = FALSE, recursive = FALSE)
 set.seed = 1234
 # --- Data set description ----
 data.desc = mapply(function(inst, id) {
-  rows = inst$predictor$data$n.rows
+  rows = inst$predictor$data$n.rows + 10
   cont.f = sum(inst$predictor$data$feature.types == "numerical")
   cat.f = sum(inst$predictor$data$feature.types == "categorical")
   data.frame(Task = as.integer(id), Name = inst$task.id, 
@@ -152,8 +152,7 @@ cov = lapply(others.cf, function(res) {
   for (meth in unique(res$method)) {
     nr = sum(!is.na(res$dominated[res$method == meth]))
     nr.cov = sum(res$dominated[res$method == meth], na.rm = TRUE)
-   # sign = biotest(nr.cov/nr, nr)
-    sign = ""
+   sign = biotest(nr.cov/nr, nr)
     coverage[meth] = paste(round(nr.cov/nr, 2),  sign," (", 
       nr, ")", sep = "")
   }
@@ -164,6 +163,8 @@ cov.df = cov.df[order(rownames(cov.df)),]
 print(cov.df)
 
 #--- Plot objective values per data set, model and method 
+usedcolor <- c("#999999", "#E69F00", "#56B4E9", "#009E73",
+  "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 boxplot.list = mapply(function(other, moc, task.name) {
   moc = moc[moc$method %in% c("moc", "mocmod"),]
   other$dominated = NULL
@@ -182,21 +183,26 @@ boxplot.list = mapply(function(other, moc, task.name) {
   all = rbind(df.melt, no.nondom)
   all$task = task.name
   ggplot(data= all , aes(x = method, y = value)) +
-    ggtitle(task.name) +
+    # ggtitle(task.name) +
     theme_bw() +
     # coord_flip() + # SD
     geom_boxplot(aes(fill = method)) + facet_grid(variable ~ learner, scales = "free") +
-  theme(axis.text.x = element_blank(), axis.ticks.x = element_blank()) +
+  # theme(axis.text.x = element_blank(), axis.ticks.x = element_blank()) +
     theme(axis.text.x = element_text(angle = 60, hjust = 1)) + #SD
-    xlab("") + ylab("") + theme(legend.position = "none")
+    xlab("") + ylab("") + theme(legend.position = "none") +
+    scale_fill_manual(values = usedcolor)
 }, others.cf, moc.cf.subset, task.names, SIMPLIFY = FALSE)
 
-
 others = combine_plots(boxplot.list[-which(names(boxplot.list) %in% c("diabetes", "no2"))])
-ggsave("results/boxplots_other.pdf", plot = others, width = 10, height = 18.5)
+for (i in seq_along(others)) {
+  width = if (i %% 2 == 0) 5.1 else 5
+  ggsave(paste0("results/boxplots_other", names(others)[i], ".eps"), device = "eps", plot = others[[i]], 
+    width = width, height = 5)
+}
 
 showed = combine_plots(boxplot.list[c("diabetes", "no2")], shared.y = TRUE)
-ggsave("results/boxplots_showed.pdf", plot = showed, width = 10, height = 5)
+ggsave("results/boxplots_showeddiabetes.eps", device = "eps", plot = showed[[1]], width = 5, height = 5)
+ggsave("results/boxplots_showedno2.eps", device = "eps", plot = showed[[2]], width = 5.1, height = 5)
 
 # --- Compare different versions of MOC ----
 # Define dictonary of task and number of features
@@ -240,22 +246,24 @@ res.log = lapply(task.names, function(task.nam) {
 names(res.log) = task.names
 df.log = do.call(rbind, res.log)
 
-# Plot results
-plot_results(df.log, type = "hv", methods = NULL, xlim = c(0, 175), subset.col = "task", 
-  pdf.file = "results/benchmarkres_hv.pdf",
-  width = 9, height = 8, line.width = 0.6, ncol = 2)
+# # Plot results
+# plot_results(df.log, type = "hv", methods = NULL, xlim = c(0, 175), subset.col = "task", 
+#   # pdf.file = "results/benchmarkres_hv.pdf",
+#   width = 9, height = 8, line.width = 0.6, ncol = 2)
 
-plot_results(df.log, type = "rank", methods = NULL, line.width = 0.7,
-  pdf.file = "results/benchmarkres_ranks.pdf",
+rankplot = plot_results(df.log, type = "rank", methods = NULL, line.width = 0.7,
+  # pdf.file = "results/benchmarkres_ranks.pdf",
   ylab = "ranks w.r.t domhv", width = 4.5, height = 2, xlim = c(0, 175), subset.col = NULL)
+ggsave("results/benchmark_ranks.eps", device = "eps", plot = rankplot, width = 4.5, height = 2)
 
-plot_results(df.log, type = "rank", methods = NULL, xlim = c(0, 175), subset.col = "task", 
-  pdf.file = "results/benchmarkres_ranks_tasks.pdf",
+rankplottask = plot_results(df.log, type = "rank", methods = NULL, xlim = c(0, 175), subset.col = "task", 
+  # pdf.file = "results/benchmarkres_ranks_tasks.pdf",
   width = 9, height = 8, line.width = 0.6, ncol = 2)
+ggsave("results/benchmark_ranks_tasks.eps", device = "eps",  plot = rankplottask, width = 8, height = 10)
 
-plot_results(df.log, type = "rank", methods = NULL, xlim = c(0, 175), subset.col = c("task", "learner"), 
-  pdf.file = "results/benchmarkres_ranks_tasks_learner.pdf",
-  width = 9, height = 30, line.width = 0.6, ncol = 2)
+# plot_results(df.log, type = "rank", methods = NULL, xlim = c(0, 175), subset.col = c("task", "learner"), 
+#   pdf.file = "results/benchmarkres_ranks_tasks_learner.pdf",
+#   width = 9, height = 30, line.width = 0.6, ncol = 2)
 
 
 #### Check
