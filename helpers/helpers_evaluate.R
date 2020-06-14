@@ -235,7 +235,7 @@ subset_results = function(cfexps, nr.solutions, strategy = "random", epsilon = 0
 }
 
 hv_contribution = function(fitness, nr.solutions, best) {
-  ref.point = c(0.5, 1, max(fitness[3,]), 1)
+  ref.point = c(0.5, 1, max(fitness[3,])+1, 1)
   for (i in seq_len(nr.solutions)) {
     best = c(best, which.max(apply(fitness, 2, 
       function(obs) computeHV(cbind(fitness[,best], obs), ref.point = ref.point)

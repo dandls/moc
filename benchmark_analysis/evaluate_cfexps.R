@@ -195,14 +195,13 @@ boxplot.list = mapply(function(other, moc, task.name) {
 
 others = combine_plots(boxplot.list[-which(names(boxplot.list) %in% c("diabetes", "no2"))])
 for (i in seq_along(others)) {
-  width = if (i %% 2 == 0) 5.1 else 5
-  ggsave(paste0("results/boxplots_other", names(others)[i], ".eps"), device = "eps", plot = others[[i]], 
-    width = width, height = 5)
+  ggsave(paste0("results/boxplots_other", names(others)[i], ".pdf"), plot = others[[i]], 
+    width = 5, height = 5)
 }
 
 showed = combine_plots(boxplot.list[c("diabetes", "no2")], shared.y = TRUE)
-ggsave("results/boxplots_showeddiabetes.eps", device = "eps", plot = showed[[1]], width = 5, height = 5)
-ggsave("results/boxplots_showedno2.eps", device = "eps", plot = showed[[2]], width = 5.1, height = 5)
+ggsave("results/boxplots_showeddiabetes.pdf", plot = showed[[1]], width = 5, height = 5)
+ggsave("results/boxplots_showedno2.pdf", plot = showed[[2]], width = 5, height = 5)
 
 # --- Compare different versions of MOC ----
 # Define dictonary of task and number of features
@@ -254,12 +253,13 @@ df.log = do.call(rbind, res.log)
 rankplot = plot_results(df.log, type = "rank", methods = NULL, line.width = 0.7,
   # pdf.file = "results/benchmarkres_ranks.pdf",
   ylab = "ranks w.r.t domhv", width = 4.5, height = 2, xlim = c(0, 175), subset.col = NULL)
-ggsave("results/benchmark_ranks.eps", device = "eps", plot = rankplot, width = 4.5, height = 2)
+ggsave("results/benchmark_ranks.pdf",  plot = rankplot, width = 4.5, height = 2)
 
-rankplottask = plot_results(df.log, type = "rank", methods = NULL, xlim = c(0, 175), subset.col = "task", 
+rankplottask = plot_results(df.log, type = "rank", methods = NULL, 
+  xlim = c(0, 175), subset.col = "task", ylab = "ranks w.r.t domhv",  
   # pdf.file = "results/benchmarkres_ranks_tasks.pdf",
   width = 9, height = 8, line.width = 0.6, ncol = 2)
-ggsave("results/benchmark_ranks_tasks.eps", device = "eps",  plot = rankplottask, width = 8, height = 10)
+ggsave("results/benchmark_ranks_tasks.pdf",  plot = rankplottask, width = 8, height = 10)
 
 # plot_results(df.log, type = "rank", methods = NULL, xlim = c(0, 175), subset.col = c("task", "learner"), 
 #   pdf.file = "results/benchmarkres_ranks_tasks_learner.pdf",
