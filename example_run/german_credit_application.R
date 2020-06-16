@@ -91,16 +91,28 @@ system.time({credit.cf = Counterfactuals$new(predictor = pred,
   p.rec.gen = best.params$p.rec.gen, initialization = "icecurve",
   p.rec.use.orig = best.params$p.rec.use.orig)})
 
+# Number of counterfactuals
+nrow(credit.cf$results$counterfactuals)
+id = credit.cf$results$counterfactuals$dist.target == 0
+sum(id)
+
+# Focus counterfactuals that met target
+credit.cf$results$counterfactuals = credit.cf$results$counterfactuals[which(id), ]
+credit.cf$results$counterfactuals.diff = credit.cf$results$counterfactuals.diff[which(id), ]
+
 # Get relative frequency of feature changes
 credit.cf$get_frequency()
 
+
 ###---- Plots ----
-a = credit.cf$plot_parallel(features = c("duration", "credit.amount", "age", "checking.account"), plot.x.interest = FALSE)
+a = credit.cf$plot_parallel(features = c("duration", "credit.amount"), plot.x.interest = FALSE)
+a = a + scale_x_discrete(expand = c(0, .2))
 b = credit.cf$plot_surface(features = c("duration", "credit.amount"))
+
 # credit.cf$plot_surface(features = c("duration", "checking.account"))
 # credit.cf$plot_surface(features = c("duration", "age"))
 c = credit.cf$plot_hv()
 
-ggsave("../../../compstat/paper_2019_counterfactual_explanations/ppsn2020/figures/credit_parallel.pdf", plot = a, width= 4, height = 3)
-ggsave("../../../compstat/paper_2019_counterfactual_explanations/ppsn2020/figures/credit_heat.pdf", plot = b, width= 4, height = 3)
+ggsave("../../../compstat/paper_2019_counterfactual_explanations/ppsn2020/figures/credit_parallel.pdf", plot = a, width= 3, height = 2.5)
+ggsave("../../../compstat/paper_2019_counterfactual_explanations/ppsn2020/figures/credit_heat.pdf", plot = b, width= 4, height = 2.5)
 # ggsave("../../../compstat/paper_2019_counterfactual_explanations/ppsn2020/figures/credit_hv.pdf", plot = c, width= 3.5, height = 2)

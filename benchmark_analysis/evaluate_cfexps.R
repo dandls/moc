@@ -162,6 +162,12 @@ cov.df = do.call("rbind", cov)
 cov.df = cov.df[order(rownames(cov.df)),]
 print(cov.df)
 
+print(xtable::xtable(cov.df, label = "tab:cov", 
+  caption = "MOC's coverage rate of methods to be compared per data set averaged over all models."),  floating = TRUE, 
+  floating.environment = "table",
+  caption.placement = "top", 
+  size = getOption("xtable.size", "small"), booktabs = TRUE)
+
 #--- Plot objective values per data set, model and method 
 usedcolor <- c("#999999", "#E69F00", "#56B4E9", "#009E73",
   "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
@@ -193,15 +199,20 @@ boxplot.list = mapply(function(other, moc, task.name) {
     scale_fill_manual(values = usedcolor)
 }, others.cf, moc.cf.subset, task.names, SIMPLIFY = FALSE)
 
+boxplot.list = lapply(boxplot.list, function(l) {
+  l + theme(axis.text = element_text(size = 13), 
+    strip.text =  element_text(size = 11))
+})
+
 others = combine_plots(boxplot.list[-which(names(boxplot.list) %in% c("diabetes", "no2"))])
 for (i in seq_along(others)) {
   ggsave(paste0("results/boxplots_other", names(others)[i], ".pdf"), plot = others[[i]], 
-    width = 5, height = 5)
+    width = 6, height = 6)
 }
 
-showed = combine_plots(boxplot.list[c("diabetes", "no2")], shared.y = TRUE)
-ggsave("results/boxplots_showeddiabetes.pdf", plot = showed[[1]], width = 5, height = 5)
-ggsave("results/boxplots_showedno2.pdf", plot = showed[[2]], width = 5, height = 5)
+showed = combine_plots(boxplot.list[c("diabetes", "no2")], shared.y = FALSE)
+ggsave("results/boxplots_showeddiabetes.pdf", plot = showed[[1]], width = 6, height = 6)
+ggsave("results/boxplots_showedno2.pdf", plot = showed[[2]], width = 6, height = 6)
 
 # --- Compare different versions of MOC ----
 # Define dictonary of task and number of features
