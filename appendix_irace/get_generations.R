@@ -57,7 +57,7 @@ generations = parallelMap::parallelMap(function(inst){
       mosmafs::mosmafsTermGenerations(400))) #SD
   # Save number of generations
   cat(sprintf("finished: %s/%s\n", inst$learner.id, inst$task.id))
-  return(nrow(cf$log) - 10)
+  return(nrow(cf$log))
 }, models_irace.10)
 }, finally = {
   if (PARALLEL) {
