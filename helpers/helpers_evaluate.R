@@ -26,6 +26,7 @@ evaluate_cfexp = function(cf, instance, id = "dice", remove.dom = FALSE, data.di
   # Revert dummmy
   if (id %in% c("dice", "recourse", "tweaking")) {
     dum.vars = names(which(instance$predictor$data$feature.types == "categorical"))
+    dum.vars = dum.vars[!dum.vars %in% names(cf)]
     for (var in dum.vars) {
       cf = revert_dummy(var, cf, as.character(unique(train.data[,var])))
     }
@@ -95,7 +96,7 @@ evaluate_cfexp = function(cf, instance, id = "dice", remove.dom = FALSE, data.di
       nondom.id = seq_len(ncol(fitness))
     }
     nondom.fitness = data.frame(t(fitness[,nondom.id]))
-    names(nondom.fitness) = c(obj.nams)
+    names(nondom.fitness) = obj.nams
     x[, grep("use.orig", names(x))] = NULL
     nondom = cbind(x[nondom.id, ], nondom.fitness)
     nondom$row_ids = row_id

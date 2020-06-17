@@ -25,7 +25,7 @@ task.names = list.dirs(path = data.path, full.names = FALSE, recursive = FALSE)
 set.seed = 1234
 # --- Data set description ----
 data.desc = mapply(function(inst, id) {
-  rows = inst$predictor$data$n.rows + 10
+  rows = inst$predictor$data$n.rows + 10 # 10 observations were removed as x.interests
   cont.f = sum(inst$predictor$data$feature.types == "numerical")
   cat.f = sum(inst$predictor$data$feature.types == "categorical")
   data.frame(Task = as.integer(id), Name = inst$task.id, 
@@ -62,8 +62,6 @@ moc.cf = lapply(task.names, function(task.nam) {
     cf = read.csv(file = csv.nam)
     lrn.nam =  str_remove(str_extract(string = csv.nam, 
       pattern = "[:alpha:]*.csv"), ".csv")
-    csv.nam.s = str_remove(string = csv.nam, pattern = csv.path)
-    method.nam = str_remove(str_extract(string = csv.nam.s, pattern = "\\-[:alpha:]*"), "\\-")
     cf$learner = lrn.nam
     return(cf)
   })
@@ -171,11 +169,13 @@ print(xtable::xtable(cov.df, label = "tab:cov",
 #--- Plot objective values per data set, model and method 
 usedcolor <- c("#999999", "#E69F00", "#56B4E9", "#009E73",
   "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
-boxplot.list = mapply(function(other, moc, task.name) {
+boxplot.list =mapply(function(other, moc, task.name) {
+  browser()
   moc = moc[moc$method %in% c("moc", "mocmod"),]
   other$dominated = NULL
   df = rbind(other, moc)
   df = df[, c(obj.nams, "method", "learner", "row_ids")]
+  df$learner[df$learner == "randomforest"] = "rf"
   names(df)[names(df) == "dist.x.interest"] = "dist.x.orig"
   names(df)[names(df) == "nr.changed"] = "no.changed"
   no.nondom = aggregate(df[, 1], 
@@ -188,31 +188,39 @@ boxplot.list = mapply(function(other, moc, task.name) {
   names(no.nondom)[1:3] = c("method", "learner", "value")
   all = rbind(df.melt, no.nondom)
   all$task = task.name
-  ggplot(data= all , aes(x = method, y = value)) +
+  all$variable = factor(all$variable, levels = unique(all$variable), 
+    labels = c(bquote("o"[1]), bquote("o"[2]), bquote("o"[3]), bquote("o"[4]), "count"))
+  # var.labs = c(as.expression('o'[1]), as.expression('o'[2]), expression('o'[3]), expression('o'[4]), "no.nondom")
+  # names(var.labs) = unique(all$variable)
+  # lrn.labs = unique(all$learner)
+  # names(lrn.labs) = unique(all$learner)
+  ggplot(data= all , aes(x = method, y = value)) + 
     # ggtitle(task.name) +
     theme_bw() +
     # coord_flip() + # SD
-    geom_boxplot(aes(fill = method)) + facet_grid(variable ~ learner, scales = "free") +
+    geom_boxplot(aes(fill = method)) + 
+    facet_grid(variable ~ learner, scales = "free", labeller = label_parsed) + # added label_parsed
   # theme(axis.text.x = element_blank(), axis.ticks.x = element_blank()) +
-    theme(axis.text.x = element_text(angle = 60, hjust = 1)) + #SD
+    theme(axis.text.x = element_text(angle = 75, hjust = 1)) + #SD
     xlab("") + ylab("") + theme(legend.position = "none") +
-    scale_fill_manual(values = usedcolor)
+    scale_fill_manual(values = usedcolor) +
+    scale_y_continuous(breaks = scales::pretty_breaks(n = 3))
 }, others.cf, moc.cf.subset, task.names, SIMPLIFY = FALSE)
 
 boxplot.list = lapply(boxplot.list, function(l) {
-  l + theme(axis.text = element_text(size = 13), 
-    strip.text =  element_text(size = 11))
+  l + theme(axis.text = element_text(size = 14), 
+    strip.text =  element_text(size = 14))
 })
 
 others = combine_plots(boxplot.list[-which(names(boxplot.list) %in% c("diabetes", "no2"))])
 for (i in seq_along(others)) {
   ggsave(paste0("results/boxplots_other", names(others)[i], ".pdf"), plot = others[[i]], 
-    width = 6, height = 6)
+    width = 6.1, height = 5.7)
 }
 
 showed = combine_plots(boxplot.list[c("diabetes", "no2")], shared.y = FALSE)
-ggsave("results/boxplots_showeddiabetes.pdf", plot = showed[[1]], width = 6, height = 6)
-ggsave("results/boxplots_showedno2.pdf", plot = showed[[2]], width = 6, height = 6)
+ggsave("results/boxplots_showeddiabetes.pdf", plot = showed[[1]], width = 6.1, height = 5.7) # height: 6
+ggsave("results/boxplots_showedno2.pdf", plot = showed[[2]], width = 6.1, height = 5.7)
 
 # --- Compare different versions of MOC ----
 # Define dictonary of task and number of features
