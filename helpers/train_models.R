@@ -62,7 +62,7 @@ sampled.rows = lapply(task_list, function(onetask) {
   ctr = partykit::ctree_control(maxdepth = 5L)
   con = fit_conditionals(dat[-sampled.rows, getTaskFeatureNames(onetask)], ctrl = ctr)
   saveRDS(object = con, file = file.path(dir_name, paste0("conditional.rds")))
-  if (SAVEINFO) { #ONLY FOR BENCHMARK --> Used for other methods than MOC
+  if (SAVEINFO) { #ONLY FOR BENCHMARK --> Info necessary to run Python methods
     # Save original data
     dat[[getTaskTargetNames(onetask)]] = trans_target(dat[[getTaskTargetNames(onetask)]])
     write.csv(dat, file = file.path(dir_name, "data_orig.csv"), row.names = FALSE)
@@ -189,12 +189,12 @@ tryCatch({
       par.set = searchspace[[row]]
       ctrl = makeTuneControlRandom(maxit = TUNEITERS * length(par.set$pars))
       if (EVALUATE) {
-        lrn.tuning = makeTuneWrapper(lrn, RESAMPLING, list(mlr::acc), par.set, ctrl, show.info = FALSE) #SD
+        lrn.tuning = makeTuneWrapper(lrn, RESAMPLING, list(mlr::acc), par.set, ctrl, show.info = FALSE) 
       }
       res = tuneParams(lrn, train.task[[row]], RESAMPLING, par.set = par.set, control = ctrl,
         show.info = FALSE)
       if (EVALUATE) {
-        performance = resample(lrn.tuning, train.task[[row]], RESAMPLING, list(mlr::acc))$aggr #SD
+        performance = resample(lrn.tuning, train.task[[row]], RESAMPLING, list(mlr::acc))$aggr 
       } else {
         performance = NA
       }
@@ -204,12 +204,8 @@ tryCatch({
       list(
         performance = performance,
         paramvals = list(res$x))
-
+      
     }))]
-}, finally = {
-  # if (PARALLEL) {
-  #   parallelMap::parallelStop()
-  # }
 })
 
 k_clear_session()
@@ -224,13 +220,13 @@ tryCatch({
   models_trained = parallelMap::parallelLapply(seq_len(nrow(task.learner.grid)), function(row) {
     with(task.learner.grid, {
       dir_name = file.path(data_dir, task.id[[row]])
-
-
+      
+      
       lrn = task.preproc.cpo[[row]] %>>% learner.preproc.cpo[[row]] %>>% learner[[row]]
       lrn = setHyperPars(lrn, par.vals = paramvals[[row]])
-
+      
       mod = mlr::train(lrn, train.task[[row]])
-
+      
       pred = Predictor$new(mod, data = getTaskData(train.task[[row]]),
         class = getTaskDesc(train.task[[row]])$positive)
       # Save keras models --> read into python

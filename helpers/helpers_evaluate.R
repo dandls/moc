@@ -99,6 +99,11 @@ evaluate_cfexp = function(cf, instance, id = "dice", remove.dom = FALSE, data.di
     names(nondom.fitness) = obj.nams
     x[, grep("use.orig", names(x))] = NULL
     nondom = cbind(x[nondom.id, ], nondom.fitness)
+    dup.idx = which(duplicated(nondom))
+    if (length(dup.idx) > 1L) {
+      browser()
+      nondom = nondom[-dup.idx,]
+    }
     nondom$row_ids = row_id
     return(nondom)
   }, flat.inst, SIMPLIFY = FALSE)
@@ -183,10 +188,9 @@ plot_results = function(df, type = "hv", methods = NULL, subset.col = "learner",
   p = ggplot(data = df.agg, aes(x=generation, y=x)) +
     geom_line(aes(colour=method, linetype = method), size = line.width) +
     ylab(ylab.name) +
-    #ylim(ylim) +
     xlim(xlim) +
     ylab(ylab) +
-    scale_colour_manual(values=c("grey10", "grey33", "grey53", "black", "grey73")) +
+    scale_colour_manual(values=c("grey10", "grey53", "grey33", "black", "grey73")) +
     scale_linetype_manual(values=c( "dotdash",
       "dashed", "dotted", "solid", "solid")) +
     theme_bw()
@@ -240,7 +244,7 @@ hv_contribution = function(fitness, nr.solutions, best) {
   for (i in seq_len(nr.solutions)) {
     best = c(best, which.max(apply(fitness, 2, 
       function(obs) computeHV(cbind(fitness[,best], obs), ref.point = ref.point)
-      )))
+    )))
   }
   return(best)
 }
@@ -271,8 +275,6 @@ biotest = function(x, n) {
 combine_plots = function(plist, shared.y = FALSE) {
   id = seq(1, length(plist), 2)
   for (i in id) {
-    #plist[[i]] = plist[[i]] + theme(axis.text.x = element_blank(), 
-    #  axis.ticks.x = element_blank())
     plist[[i]] = plist[[i]] + theme(strip.text.y = element_blank())
   }
   if (shared.y) {
@@ -280,11 +282,53 @@ combine_plots = function(plist, shared.y = FALSE) {
     for (j in id.y) {
       plist[[j]] = plist[[j]] + theme(axis.text.y = element_blank(),
         axis.ticks.y = element_blank())
-      #plist[[j]] = plist[[j]] + theme(strip.text.x = element_blank())
     }
   }
   return(plist)
 }
+
+
+# Find examples
+find_illustration = function(task, learner, method, positive) {
+  # Extract instance: 
+  inst = subset_instances(instances, task = task, learner = learner)[[1]]
+  if (learner %in% c("logreg", "neuralnet")) {
+    inst = load_keras_model(inst, data.path)
+  }
+  pred = inst$predictor$predict(inst$sampled.rows)
+  if (positive) {
+    i = which(pred > 0.5)
+  } else {
+    i = which(pred < 0.5)
+  }
+  id = (as.numeric(row.names(inst$sampled.rows)[i])+1)
+  orig = inst$sampled.rows
+  orig$pred = pred
+  orig = orig[i,]
+  orig$row_ids = as.numeric(row.names(orig))+1
+  
+  # Moc 
+  mocdiab = moc.cf.subset[[task]]
+  mocdiab = mocdiab[mocdiab$method == "mocmod" & mocdiab$learner == learner & mocdiab$row_ids %in% id, ]
+  dicediab = others.cf[[task]]
+  dicediab = dicediab[dicediab$method == method & dicediab$learner == learner & dicediab$row_ids %in% id, ]
+  
+  return(list(orig = orig, moc = mocdiab, other = dicediab))
+}  
+
+# Create a xtable from the examples 
+create_table = function(example, nr.solutions, end.feat) {
+  example$moc = subset_results(example$moc, nr.solutions, strategy = "hvcontr")
+  example = lapply(example, function(e) e %>% dplyr::mutate_if(is.factor, as.character))
+  example = lapply(example, function(e) e %>% dplyr::mutate_if(is.character, as.numeric))
+  temp = dplyr::bind_rows(example$orig[, 1:end.feat], example$moc[, 1:(end.feat+4)], example$other[, 1:(end.feat+4)])
+  temp = round(t(temp), 2)
+  row.names(temp) = paste0(row.names(temp), " (", temp[,1], ")")
+  temp = temp[, -1]
+  xtable::xtable(temp)
+}
+
+
 
 
 

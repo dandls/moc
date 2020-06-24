@@ -9,16 +9,15 @@ get_keras_model = function(layer_size = 0, lr = 3*10^-4, input_shape) {
   ffnet = keras_model_sequential()
   if (layer_size == 0) {
     layer_dense(ffnet, units = 1L, input_shape = input_shape,
-        activation = "sigmoid")
+      activation = "sigmoid")
   } else {
     layer_dense(ffnet, units = 2^layer_size, input_shape = input_shape,
       activation = "relu")
-    #layer_dense(ffnet, units = 2^layer_size, activation = "relu")
     layer_dense(ffnet, units = 1L, activation = "sigmoid")
   }
   compile(ffnet, optimizer = optimizer_adam(lr),
-      loss = "binary_crossentropy",
-      metrics = "accuracy")
+    loss = "binary_crossentropy",
+    metrics = "accuracy")
 }
 
 makeRLearner.classif.keraslogreg = function() {
@@ -49,7 +48,7 @@ trainLearner.classif.keraslogreg = function(.learner, .task, .subset, .weights =
   y = trans_target(target)
   input_shape = sum(.task$task.desc$n.feat)
   target_labels = getTaskClassLevels(.task)
-
+  
   model = get_keras_model(layer_size = .learner$par.vals$layer_size,
     lr = .learner$par.vals$lr, input_shape = input_shape)
   es = callback_early_stopping(monitor='val_loss', patience=5L)
@@ -101,13 +100,12 @@ initialize_instance = function(inst, data.dir) {
   if (nrow(inst$sampled.rows) > 1) stop("Need to flatten_instance()!")
   x.interest = inst$sampled.rows
   inst$predictor$predict(newdata = x.interest)
-  # target = ifelse(inst$predictor$predict(newdata = x.interest) < 0.5, 1, 0)
   if (inst$predictor$predict(newdata = x.interest)[[1]] <= 0.5) {
     target = c(0.5 + .Machine$double.eps/2, 1)
   } else {
     target = c(0, 0.5)
   }
-
+  
   list(predictor = inst$predictor, task.id = inst$task.id,
     learner.id = inst$learner.id,x.interest = x.interest,
     target = target)
