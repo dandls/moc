@@ -4,7 +4,7 @@
 
 random_search = function(predictor, x.interest, target, mu,
   ref.point, range, param.set = param.set, max.iterations = 500, train.data,
-    obj.nam, param.set.init = NULL) {
+  obj.nam, param.set.init = NULL) {
   
   x.interest = x.interest[setdiff(colnames(x.interest), 
     predictor$data$y.names)]
@@ -55,12 +55,7 @@ random_search = function(predictor, x.interest, target, mu,
   nondom.pop = mosmafs::listToDf(res$pareto.set, param.set)
   nondom.pop[, grep("use.orig", names(nondom.pop))] = NULL
   nondom = cbind(nondom.pop, nondom.fitness)
-  # if (!is.null(epsilon)) {
-  #   feas.idx = nondom$dist.target <= epsilon
-  #   if (any(feas.idx)) {
-  #     nondom = nondom[feas.idx,]
-  #   } 
-  # }
+  
   
   # Calculate hypervolume and diversity over generations
   pop = mosmafs::listToDf(res$last.population, param.set)

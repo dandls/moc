@@ -29,7 +29,7 @@ study_design = function(inst, best.config, save.dir = NULL) {
     x.interest = oneinst$x.interest
     target = oneinst$target
     epsilon = 0
-
+    
     ## MOC without modifications
     # as recommended by parameter tuning
     cf.irace = Counterfactuals$new(predictor = pred, x.interest = x.interest, 
@@ -49,16 +49,16 @@ study_design = function(inst, best.config, save.dir = NULL) {
     obj.nam = cf.irace$.__enclos_env__$private$obj.names
     
     random = random_search(predictor = pred, x.interest = x.interest, 
-        target = target, mu = best.config$mu, ref.point = ref.point, param.set = param.set, 
-        range = range, max.iterations = best.config$generations, 
-        train.data = train.data, obj.nam = obj.nam)
+      target = target, mu = best.config$mu, ref.point = ref.point, param.set = param.set, 
+      range = range, max.iterations = best.config$generations, 
+      train.data = train.data, obj.nam = obj.nam)
     
     # Extract counterfactuals 
     res = random$cf
     if (nrow(res) >= 1) {
-        res$method = "random"
+      res$method = "random"
     } else {
-        res$method = character()
+      res$method = character()
     }
     res = add_rows(res, cf.irace$results$counterfactuals, "moc")
     
@@ -66,7 +66,7 @@ study_design = function(inst, best.config, save.dir = NULL) {
     df = add_columns(df, cf.irace, "moc")
     df = cbind(df, random$log)
     
-    rm(cf.irace)
+    rm(cf.irace) # necessary to prevent memory overload
     rm(random)
     gc()
     
@@ -80,10 +80,10 @@ study_design = function(inst, best.config, save.dir = NULL) {
       p.rec.gen = best.config$p.rec.gen,
       p.rec.use.orig = best.config$p.rec.use.orig,
       initialization = "icecurve")
-
+    
     res = add_rows(res, cf.irace.ice$results$counterfactuals, "mocice")
     df = add_columns(df, cf.irace.ice, "mocice")
-
+    
     rm(cf.irace.ice)
     gc()
     
@@ -100,11 +100,11 @@ study_design = function(inst, best.config, save.dir = NULL) {
       
       df = add_columns(df, cf.irace.con, "moccond")
       res = add_rows(res, cf.irace.con$results$counterfactuals, 
-          "moccond")
+        "moccond")
       
       rm(cf.irace.con)
       gc()
-
+      
       # MOC with modified mutator and ice curve variance #SD
       cf.irace.con.ice = Counterfactuals$new(predictor = pred.con,
         x.interest = x.interest,
@@ -115,11 +115,11 @@ study_design = function(inst, best.config, save.dir = NULL) {
         p.rec.gen = best.config$p.rec.gen,
         p.rec.use.orig = best.config$p.rec.use.orig,
         initialization = "icecurve")
-
+      
       df = add_columns(df, cf.irace.con.ice, "mocmod")
       res = add_rows(res, cf.irace.con.ice$results$counterfactuals,
-          "mocmod")
-
+        "mocmod")
+      
       rm(cf.irace.con.ice)
       gc()
     }

@@ -7,7 +7,6 @@ all : train-models run-tweaking run-pair run-moc
 
 train-models :
 	R CMD BATCH '--args TRUE $(tasks_dir) $(model_dir) $(data_dir) 100 TRUE 4321' ../helpers/train_models.R
-	# Rscript ../helpers/train_models.R --savekeras TRUE --task_ids $(tasks_dir)  --savedir $(model_dir) --datadir $(data_dir)
 
 run-tweaking : 
 	R CMD BATCH  '--args $(model_dir) $(data_dir) $(config_dir)' featuretweaking/run_feature_tweaking.R
@@ -17,5 +16,4 @@ run-pair :
   
 run-moc : 
 	R CMD BATCH '--args $(model_dir) $(config_dir) $(data_dir) ' run_moc.R
-	#Rscript run_moc.R --readdir $(model_dir) --configdir $(config_dir)	--datadir $(data_dir) 
 	
