@@ -34,31 +34,31 @@ if (PARALLEL) {
 }
 tryCatch({
   set.seed(1234)
-generations = parallelMap::parallelMap(function(inst){
-  gc()
-  # Extract info 
-  inst = initialize_instance(inst, data_dir)
-  x.interest = inst$x.interest
-  target = inst$target
-  pred = inst$predictor$clone()
-  if (best_params$conditional) {
-    conditionals = readRDS(file.path(data_dir, inst$task.id, "conditional.rds"))
-    pred$conditionals = conditionals
-  } 
-  # Receive counterfactuals
-  cf = Counterfactuals$new(predictor = pred, target = target, 
-    mu = best_params$mu, x.interest = x.interest, p.mut = best_params$p.mut, 
-    p.rec = best_params$p.rec, p.mut.gen = best_params$p.mut.gen, 
-    p.mut.use.orig = best_params$p.mut.use.orig, 
-    p.rec.gen = best_params$p.rec.gen, 
-    p.rec.use.orig = best_params$p.rec.use.orig,
-    initialization = best_params$initialization,
-    generations = list(mosmafs::mosmafsTermStagnationHV(10),
-      mosmafs::mosmafsTermGenerations(400))) #SD
-  # Save number of generations
-  cat(sprintf("finished: %s/%s\n", inst$learner.id, inst$task.id))
-  return(nrow(cf$log))
-}, models_irace.10)
+  generations = parallelMap::parallelMap(function(inst){
+    gc()
+    # Extract info 
+    inst = initialize_instance(inst, data_dir)
+    x.interest = inst$x.interest
+    target = inst$target
+    pred = inst$predictor$clone()
+    if (best_params$conditional) {
+      conditionals = readRDS(file.path(data_dir, inst$task.id, "conditional.rds"))
+      pred$conditionals = conditionals
+    } 
+    # Receive counterfactuals
+    cf = Counterfactuals$new(predictor = pred, target = target, 
+      mu = best_params$mu, x.interest = x.interest, p.mut = best_params$p.mut, 
+      p.rec = best_params$p.rec, p.mut.gen = best_params$p.mut.gen, 
+      p.mut.use.orig = best_params$p.mut.use.orig, 
+      p.rec.gen = best_params$p.rec.gen, 
+      p.rec.use.orig = best_params$p.rec.use.orig,
+      initialization = best_params$initialization,
+      generations = list(mosmafs::mosmafsTermStagnationHV(10),
+        mosmafs::mosmafsTermGenerations(400))) #SD
+    # Save number of generations
+    cat(sprintf("finished: %s/%s\n", inst$learner.id, inst$task.id))
+    return(nrow(cf$log))
+  }, models_irace.10)
 }, finally = {
   if (PARALLEL) {
     parallelMap::parallelStop()
@@ -66,8 +66,9 @@ generations = parallelMap::parallelMap(function(inst){
 })
 #--- Extract median generations ----
 allgen = unlist(generations)
-generations = as.integer(quantile(allgen, 0.9, na.rm = TRUE)) 
+generations = as.integer(max(allgen)) 
 saveRDS(allgen, file.path(data_dir, "max_generations.rds"))
+
 # Save best parameter set 
 best_config = cbind(generations, best_params)
 saveRDS(best_config, savedir)

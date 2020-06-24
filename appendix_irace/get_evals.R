@@ -25,38 +25,24 @@ if (PARALLEL) {
   parallelMap::parallelSource("../helpers/libs_mlr.R", master = FALSE)
   parallelMap::parallelLibrary("pracma")
   parallelMap::parallelExport("mu", "data_dir")
-
-  ## parallelExport(
-  ##   "Counterfactuals", "Predictor", "Conditional", "InterpretationMethod",
-  ##   "make_paramlist", "mu",
-  ##   "data_dir", "initialize_instance",
-  ##   "char_to_factor",
-  ##   "transform_to_orig",
-  ##   "sdev_to_list", "select_nondom", "select_diverse",
-  ##   "fitness_fun", "computeCrowdingDistanceR", "get_diff",
-  ##   "load_keras_model")
-  ## parallelLibrary("keras", "pracma", "iml")
-  ## parallelExport("trainLearner.classif.keraslogreg", "predictLearner.classif.keraslogreg",
-  ##   "trans_target", "invoke", "get_keras_model", "predict_proba")
-  ## parallelLibrary("mosmafs", "ParamHelpers")
 }
 tryCatch({
   set.seed(1234)
   get_nr_generations = parallelMap::parallelMap(function(inst){
-      # Sample data point as x.interest
-      inst = initialize_instance(inst, data_dir)
-      x.interest = inst$x.interest
-      target = inst$target
-      # Receive counterfactuals
-      cf = Counterfactuals$new(predictor = inst$predictor, target = target,
-        x.interest = x.interest, mu = mu, epsilon = 0,
-        generations = list(mosmafs::mosmafsTermStagnationHV(10),
-          mosmafs::mosmafsTermGenerations(400))) #SD
-      # Save number of generations
-      cat(sprintf("finished: %s/%s\n", inst$learner.id, inst$task.id))
-
-      nrow(cf$log) - 1  # number of generations excludes the 0th generation
-  }, models_irace.10) #SD
+    # Sample data point as x.interest
+    inst = initialize_instance(inst, data_dir)
+    x.interest = inst$x.interest
+    target = inst$target
+    # Receive counterfactuals
+    cf = Counterfactuals$new(predictor = inst$predictor, target = target,
+      x.interest = x.interest, mu = mu, epsilon = 0,
+      generations = list(mosmafs::mosmafsTermStagnationHV(10),
+        mosmafs::mosmafsTermGenerations(400))) #SD
+    # Save number of generations
+    cat(sprintf("finished: %s/%s\n", inst$learner.id, inst$task.id))
+    
+    nrow(cf$log) - 1  # number of generations excludes the 0th generation
+  }, models_irace.10) 
 }, finally = {
   if (PARALLEL) {
     parallelMap::parallelStop()

@@ -37,7 +37,7 @@ ps = pSS(
   p.mut.use.orig : numeric[0.05, 0.5],
   p.rec.gen : numeric[0.3, 1],
   p.rec.use.orig : numeric[0.3, 1],
-  initialization : discrete[random, icecurve],  #SD evtl traindata raus???
+  initialization : discrete[random, icecurve],
   conditional : logical
 )
 
@@ -45,7 +45,7 @@ targetRunnerParallel = function(experiment, exec.target.runner, scenario, target
   # we are assuming here that we have the same instance in every experiment:
   stopifnot(length(unique(vapply(experiment, `[[`, numeric(1), "id.instance"))) == 1)
   inst = experiment[[1]]$instance
-
+  
   message(inst$learner.id)
   message(inst$task.id)
   gc()
@@ -58,13 +58,13 @@ targetRunnerParallel = function(experiment, exec.target.runner, scenario, target
   }
   tryCatch({
     hv_auc = parallelMap::parallelMap(function(curexp) {
-
+      
       gc()
-
+      
       inst = initialize_instance(inst, data_dir)
-
+      
       pars = curexp$configuration
-
+      
       if (as.logical(pars$conditional)) {
         conditionals <<- tryCatch(conditionals, error = function(e) readRDS(file.path(data_dir, inst$task.id, "conditional.rds")))
         pred = inst$predictor$clone()
@@ -83,8 +83,8 @@ targetRunnerParallel = function(experiment, exec.target.runner, scenario, target
         p.rec.use.orig = pars$p.rec.use.orig,
         initialization = pars$initialization,
         generations = list(mosmafs::mosmafsTermEvals(evals)))
-
-
+      
+      
       integral(approxfun(c(0, cf$log$evals), c(0, cf$log$fitness.domHV)),
         xmin = 0, xmax = evals)
     }, experiment)
@@ -93,11 +93,11 @@ targetRunnerParallel = function(experiment, exec.target.runner, scenario, target
       parallelMap::parallelStop()
     }
   })
-
+  
   lapply(hv_auc, function(y) list(cost = y * -1, time = NA_real_))
 }
 extra.args = list()
-extra.args$maxExperiments = 3000 #SD 1000
+extra.args$maxExperiments = 3000
 extra.args$firstTest = 15
 
 tuner.config = c(list(targetRunnerParallel = targetRunnerParallel,
