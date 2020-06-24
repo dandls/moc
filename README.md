@@ -8,7 +8,7 @@ For all computations, we used either the statistical software R (version ≥ 3.4
 ## Overview 
 
 * **Code to reproduce analysis done in the Paper**:
-    * *examples*: Example R code that generates counterfactuals on the German credit dataset, as used in the Paper. 
+    * *credit_example*: Example R code that generates counterfactuals on the German credit dataset, as used in the Paper. 
     * *appendix_irace*: Code that was used to run [iterated F-racing](https://doi.org/10.1016/j.orp.2016.09.002) to tune the hyperparameters of MOC. Includes a `Makefile`. 
     * *benchmark*: Code that was used to generate the benchmark data. Includes a `Makefile`.
     * *benchmark_analysis*: R code for the analysis of the benchmark results.
@@ -42,7 +42,7 @@ Have a look on the [Makefile](appendix_irace/Makefile).
 	
 `make run-irace` this will start iterated F-racing using the maximum number of generations and the trained models from the steps before. 
 
-`make get-generations` will return the number of generations necessayr to ensure convergence AFTER the other parameters were 
+`make get-generations` will return the number of generations necessary to ensure convergence AFTER the other parameters were 
 tuned. 
 
 All results are saved in a new folder called *saved_objects_rerun*. 
