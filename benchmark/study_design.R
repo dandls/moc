@@ -105,7 +105,7 @@ study_design = function(inst, best.config, save.dir = NULL) {
       rm(cf.irace.con)
       gc()
       
-      # MOC with modified mutator and ice curve variance #SD
+      # MOC with modified mutator and ice curve variance 
       cf.irace.con.ice = Counterfactuals$new(predictor = pred.con,
         x.interest = x.interest,
         target = target, mu = best.config$mu, epsilon = epsilon,
