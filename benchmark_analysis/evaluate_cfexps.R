@@ -3,8 +3,12 @@
 ### Read .csv files with counterfactuals for MOC, Tweaking, Recourse and Dice
 ### Evaluate them with respect to coverage and objective values
 ### For MOC different versions are compared with respect to the ranks of the 
-### hypervolume. 
+### hypervolume.
+### Also the illustrative example is configured for the appendix. 
 ######################################
+
+#--- Path to results ----
+data.path = "../saved_objects/benchmark"
 
 #--- Setup ----
 source("../helpers/libs_mlr.R")
@@ -16,13 +20,14 @@ library(ParamHelpers)
 library(mosmafs)
 library(ggplot2)
 library(ggpubr)
-data.path = "../saved_objects_rerun/benchmark"
 instances = readRDS(file.path(data.path, "models_benchmark.rds"))
 
 obj.nams = c("dist.target", "dist.x.interest", "nr.changed", "dist.train")
 task_ids = readRDS("../helpers/benchmark_task_ids.rds")
 task.names = list.dirs(path = data.path, full.names = FALSE, recursive = FALSE)
 set.seed = 1234
+dir.create(path = "results", showWarnings = FALSE)
+
 # --- Data set description ----
 data.desc = mapply(function(inst, id) {
   rows = inst$predictor$data$n.rows + 10 # 10 observations were removed as x.interests
@@ -98,7 +103,6 @@ others.cf = lapply(task.names, function(task.nam) {
   csv.path = file.path(data.path, task.nam)
   # Get csv files with 'cf' in name 
   csv.nams = list.files(path = csv.path, pattern = "cf-", recursive = FALSE, full.names = TRUE)
-  # csv.nams = csv.nams[stringr::str_detect(csv.nams, "whatif")] #SD!!!!
   # Match results of moc 
   mocres = moc.cf.cov[[task.nam]]
   mocres = mocres[(mocres$method == "mocmod"),]
@@ -150,7 +154,7 @@ cov = lapply(others.cf, function(res) {
   for (meth in unique(res$method)) {
     nr = sum(!is.na(res$dominated[res$method == meth]))
     nr.cov = sum(res$dominated[res$method == meth], na.rm = TRUE)
-   sign = biotest(nr.cov/nr, nr)
+    sign = biotest(nr.cov/nr, nr)
     coverage[meth] = paste(round(nr.cov/nr, 2),  sign," (", 
       nr, ")", sep = "")
   }
@@ -170,7 +174,6 @@ print(xtable::xtable(cov.df, label = "tab:cov",
 usedcolor <- c("#999999", "#E69F00", "#56B4E9", "#009E73",
   "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 boxplot.list =mapply(function(other, moc, task.name) {
-  browser()
   moc = moc[moc$method %in% c("moc", "mocmod"),]
   other$dominated = NULL
   df = rbind(other, moc)
@@ -190,20 +193,14 @@ boxplot.list =mapply(function(other, moc, task.name) {
   all$task = task.name
   all$variable = factor(all$variable, levels = unique(all$variable), 
     labels = c(bquote("o"[1]), bquote("o"[2]), bquote("o"[3]), bquote("o"[4]), "count"))
-  # var.labs = c(as.expression('o'[1]), as.expression('o'[2]), expression('o'[3]), expression('o'[4]), "no.nondom")
-  # names(var.labs) = unique(all$variable)
-  # lrn.labs = unique(all$learner)
-  # names(lrn.labs) = unique(all$learner)
   ggplot(data= all , aes(x = method, y = value)) + 
-    # ggtitle(task.name) +
     theme_bw() +
-    # coord_flip() + # SD
     geom_boxplot(aes(fill = method)) + 
-    facet_grid(variable ~ learner, scales = "free", labeller = label_parsed) + # added label_parsed
-  # theme(axis.text.x = element_blank(), axis.ticks.x = element_blank()) +
-    theme(axis.text.x = element_text(angle = 75, hjust = 1)) + #SD
+    facet_grid(variable ~ learner, scales = "free", labeller = label_parsed) + 
+    theme(axis.text.x = element_text(angle = 75, hjust = 1)) + 
     xlab("") + ylab("") + theme(legend.position = "none") +
     scale_fill_manual(values = usedcolor) +
+    # scale_fill_grey(start = 0.4, end = 1) + # enable plotting gray scale
     scale_y_continuous(breaks = scales::pretty_breaks(n = 3))
 }, others.cf, moc.cf.subset, task.names, SIMPLIFY = FALSE)
 
@@ -215,12 +212,12 @@ boxplot.list = lapply(boxplot.list, function(l) {
 others = combine_plots(boxplot.list[-which(names(boxplot.list) %in% c("diabetes", "no2"))])
 for (i in seq_along(others)) {
   ggsave(paste0("results/boxplots_other", names(others)[i], ".pdf"), plot = others[[i]], 
-    width = 6.1, height = 5.7)
+    width = 6.1, height = 6)
 }
 
 showed = combine_plots(boxplot.list[c("diabetes", "no2")], shared.y = FALSE)
-ggsave("results/boxplots_showeddiabetes.pdf", plot = showed[[1]], width = 6.1, height = 5.7) # height: 6
-ggsave("results/boxplots_showedno2.pdf", plot = showed[[2]], width = 6.1, height = 5.7)
+ggsave("results/boxplots_showeddiabetes.pdf", plot = showed[[1]], width = 6.1, height = 6) # height: 6
+ggsave("results/boxplots_showedno2.pdf", plot = showed[[2]], width = 6.1, height = 6)
 
 # --- Compare different versions of MOC ----
 # Define dictonary of task and number of features
@@ -264,63 +261,25 @@ res.log = lapply(task.names, function(task.nam) {
 names(res.log) = task.names
 df.log = do.call(rbind, res.log)
 
-# # Plot results
-# plot_results(df.log, type = "hv", methods = NULL, xlim = c(0, 175), subset.col = "task", 
-#   # pdf.file = "results/benchmarkres_hv.pdf",
-#   width = 9, height = 8, line.width = 0.6, ncol = 2)
+## Plot results
 
 rankplot = plot_results(df.log, type = "rank", methods = NULL, line.width = 0.7,
-  # pdf.file = "results/benchmarkres_ranks.pdf",
   ylab = "ranks w.r.t domhv", width = 4.5, height = 2, xlim = c(0, 175), subset.col = NULL)
 ggsave("results/benchmark_ranks.pdf",  plot = rankplot, width = 4.5, height = 2)
 
 rankplottask = plot_results(df.log, type = "rank", methods = NULL, 
   xlim = c(0, 175), subset.col = "task", ylab = "ranks w.r.t domhv",  
-  # pdf.file = "results/benchmarkres_ranks_tasks.pdf",
   width = 9, height = 8, line.width = 0.6, ncol = 2)
 ggsave("results/benchmark_ranks_tasks.pdf",  plot = rankplottask, width = 8, height = 10)
 
-# plot_results(df.log, type = "rank", methods = NULL, xlim = c(0, 175), subset.col = c("task", "learner"), 
-#   pdf.file = "results/benchmarkres_ranks_tasks_learner.pdf",
-#   width = 9, height = 30, line.width = 0.6, ncol = 2)
 
+#--- Example Diabetes (for appendix) ----
+library(xtable)
 
-#### Check
-# 10 found? 
-nr.rows = mapply(function(other, moc) {
-  moc = moc[moc$method == "mocmod",]
-  other$dominated = NULL
-  df = rbind(other, moc)
-  
-  nr.sol = aggregate(df[, 1],
-    by = list(df$method, df$learner, df$row_ids),
-    FUN = length)
-  agm = aggregate(df$row_ids, by = list(df$method, df$learner), 
-    FUN = function(x) length(unique(x)))
-  agm$task = moc$task[1]
-  return(agm)
-}, others.cf[-1], moc.cf[-1], SIMPLIFY = FALSE)
-nr.rows.df = do.call("rbind", nr.rows)
-assert_true(all(nr.rows.df$x == 10))
+example1 = find_illustration("diabetes", "logreg", "recourse", positive = FALSE)
+example1 = lapply(example1, function(e){e[e$row_ids == 741,]}) # 3 examples, not a lot changed. 
+create_table(example1, nr.solutions = 6, end.feat = 8)
 
-# Missing HVs
-id.res = lapply(task.names, function(task.nam) {
-  ### NSGA-II + Random Search
-  csv.path = file.path(data.path, task.nam, "moc")
-  # Get csv files with 'cf' in name 
-  csv.nams = list.files(path = csv.path, pattern = "log-", recursive = TRUE, full.names = TRUE)
-  csv.nams = csv.nams[!grepl("(tweaking)", csv.nams)] ### TO DO! 
-  res.list = lapply (csv.nams, function(csv.nam) {
-    lrn.nam =  str_remove(str_extract(string = csv.nam, 
-      pattern = "[:alpha:]*.csv"), ".csv")
-    
-    # Read csv file 
-    log = read.csv(file = csv.nam)
-    det = which(apply(log[, names(log)[str_detect(names(log), "hv")]] == 0, MARGIN = 1, FUN = any))
-    if(length(det) > 0) {
-      return(paste("csv: ", csv.nam, "row.ids:", unique(log$row_ids[det])))
-    } else NULL
-  })
-  return(res.list)
-})
-
+example2 = find_illustration("diabetes", "randomforest", "tweaking", positive = FALSE)
+example2 = lapply(example2, function(e){e[e$row_ids == 268,]})
+create_table(example2, nr.solutions = 6, end.feat = 8)
