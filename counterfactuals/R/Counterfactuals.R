@@ -321,23 +321,35 @@ Counterfactuals = R6::R6Class("Counterfactuals",
       private$run()
       return(self)
     },
-    subset_results = function(nr.solutions = 10L) {
+    subset_results = function(nr.solutions = 10L, epsilon = Inf) {
       cfexps = self$results$counterfactuals
       if (nr.solutions >= nrow(cfexps)) {
         warning("nr.solutions out of range, it was set to the number of solutions in self$results")
         return(cfexps)
       }
       assert_integerish(nr.solutions, lower = 1)
-      ods = computeCrowdingDistanceR(fitness = t(cfexps[, private$obj.names]),
-        candidates = cfexps[, names(cfexps[, self$predictor$data$feature.names])])
-      idx = order(ods, decreasing = TRUE)[1:nr.solutions]
-      results.subset = self$results
-      results.subset$counterfactuals = results.subset$counterfactuals[idx, ]
-      rownames(results.subset$counterfactuals) = NULL
-      results.subset$counterfactuals.diff = results.subset$counterfactuals.diff[idx,]
-      rownames(results.subset$counterfactuals.diff) = NULL
-      return(results.subset)
-    },
+        feas.id = which(cfexps$dist.target <= epsilon)
+        best = c()
+        if (length(feas.id) > 0) {
+          left = nr.solutions - length(feas.id)
+          if (left == 0) {
+            return(cfexps[feas.id,])
+          } else if (left > 0) {
+            nr.solutions = left
+            best = feas.id
+          } else if (left < 0) {
+            cfexps = cfexps[feas.id,]
+          }
+        } 
+          idx = private$hv_contribution(t(cfexps[, obj.nams]), nr.solutions = nr.solutions, 
+            best = best)
+          results.subset = self$results
+          results.subset$counterfactuals = results.subset$counterfactuals[idx, ]
+          rownames(results.subset$counterfactuals) = NULL
+          results.subset$counterfactuals.diff = results.subset$counterfactuals.diff[idx,]
+          rownames(results.subset$counterfactuals.diff) = NULL
+          return(results.subset)
+      },
     plot_statistics = function() {
       min.obj = c("generation", paste(private$obj.names, "min", sep = "."))
       mean.obj = c("generation", paste(private$obj.names, "mean", sep = "."))
@@ -496,7 +508,7 @@ Counterfactuals = R6::R6Class("Counterfactuals",
       results = private$evaluate(private$ecrresults)
       private$dataDesign = results
       private$qResults = private$run.prediction(results)
-      self$generations = self$generations + generations
+      # self$generations = self$generations + generations
       self$results = private$aggregate()
     },
     get_hv = function() {
@@ -913,6 +925,15 @@ Counterfactuals = R6::R6Class("Counterfactuals",
       }
       p
     },
+    hv_contribution = function(fitness, nr.solutions, best) {
+      ref.point = c(0.5, 1, max(fitness[3,])+1, 1)
+      for (i in seq_len(nr.solutions)) {
+        best = c(best, which.max(apply(fitness, 2, 
+          function(obs) computeHV(cbind(fitness[,best], obs), ref.point = ref.point)
+        )))
+      }
+      return(best)
+    }, 
     sanitize_feature = function(fixed.features, feature.names) {
       if (is.numeric(fixed.features)) {
         assert_integerish(fixed.features, lower = 1, upper = length(feature.names),
