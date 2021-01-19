@@ -257,7 +257,7 @@ equidistant.grid = function(feature, grid.size, integer = FALSE) {
     if (!length(feature)) stop("Feature without any finite values")
     gr <- seq(from = min(feature), to = max(feature), length.out = grid.size)
     if (integer) {
-      gr <- as.integer(gr)
+      gr <- unique(as.integer(gr))
     } 
     data.frame(grid = gr)
   } else {
