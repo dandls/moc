@@ -228,19 +228,20 @@ get_ICE_var = function(x.interest, predictor, param.set) {
 # Calculate ice curve variance per feature
 get_ice_curve = function(instance, feature, predictor, values,
   grid.size = 20) {
-
+  # determine if integer
+  INTEGER <- is.integer(instance[, feature])
+  
   # make grid of one feature
-  grid = as.data.frame(equidistant.grid(values, grid.size))
+  grid = as.data.frame(equidistant.grid(values, grid.size, integer = INTEGER))
   grid.size = nrow(grid)
   colnames(grid) = feature
-
+  
   instance = instance[, !names(instance) %in% feature]
   instance.df = instance[rep(row.names(instance), grid.size), ]
 
   grid.df = cbind.data.frame(instance.df, grid)
 
   # predict outcomes
-  #pred = predict(predictor, newdata = grid.df)$data$response
   pred = predictor$predict(newdata = grid.df)[[1]]
 
   # calculate sd
@@ -250,11 +251,15 @@ get_ice_curve = function(instance, feature, predictor, values,
 
 
 # 1D Grid
-equidistant.grid = function(feature, grid.size) {
+equidistant.grid = function(feature, grid.size, integer = FALSE) {
   if (is.numeric(feature)) {
     feature = feature[is.finite(feature)]
     if (!length(feature)) stop("Feature without any finite values")
-    data.frame(grid = seq(from = min(feature), to = max(feature), length.out = grid.size))
+    gr <- seq(from = min(feature), to = max(feature), length.out = grid.size)
+    if (integer) {
+      gr <- as.integer(gr)
+    } 
+    data.frame(grid = gr)
   } else {
     data.frame(grid = unique(feature))
   }
