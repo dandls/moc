@@ -341,7 +341,7 @@ Counterfactuals = R6::R6Class("Counterfactuals",
             cfexps = cfexps[feas.id,]
           }
         } 
-          idx = private$hv_contribution(t(cfexps[, obj.nams]), nr.solutions = nr.solutions, 
+          idx = private$hv_contribution(t(cfexps[, private$obj.names]), nr.solutions = nr.solutions, 
             best = best)
           results.subset = self$results
           results.subset$counterfactuals = results.subset$counterfactuals[idx, ]
@@ -929,7 +929,7 @@ Counterfactuals = R6::R6Class("Counterfactuals",
       ref.point = c(0.5, 1, max(fitness[3,])+1, 1)
       for (i in seq_len(nr.solutions)) {
         best = c(best, which.max(apply(fitness, 2, 
-          function(obs) computeHV(cbind(fitness[,best], obs), ref.point = ref.point)
+          function(obs) ecr::computeHV(cbind(fitness[,best], obs), ref.point = ref.point)
         )))
       }
       return(best)

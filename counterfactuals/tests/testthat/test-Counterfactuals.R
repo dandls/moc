@@ -287,4 +287,5 @@ test_that("do not use x.interest as part of observed data", {
 
   cf = Counterfactuals$new(mod, x.interest = x.interest, target = target,
     mu = 30, generations = generations)
+  expect_list(cf$results)
 })
