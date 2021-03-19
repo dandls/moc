@@ -28,7 +28,7 @@ git clone https://github.com/susanne-207/moc.git
 
 ### Statistical Analysis
 For the German Credit dataset example shown in the paper, step through this file:
-[german_credit_application.R](example_run/german_credit_application.R) 
+[german_credit_application.R](credit_example/german_credit_application.R) 
 
 For the results of the benchmark study, step through the following file:
 [evaluate_cfexps.R](benchmark_analysis/evaluate_cfexps.R) 
