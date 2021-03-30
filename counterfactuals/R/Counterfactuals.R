@@ -35,7 +35,7 @@
 #' \describe{
 #' \item{predictor: }{(Predictor)\cr
 #' The object (created with Predictor$new()) holding the machine learning model and the data.}
-#' \item{x.interest: }{(data.frame)\cr  Single row with the instance to be explained.}
+#' \item{x.interest: }{(data.frame)\cr Single row with the instance to be explained.}
 #' \item{target: }{(numeric(1)|numeric(2))\cr Desired outcome either a single numeric or
 #' a vector of two numerics, to define a desired interval as outcome.}
 #' \item{epsilon: }{(numeric(1))\cr Soft constraint. If chosen, candidates, whose
@@ -142,7 +142,7 @@
 #' \describe{
 #' \item{Dandl, S., Molnar, C., Binder, M., Bischl, B. (2020). Multi-Objective Counterfactual Explanations. Preprint on ArXiv.}
 #' \item{Li, R., Emmerich, M.T., Eggermont, J., Bäck, T., Schütz, M., Dijkstra, J., Reiber, J.H. (2013).
-#'  Mixed Integer Evolution Strategies for Parameter Optimization. Evolutionary Computation 21(1): 29–64}
+#' Mixed Integer Evolution Strategies for Parameter Optimization. Evolutionary Computation 21(1): 29–64}
 #' \item{Binder, M., Moosbauer, J., Thomas, J., Bischl, B. (2019).
 #' Multi-Objective Hyperparameter Tuning and Feature Selection using Filter Ensembles (2019), accepted at GECCO 2020}
 #' \item{Bossek, J. (2017). ecr 2.0: A modular framework for evolutionary computation in r,
@@ -151,7 +151,7 @@
 #' \item{Deb, K., Pratap, A., Agarwal, S. and Meyarivan, T. (2002). A fast and elitist multiobjective
 #' genetic algorithm: Nsga-ii, IEEE Transactions on Evolutionary Computation
 #' 6(2): 182-197.}{}
-#' \item{Avila, S. L.,  Kraehenbuehl, L. and Sareni, B. (2006). A multi-niching
+#' \item{Avila, S. L., Kraehenbuehl, L. and Sareni, B. (2006). A multi-niching
 #' multi-objective genetic algorithm for solving complex multimodal problems,
 #' OIPE, Sorrento, Italy.}{}
 #' }
@@ -162,8 +162,8 @@
 #' @examples
 #' if (require("randomForest")) {
 #' # First we fit a machine learning model on the Boston housing data
-#' data("Boston", package  = "MASS")
-#' rf =  randomForest(medv ~ ., data = Boston)
+#' data("Boston", package = "MASS")
+#' rf = randomForest(medv ~ ., data = Boston)
 #' X = Boston[-which(names(Boston) == "medv")]
 #' mod = Predictor$new(rf, data = X)
 #'
