@@ -5,7 +5,7 @@ Dandl, S., Molnar, C., Binder, M., Bischl, B. (2020): Multi-Objective Counterfac
 
 For all computations, we used either the statistical software R (version ≥ 3.4.4) or Python (version 3.6.9). 
 
-> :bangbang: **There is now an additional branch of the counterfactuals package without dependency to the local version of the [iml package](https://github.com/susanne-207/moc/tree/master/iml)** :bangbang:   
+> :bangbang: **There is now an additional branch of the counterfactuals package without dependency to the local version of the [iml package](https://github.com/susanne-207/moc/tree/master/iml)**  
 > Branch: [moc_without_iml](https://github.com/susanne-207/moc/tree/moc_without_iml)   
 > You can load this package with 
 > `remotes::install_git(url = "https://github.com/susanne-207/moc", branch = "moc_without_iml", subdir = "counterfactuals")`.
