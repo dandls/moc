@@ -102,7 +102,7 @@
 #' \item{\code{subset_results(nr.solutions)}}{Returns a subset of Counterfactuals
 #' as in Counterfactuals$results of the size of nr. solutions.}
 #' \item{\code{explain(x.interest, target)}}{Method to set a new data point which to explain.}
-#' \item{\code{plot()}}{Method to plot the Pareto front in 2-D. See \link{plot.Counterfactuals.}}
+#' \item{\code{plot()}}{Method to plot the Pareto front in 2-D. See \link{plot.Counterfactuals}.}
 #' \item{\code{continue_search(generations)}}{Method to continue search
 #' after run was already finished. Results are automatically updated in
 #' Counterfactuals$results.}
@@ -140,11 +140,11 @@
 #'
 #' @references
 #' \describe{
-#' \item{Dandl, S., Molnar, C., Binder, M., Bischl, B. (2020). Multi-Objective Counterfactual Explanations. Preprint on ArXiv.}
+#' \item{Dandl, S., Molnar, C., Binder, M., Bischl, B. (2020). Multi-Objective Counterfactual Explanations. Preprint on ArXiv.}{}
 #' \item{Li, R., Emmerich, M.T., Eggermont, J., Bäck, T., Schütz, M., Dijkstra, J., Reiber, J.H. (2013).
-#'  Mixed Integer Evolution Strategies for Parameter Optimization. Evolutionary Computation 21(1): 29–64}
+#'  Mixed Integer Evolution Strategies for Parameter Optimization. Evolutionary Computation 21(1): 29–64}{}
 #' \item{Binder, M., Moosbauer, J., Thomas, J., Bischl, B. (2019).
-#' Multi-Objective Hyperparameter Tuning and Feature Selection using Filter Ensembles (2019), accepted at GECCO 2020}
+#' Multi-Objective Hyperparameter Tuning and Feature Selection using Filter Ensembles (2019), accepted at GECCO 2020}{}
 #' \item{Bossek, J. (2017). ecr 2.0: A modular framework for evolutionary computation in r,
 #' Proceedings of the Genetic and Evolutionary Computation Conference Companion,
 #' GECCO '17, pp. 1187-1193.}{}
