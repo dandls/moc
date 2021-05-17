@@ -38,7 +38,7 @@ Suggests: randomForest,
           e1071, 
           knitr,
           mlr
-License: TODO
+License: MIT + file LICENSE
 Encoding: UTF-8
 RoxygenNote: 7.1.1
 VignetteBuilder: knitr
