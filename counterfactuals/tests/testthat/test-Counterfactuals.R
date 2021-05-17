@@ -265,16 +265,14 @@ test_that("different initialization strategies", {
 test_that("conditional transformation trees mutator works", {
   mod_cond = mod$clone()
   ctr = partykit::ctree_control(maxdepth = 2L)
-  mod_cond$conditionals = fit_conditionals(mod_cond$data$get.x(), ctrl = ctr)
+  cond = fit_conditionals(mod_cond$data$get.x(), ctrl = ctr)
+  cond[["lstat"]]$csample(mod_cond$data$get.x()[1,], size = 1, type = "parametric")
+  cond[["chas"]]$csample(mod_cond$data$get.x()[1,], size = 1, type = "parametric")
+  cond[["rad"]]$csample(mod_cond$data$get.x()[1,], size = 1, type = "parametric")
   set.seed(100)
   cf_cond = Counterfactuals$new(mod_cond, x.interest = x.interest, target = target,
-    mu = 30, generations = generations)
+    mu = 30, generations = generations, conditionals = TRUE)
   expect_false(all(do.call(paste0, cf_cond$results$counterfactuals) %in% do.call(paste0, cf$results$counterfactuals)))
-  # expr_cond = system.time(Counterfactuals$new(mod_cond, x.interest = x.interest, target = target,
-  #   mu = 10, generations = 3))
-  # expr_orig = system.time(Counterfactuals$new(mod, x.interest = x.interest, target = target,
-  #   mu = 10, generations = 3))
-  # expect_true(expr_cond[3]>expr_orig[3])
 })
 
 test_that("do not use x.interest as part of observed data", {

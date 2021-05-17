@@ -267,8 +267,7 @@ Counterfactuals = R6::R6Class("Counterfactuals",
       checkmate::assert_logical(track.infeas)
       checkmate::assert_character(initialization)
       checkmate::assert_true(initialization %in% c("random", "sd", "icecurve", "traindata"))
-      checkmate::assert_logical(conditionals)
-
+      
       # assign
       self$target = target
       self$epsilon = epsilon
@@ -287,7 +286,9 @@ Counterfactuals = R6::R6Class("Counterfactuals",
       self$upper = upper
       self$track.infeas = track.infeas
       self$initialization = initialization
-      if (conditionals) {
+      
+      # fit conditionals if conditionals != false 
+      if (is.logical(conditionals) && conditionals) {
         conditionals = fit_conditionals(self$predictor$data$get.x(), 
           ctrl = partykit::ctree_control(maxdepth = 5L))
       } 
@@ -302,7 +303,7 @@ Counterfactuals = R6::R6Class("Counterfactuals",
       private$param.set= ParamHelpers::makeParamSet(
         params = make_paramlist(rbind(predictor$data$get.x(), x.interest[predictor$data$feature.names]),
           lower = lower, upper = upper))
-
+      
       # Extract info from input.data
       private$range = ParamHelpers::getUpper(private$param.set) -
         ParamHelpers::getLower(private$param.set)
@@ -310,7 +311,7 @@ Counterfactuals = R6::R6Class("Counterfactuals",
         [ParamHelpers::getParamTypes(private$param.set) == "discrete"]]  = NA
       private$range = private$range[predictor$data$feature.names]
       private$sdev = apply(Filter(is.numeric, predictor$data$get.x()), 2, sd)
-
+      
       # Set x.interest
       if (!is.null(x.interest) & !is.null(target)) {
         private$set_x_interest(x.interest)
@@ -337,28 +338,28 @@ Counterfactuals = R6::R6Class("Counterfactuals",
         return(cfexps)
       }
       assert_integerish(nr.solutions, lower = 1)
-        feas.id = which(cfexps$dist.target <= epsilon)
-        best = c()
-        if (length(feas.id) > 0) {
-          left = nr.solutions - length(feas.id)
-          if (left == 0) {
-            return(cfexps[feas.id,])
-          } else if (left > 0) {
-            nr.solutions = left
-            best = feas.id
-          } else if (left < 0) {
-            cfexps = cfexps[feas.id,]
-          }
+      feas.id = which(cfexps$dist.target <= epsilon)
+      best = c()
+      if (length(feas.id) > 0) {
+        left = nr.solutions - length(feas.id)
+        if (left == 0) {
+          return(cfexps[feas.id,])
+        } else if (left > 0) {
+          nr.solutions = left
+          best = feas.id
+        } else if (left < 0) {
+          cfexps = cfexps[feas.id,]
         }
-          idx = private$hv_contribution(t(cfexps[, private$obj.names]), nr.solutions = nr.solutions, 
-            best = best)
-          results.subset = self$results
-          results.subset$counterfactuals = results.subset$counterfactuals[idx, ]
-          rownames(results.subset$counterfactuals) = NULL
-          results.subset$counterfactuals.diff = results.subset$counterfactuals.diff[idx,]
-          rownames(results.subset$counterfactuals.diff) = NULL
-          return(results.subset)
-      },
+      }
+      idx = private$hv_contribution(t(cfexps[, private$obj.names]), nr.solutions = nr.solutions, 
+        best = best)
+      results.subset = self$results
+      results.subset$counterfactuals = results.subset$counterfactuals[idx, ]
+      rownames(results.subset$counterfactuals) = NULL
+      results.subset$counterfactuals.diff = results.subset$counterfactuals.diff[idx,]
+      rownames(results.subset$counterfactuals.diff) = NULL
+      return(results.subset)
+    },
     plot_statistics = function() {
       min.obj = c("generation", paste(private$obj.names, "min", sep = "."))
       mean.obj = c("generation", paste(private$obj.names, "mean", sep = "."))
@@ -395,15 +396,15 @@ Counterfactuals = R6::R6Class("Counterfactuals",
           pf.gen$generation = i-1
           pf.gen
         })
-
+      
       pf.over.gen.df = do.call(rbind, pf.over.gen)
-
+      
       pfPlot = ggplot(data = pf.over.gen.df, aes(x=y1, y=y2, alpha = generation)) +
         geom_point(col = "black")+
         theme_bw() +
         xlab(private$obj.names[1]) +
         ylab(private$obj.names[2])
-
+      
       pfPlot
     },
     plot_parallel = function(features = NULL, row.ids = NULL, nr.solutions = NULL, type = "parallel", epsilon = NULL, plot.x.interest = TRUE) {
@@ -411,20 +412,20 @@ Counterfactuals = R6::R6Class("Counterfactuals",
       assert_character(features, null.ok = TRUE, min.len = 2L)
       assert_numeric(row.ids, null.ok = TRUE)
       assert_numeric(nr.solutions, null.ok = TRUE)
-
+      
       if (is.null(features)) {
         features = self$predictor$data$feature.names
       }
       if (type == "spider" & length(features) < 3L) {
         stop("The number of features must be 3 or more for a spider plot.")
       }
-
+      
       if (is.null(nr.solutions)) {
         cf = self$results$counterfactuals
       } else {
         cf = self$subset_results(nr.solutions)$counterfactuals
       }
-
+      
       if (!is.null(row.ids)) {
         cf = cf[row.ids,]
       } else {
@@ -437,18 +438,18 @@ Counterfactuals = R6::R6Class("Counterfactuals",
       }
       char.id = sapply(cf, is.character)
       cf[, char.id] = sapply(cf[, char.id], as.numeric)
-
+      
       factor.id = sapply(cf, is.factor)
       cf[, factor.id] = sapply(cf[, factor.id], unclass)
       
       
       mycolors = gray.colors(nrrows, start = 0.2, end = 0.8, gamma = 2.2)
-        
+      
       if (plot.x.interest) {
         mycolors = c(mycolors, "blue")
       }
       names(mycolors) <- rownames(cf)
-
+      
       if (!is.null(epsilon)) {
         cf = cf[cf$dist.target<=epsilon, ]
       }
@@ -496,12 +497,12 @@ Counterfactuals = R6::R6Class("Counterfactuals",
       if (length(features) != 2L) {
         stop("The number of features must be 2.")
       }
-
+      
       cf = self$results$counterfactuals
-
+      
       change.id = which(rowSums(self$results$counterfactuals.diff[, features] != 0) == cf$nr.changed)
       instances = cf[change.id, ]
-
+      
       if (!is.null(epsilon)) {
         instances = instances[instances$dist.target<=epsilon, ]
       }
@@ -587,9 +588,9 @@ Counterfactuals = R6::R6Class("Counterfactuals",
         self$results = private$aggregate()
         private$finished <- TRUE
       }
-      },
+    },
     intervene = function() {
-
+      
       # Define reference point for hypervolume computation
       private$ref.point = c(min(abs(self$y.hat.interest - self$target)),
         1, ncol(self$x.interest))
@@ -604,7 +605,7 @@ Counterfactuals = R6::R6Class("Counterfactuals",
         pred = self$predictor$predict(self$predictor$data$get.x())
         private$ref.point[1] = diff(c(min(pred), max(pred)))
       }
-
+      
       # Create fitness function with package smoof
       fn = smoof::makeMultiObjectiveFunction(
         has.simple.signature = FALSE, par.set = private$param.set,
@@ -616,11 +617,11 @@ Counterfactuals = R6::R6Class("Counterfactuals",
             range = private$range, track.infeas = self$track.infeas,
             k = self$k, weights = self$weights)
         })
-
+      
       fn = mosmafs::setMosmafsVectorized(fn)
-
+      
       # Initialize population based on x.interest, param.set
-
+      
       # Strategy 1: Use sd to initialize numeric features (default FALSE)
       if (self$initialization == "sd" && length(private$sdev) > 0) {
         lower = self$x.interest[names(private$sdev)] - private$sdev
@@ -642,7 +643,7 @@ Counterfactuals = R6::R6Class("Counterfactuals",
       # Strategy 3: Use training data as first population
       if (self$initialization == "traindata") {
         train.data = as.data.frame(private$dataSample, stringsAsFactors = FALSE)
-
+        
         train.data = train.data[head(sample.int(nrow(train.data)), 200), ]
         for (rx in seq_len(nrow(train.data))) {
           use.orig.feats = sample.int(length(self$x.interest), 1) - 1
@@ -682,7 +683,7 @@ Counterfactuals = R6::R6Class("Counterfactuals",
         initial.pop = ParamHelpers::sampleValues(private$param.set.init, self$mu,
           discrete.names = TRUE)
       }
-
+      
       # Strategy 4: Use ice curve variance to initialize use.original vector
       # while features are initialized randomly
       if (self$initialization == "icecurve") {
@@ -698,13 +699,13 @@ Counterfactuals = R6::R6Class("Counterfactuals",
       i = sapply(self$x.interest, is.factor)
       x.interest = self$x.interest
       x.interest[i] = lapply(self$x.interest[i], as.character)
-
+      
       initial.pop = lapply(initial.pop, function(x) {
         x = transform_to_orig(x, x.interest, delete.use.orig = FALSE,
           fixed.features = self$fixed.features, max.changed = self$max.changed)
       })
-
-
+      
+      
       # Define operators based on parameterset private$param.set
       # Messages can be ignored (only hint that operator was initialized, although
       # no feature of the corresponding type exists)
@@ -731,7 +732,7 @@ Counterfactuals = R6::R6Class("Counterfactuals",
           logical = ecr::setup(ecr::mutBitflip, p = self$p.mut.gen),
           use.orig = ecr::setup(mosmafs::mutBitflipCHW, p = self$p.mut.use.orig),
           .binary.discrete.as.logical = TRUE))
-
+        
         mutator = ecr::makeMutator(function(ind) {
           # # Transform use.original
           ind$use.orig = as.logical(mosmafs::mutBitflipCHW(as.integer(ind$use.orig), p = self$p.mut.use.orig)) #SD
@@ -762,7 +763,7 @@ Counterfactuals = R6::R6Class("Counterfactuals",
           return(ind)
         }, supported = "custom")
       }
-
+      
       recombinator = suppressMessages(mosmafs::combine.operators(private$param.set,
         numeric = ecr::setup(ecr::recSBX, p = self$p.rec.gen),
         integer = ecr::setup(mosmafs::recIntSBX, p = self$p.rec.gen),
@@ -770,7 +771,7 @@ Counterfactuals = R6::R6Class("Counterfactuals",
         logical = ecr::setup(mosmafs::recPCrossover, p = self$p.rec.gen),
         use.orig = ecr::setup(mosmafs::recPCrossover, p = self$p.rec.use.orig),
         .binary.discrete.as.logical = TRUE))
-
+      
       overall.recombinator <- ecr::makeRecombinator(function(inds, ...) {
         inds <- recombinator(inds)
         do.call(ecr::wrapChildren, lapply(inds, function(x) {
@@ -778,13 +779,13 @@ Counterfactuals = R6::R6Class("Counterfactuals",
             fixed.features = self$fixed.features, max.changed = self$max.changed)
         }))
       }, n.parents = 2, n.children = 2)
-
+      
       parent.selector = mosmafs::selTournamentMO
-
+      
       survival.selector = ecr::setup(select_nondom,
         epsilon = self$epsilon,
         extract.duplicates = TRUE)
-
+      
       # Extract algorithm information with a log object
       log.stats = list(fitness = lapply(
         seq_len(n.objectives),
@@ -797,7 +798,7 @@ Counterfactuals = R6::R6Class("Counterfactuals",
         list(
           n.row = function(x) sum(ecr::nondominated(x))
         ))
-
+      
       # Compute counterfactuals
       ecrresults = mosmafs::slickEcr(fn, lambda = self$mu, population = initial.pop,
         mutator = mutator,
@@ -811,7 +812,7 @@ Counterfactuals = R6::R6Class("Counterfactuals",
       return(private$evaluate(ecrresults))
     },
     evaluate = function(ecrresults) {
-
+      
       # Settings for either 3 or 4 objectives
       if (self$track.infeas) {
         id.cols = 9L
@@ -820,25 +821,25 @@ Counterfactuals = R6::R6Class("Counterfactuals",
         id.cols = 7L
         n.objectives = 3L
       }
-
+      
       # Extract results
       # Only consider new candidates
       pop = getPopulations(ecrresults$log.newinds)
-
+      
       getPopFitness  =  function(pop, dim) {
         vapply(pop, attr, numeric(dim), "fitness")
       }
-
+      
       combineResults  =  function(pop1, pop2, dim) {
         fullpop  =  c(pop1, pop2)
         fullpopfitness  =  getPopFitness(fullpop, dim)
         fullpop  =  fullpop[ecr::nondominated(fullpopfitness)]
       }
-
+      
       accpops  =  Reduce(function(pop1, pop2) combineResults(pop1, pop2, n.objectives),
         lapply(pop, get, x = "population"),
         accumulate = TRUE)
-
+      
       # calculate hv for each generation
       hvdev  =  vapply(accpops, function(pop) {
         ecr::computeHV(getPopFitness(pop, n.objectives), private$ref.point)
@@ -852,36 +853,36 @@ Counterfactuals = R6::R6Class("Counterfactuals",
       names(log)[1:id.cols] = nam
       evals = mosmafs::collectResult(ecrresults)$evals
       log$evals = evals
-
+      
       log = log[c("generation", "state", "evals", nam[2:id.cols], "fitness.domHV",
         "fitness.n.row")]
       self$log = log
-
+      
       # only return last population
       finalpop  =  tail(accpops, 1)[[1]]
       fit = data.frame(t(getPopFitness(finalpop, n.objectives)))
       names(fit) = private$obj.names
       finalpop = mosmafs::listToDf(finalpop, private$param.set)
       finalpop[, grepl("use.orig", names(finalpop))] = NULL
-
+      
       # Delete duplicates
       select.id = which(!duplicated(finalpop))
       fit = fit[select.id,]
       finalpop = finalpop[select.id, ]
-
+      
       result = cbind(finalpop, fit)
-
+      
       return(result)
     },
     aggregate = function() {
       # Generate a results object as a list
       pareto.set = private$dataDesign[, !(names(private$dataDesign) %in% private$obj.names)]
       pareto.front = private$dataDesign[, private$obj.names]
-
+      
       pareto.set.diff = get_diff(pareto.set, self$x.interest)
       pred = data.frame(private$qResults)
       names(pred) = "pred"
-
+      
       pareto.set.pf = cbind(private$dataDesign, pred = pred)
       pareto.set.pf = pareto.set.pf[order(pareto.set.pf$dist.target, pareto.set.pf$nr.changed,
         pareto.set.pf$dist.x.interest),]
@@ -919,7 +920,7 @@ Counterfactuals = R6::R6Class("Counterfactuals",
         results_diff = results_diff[results_diff$nr.changed %in% nr.changed, ]
       }
       pf = results_diff[, private$obj.names]
-
+      
       p = ggplot(data = pf, aes(x=dist.target, y=dist.x.interest,
         color = as.factor(nr.changed))) +
         geom_point() +
@@ -927,7 +928,7 @@ Counterfactuals = R6::R6Class("Counterfactuals",
         ylab("dist x.interest") +
         theme_bw() +
         guides(color=guide_legend(title="nr changed"))
-
+      
       if (labels) {
         diffs = results_diff[, !(names(results_diff) %in% c(private$obj.names, "pred", "X1"))]
         labels = c()
@@ -1048,7 +1049,7 @@ calculate_frequency_wrapper = function(counterfactual, target = NULL, obs = NULL
   if (is.null(counterfactual$target) & is.null(target)) {
     stop("target not specified")
   }
-
+  
   df = counterfactual$predictor$data$get.x()
   if (!is.null(obs)) {
     df = obs
@@ -1059,21 +1060,21 @@ calculate_frequency_wrapper = function(counterfactual, target = NULL, obs = NULL
   if(is.null(target)) {
     target = counterfactual$target
   }
-
+  
   df = as.data.frame(df)
   freq = by(df, 1:nrow(df), function(row) {
     counterfactual = counterfactual$explain(row, target)
     counterfactual$get_frequency()
   })
   freq = do.call(rbind, freq)
-
+  
   average_freq = colMeans(freq)
-
+  
   if(plot) {
     barplot(average_freq, ylim = c(0, 1), ylab = "Relative frequency")
   }
   return(average_freq)
-
+  
 }
 
 
@@ -1081,24 +1082,24 @@ get_ice_curve_area = function (instance, features, predictor, param.set, grid.si
   instance =  instance[, 1:predictor$data$n.features]
   min.max = as.data.frame(rbind(getLower(param.set),
     getUpper(param.set)))
-
+  
   val = getValues(param.set)
   val$use.orig = NULL
   val.l = lapply(val, function(x) unlist(x, use.names = FALSE))
   values = c(as.list(min.max), val.l)
-
-
+  
+  
   grids = sapply(features, function(feat) {
     as.data.frame(equidistant.grid(values[[feat]], grid.size))
   })
   expgrid = expand.grid(a = grids[[1]], b = grids[[2]])
   colnames(expgrid) = features
-
+  
   instance = instance[, !names(instance) %in% features]
   instance.df = instance[rep(row.names(instance), nrow(expgrid)), ]
-
+  
   grid.df = cbind.data.frame(instance.df, expgrid)
-
+  
   # predict outcomes
   pred = predictor$predict(newdata = grid.df)[[1]]
   cbind(expgrid, pred)
@@ -1107,7 +1108,7 @@ get_ice_curve_area = function (instance, features, predictor, param.set, grid.si
 plot_ice_curve_area = function(grid, predictor, instance = NULL, x.interest) {
   nams = names(grid)[1:2]
   train.data = data.frame(predictor$data$get.x())
-
+  
   if (all(predictor$data$feature.types[nams] %in% "numerical") ||
       all(predictor$data$feature.types[nams] %in% "categorical")) {
     p = ggplot(train.data, mapping = aes_string(x = nams[1],
