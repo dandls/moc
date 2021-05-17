@@ -3,7 +3,13 @@
 This repository provides code and examples for generating multi-objective counterfactuals for the following paper:      
 Dandl, S., Molnar, C., Binder, M., Bischl, B. (2020): Multi-Objective Counterfactual Expalantions. 
 
-For all computations, we used either the statistical software R (version ≥ 3.4.4) or Python (version 3.6.9)
+For all computations, we used either the statistical software R (version ≥ 3.4.4) or Python (version 3.6.9). 
+
+> :bangbang: **There is now an additional branch of the counterfactuals package without dependency to the local version of the [iml package](https://github.com/susanne-207/moc/tree/master/iml)** :bangbang:   
+> Branch: [moc_without_iml](https://github.com/susanne-207/moc/tree/moc_without_iml)   
+> You can load this package with 
+> `remotes::install_git(url = "https://github.com/susanne-207/moc", branch = "moc_without_iml", subdir = "counterfactuals")`.
+> Use this branch if you do not want to reproduce the paper but want to run MOC with your own examples. 
 
 ## Overview 
 
