@@ -4,7 +4,7 @@
 \alias{mutConDens}
 \title{Mutator that uses conditional distributions.}
 \usage{
-mutConDens(ind, X, pred, param.set, ...)
+mutConDens(ind, conditionals, X, pred, param.set, ...)
 }
 \value{
 (numeric(1)/character(1))

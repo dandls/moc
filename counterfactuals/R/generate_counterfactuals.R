@@ -292,9 +292,9 @@ computeCrowdingDistanceR = function(fitness, candidates) {
 #' \item{param.set: }{(ParamSet)\cr Parameter set extracted from observed data.}
 #' }
 #' @return (numeric(1)/character(1))
-mutConDens = ecr::makeMutator(function(ind, X, pred, param.set,...) {
+mutConDens = ecr::makeMutator(function(ind, conditionals, X, pred, param.set,...) {
   a = names(ind)
-  val = pred$conditionals[[a]]$csample(X = X, size = 1, type = "parametric")[[1]]
+  val = conditionals[[a]]$csample(X = X, size = 1, type = "parametric")[[1]]
   # num.feat = names(pred$data$feature.types)[pred$data$feature.types == "numerical"]
   # for (col in num.feat) X[,col] = as.numeric(X[,col])
   # X = X[, duration := as.numeric(duration)]

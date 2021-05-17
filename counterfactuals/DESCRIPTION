@@ -21,7 +21,9 @@ Imports: R6,
          ggplot2,
          GGally,
          ggExtra,
-         metR
+         metR, 
+	 data.table, 
+         iml
 Suggests: randomForest,
           mlt,
           gower,
