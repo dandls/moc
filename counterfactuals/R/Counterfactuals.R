@@ -8,11 +8,11 @@
 #' @section Usage:
 #' \preformatted{
 #' cf = Counterfactuals$new(predictor, x.interest = NULL, target = NULL,
-#' epsilon = NULL, fixed.features = NULL, max.changed = NULL,
-#' mu = 59, generations = 60, p.mut = 0.7, p.rec = 0.6, p.mut.gen = 0.25,
-#' p.mut.use.orig = 0.2, p.rec.gen = 0.6, p.rec.use.orig = 0.7,
-#' k = 1L, weights = NULL, lower = NULL, upper = NULL, initialization = "random",
-#' track.infeas = TRUE)
+#'   epsilon = NULL, fixed.features = NULL, max.changed = NULL,
+#'   mu = 20, generations = 175, p.rec = 0.57, p.rec.gen = 0.85, p.rec.use.orig = 0.88,
+#'   p.mut = 0.79, p.mut.gen = 0.56, p.mut.use.orig = 0.32,
+#'   k = 1L, weights = NULL, lower = NULL, upper = NULL, initialization = "random",
+#'   track.infeas = TRUE)
 #'
 #' plot(cf)
 #' cf$results
