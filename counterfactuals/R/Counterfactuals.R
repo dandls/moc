@@ -48,23 +48,23 @@
 #' \item{max.changed: }{integer(1)\cr Maximum number of features that can be changed.
 #' Default is NULL.}
 #' \item{mu: }{(integer(1))\cr Population size.
-#' Default is 59.}
-#' \item{generations: }{(integer(1))\cr Number of generations. Default is 60.}
+#' Default is 20.}
+#' \item{generations: }{(integer(1))\cr Number of generations. Default is 175.}
 #' \item{p.mut: }{numeric(1)\cr Probability a child is chosen to be mutated.
-#' Default is 0.7.}
+#' Default is 0.79.}
 #' \item{p.rec: }{numeric(1)\cr Probability a pair of parents is chosen to recombine.
-#' Default is 0.6.}
+#' Default is 0.57.}
 #' \item{p.mut.gen:}{numeric(1)\cr Probability one feature/gene is mutated.
-#' Default is 0.25.}
+#' Default is 0.56.}
 #' \item{p.mut.use.orig:}{numeric(1)\cr Probability an element of the indicator
 #' to use the feature value of x.interest is mutated. As hamming weight
 #' bitflip mutation is used, only a probability between 0 and 0.5 is allowed.
-#' Default is 0.2.}
+#' Default is 0.32.}
 #' \item{p.rec.gen:}{numeric(1)\cr Probability one feature/gene is recombined.
-#' Default is 0.6.}
+#' Default is 0.85.}
 #' \item{p.rec.use.orig:}{numeric(1)\cr Probability an elment of the indicator
 #' to use the feature values of x.interest is recombined.
-#' Default is 0.7.}
+#' Default is 0.88.}
 #' \item{lower:}{numeric\cr Vector of minimal values for numeric features. If NULL
 #' (default) lower is extracted from input data specified in field 'data' of 'predictor'.}
 #' \item{upper: }{numeric\cr Vector of maximal values for numeric features.
@@ -230,9 +230,9 @@ Counterfactuals = R6::R6Class("Counterfactuals",
     results = NULL,
     initialize = function(predictor, x.interest = NULL, target = NULL,
       epsilon = NULL, fixed.features = NULL, max.changed = NULL,
-      mu = 50, generations = 50, p.rec = 0.9, p.rec.gen = 0.7, p.rec.use.orig = 0.7,
-      p.mut = 0.2, p.mut.gen = 0.5, p.mut.use.orig = 0.2, k = 1L, weights = NULL,
-      lower = NULL, upper = NULL, conditionals = FALSE, initialization = "random",
+      mu = 20, generations = 175, p.rec = 0.57, p.rec.gen = 0.85, p.rec.use.orig = 0.88,
+      p.mut = 0.79, p.mut.gen = 0.56, p.mut.use.orig = 0.32, k = 1L, weights = NULL,
+      lower = NULL, upper = NULL, conditionals = TRUE, initialization = "icecurve",
       track.infeas = TRUE) {
 
       super$initialize(predictor = predictor)
