@@ -21,7 +21,9 @@ For all computations, we used either the statistical software R (version ≥ 3.4
 git clone https://github.com/susanne-207/moc.git
 ``` 
 
-### Statistical Analysis
+### Analysis
+For an example with mlr3, step through this file: [pima.R](other_examples/pima.R)
+
 For the German Credit dataset example shown in the paper, step through this file:
 [german_credit_application.R](credit_example/german_credit_application.R) 
 
