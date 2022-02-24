@@ -12,7 +12,7 @@ data_dir = args[[2]] # data_dir = "../saved_objects/irace"
 save_dir = args[[3]] # save_dir = "../saved_objects_rerun/irace/max_eval.rds"
 PARALLEL = TRUE
 mu = 50L
-n_generations = 50L
+n_generations = 5L
 Sys.setenv('TF_CPP_MIN_LOG_LEVEL' = 2)
 
 
@@ -31,7 +31,7 @@ if (PARALLEL) {
 tryCatch({
   set.seed(1234)
   get_nr_generations = parallelMap::parallelMap(function(inst){
-    browser()
+    print(paste(inst$learner.id, "on", inst$task.id))
     # Sample data point as x.interest
     inst = initialize_instance(inst, data_dir)
     x.interest = inst$x.interest
@@ -41,7 +41,7 @@ tryCatch({
       n_generations = n_generations, p_rec = 0.9, p_rec_gen = 0.7,
       p_mut = 0.2, p_mut_gen = 0.5, p_mut_use_orig = 0.2, k = 1L, quiet = TRUE)
     cf = moccf$find_counterfactuals(x_interest = x.interest, 
-      desired_class = inst$predictor$class, desired_prob = target)
+      desired_class = make.names(inst$predictor$class), desired_prob = target)
     hv = moccf$get_dominated_hv()$hv
     return(getTermGenerations(hv))
   }, models_irace.10) 
