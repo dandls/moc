@@ -40,7 +40,7 @@ ps = pSS(
   p_mut_use_orig : numeric[0.05, 0.5],
   p_rec_gen : numeric[0.3, 1],
   init_strategy : discrete[random, icecurve, traindata],
-  conditional_sampler : logical
+  conditional : logical
 )
 
 targetRunnerParallel = function(experiment, exec.target.runner, scenario, target.runner) {
@@ -67,17 +67,12 @@ targetRunnerParallel = function(experiment, exec.target.runner, scenario, target
       
       pars = curexp$configuration
       
-      if (as.logical(pars$conditional)) {
-        conditionals <<- tryCatch(conditionals, error = function(e) readRDS(file.path(data_dir, inst$task.id, "conditional.rds")))
-        pred = inst$predictor$clone()
-        pred$conditionals = conditionals
-      } else {
-        pred = inst$predictor
-      }
-      
+      pred = inst$predictor
+
       set.seed(curexp$seed)
       moccf = MOCClassif$new(predictor = pred, epsilon = 0, mu = pars$mu, 
         n_generations = ceiling(evals/pars$mu), init_strategy = pars$init_strategy,
+        use_conditional_mutator = as.logical(pars$conditional),
         p_rec = pars$p_rec, p_rec_gen = pars$p_rec_gen,
         p_mut = pars$p_mut, p_mut_gen = pars$p_mut_gen, p_mut_use_orig = pars$p_mut_use_orig, quiet = TRUE)
       cf = moccf$find_counterfactuals(x_interest = inst$x.interest, 
