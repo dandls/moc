@@ -8,18 +8,21 @@ library("irace")
 library("pracma") # for integral
 
 args = commandArgs(trailingOnly=TRUE)
-read_dir = args[[1]]
-save_dir = args[[2]]
-data_dir = args[[4]]
-all_evals = readRDS(args[[3]])
+read_dir = args[[1]] # read_dir = "../saved_objects/irace/models_irace.rds"
+save_dir = args[[2]] # save_dir = "../saved_objects/irace/irace_results.rds"
+data_dir = args[[4]] # data_dir = "../saved_objects/irace"
+all_evals = readRDS(args[[3]]) # all_evals = readRDS("../saved_objects/irace/max_eval.rds")
 evals = (ceiling(quantile(all_evals, probs = 0.9)/1000)*1000)[[1]]
 
 cpus = 20
 PARALLEL = TRUE
+SAVE = TRUE
 Sys.setenv('TF_CPP_MIN_LOG_LEVEL' = 2)
 
 #--- Create tuning instances----
 instances = readRDS(read_dir)
+kc2id =  which(sapply(instances, function(inst) inst$task.id) %in% c("kc1", "nursery"))
+instances = instances[-kc2id] #FIXME: remove when fixed by Martin
 instances = flatten_instances(instances)
 instances = instances[sample.int(length(instances))]
 
@@ -31,17 +34,17 @@ detect_null = lapply(instances, function(inst) {
 #--- Irace Setup ----
 ps = pSS(
   mu : integer[20, 100],
-  p.mut : numeric[0.05, 0.8],
-  p.rec : numeric[0.3, 1],
-  p.mut.gen : numeric[0.05, 0.8],
-  p.mut.use.orig : numeric[0.05, 0.5],
-  p.rec.gen : numeric[0.3, 1],
-  p.rec.use.orig : numeric[0.3, 1],
-  initialization : discrete[random, icecurve],
-  conditional : logical
+  p_mut : numeric[0.05, 0.8],
+  p_rec : numeric[0.3, 1],
+  p_mut_gen : numeric[0.05, 0.8],
+  p_mut_use_orig : numeric[0.05, 0.5],
+  p_rec_gen : numeric[0.3, 1],
+  init_strategy : discrete[random, icecurve, traindata],
+  conditional_sampler : logical
 )
 
 targetRunnerParallel = function(experiment, exec.target.runner, scenario, target.runner) {
+  
   # we are assuming here that we have the same instance in every experiment:
   stopifnot(length(unique(vapply(experiment, `[[`, numeric(1), "id.instance"))) == 1)
   inst = experiment[[1]]$instance
@@ -58,7 +61,6 @@ targetRunnerParallel = function(experiment, exec.target.runner, scenario, target
   }
   tryCatch({
     hv_auc = parallelMap::parallelMap(function(curexp) {
-      
       gc()
       
       inst = initialize_instance(inst, data_dir)
@@ -74,18 +76,17 @@ targetRunnerParallel = function(experiment, exec.target.runner, scenario, target
       }
       
       set.seed(curexp$seed)
-      cf = Counterfactuals$new(predictor = pred, target = inst$target,
-        mu = pars$mu, x.interest = inst$x.interest, p.mut = pars$p.mut,
-        epsilon = 0, 
-        p.rec = pars$p.rec, p.mut.gen = pars$p.mut.gen,
-        p.mut.use.orig = pars$p.mut.use.orig,
-        p.rec.gen = pars$p.rec.gen,
-        p.rec.use.orig = pars$p.rec.use.orig,
-        initialization = pars$initialization,
-        generations = list(mosmafs::mosmafsTermEvals(evals)))
+      moccf = MOCClassif$new(predictor = pred, epsilon = 0, mu = pars$mu, 
+        n_generations = ceiling(evals/pars$mu), init_strategy = pars$init_strategy,
+        p_rec = pars$p_rec, p_rec_gen = pars$p_rec_gen,
+        p_mut = pars$p_mut, p_mut_gen = pars$p_mut_gen, p_mut_use_orig = pars$p_mut_use_orig, quiet = TRUE)
+      cf = moccf$find_counterfactuals(x_interest = inst$x.interest, 
+        desired_class = make.names(pred$class), desired_prob = inst$target)
       
-      
-      integral(approxfun(c(0, cf$log$evals), c(0, cf$log$fitness.domHV)),
+      # compute integral under hv curve over evaluations
+      hv = moccf$get_dominated_hv()
+      hv$evals = hv$generation * pars$mu
+      integral(approxfun(c(0, hv$evals), c(0, hv$hv)),
         xmin = 0, xmax = evals)
     }, experiment)
   }, finally = {
@@ -108,4 +109,4 @@ set.seed(12345)
 irace_results = irace(scenario = tuner.config,
   parameters = convertParamSetToIrace(ps))
 
-saveRDS(irace_results, save_dir)
+if (SAVE) saveRDS(irace_results, save_dir)

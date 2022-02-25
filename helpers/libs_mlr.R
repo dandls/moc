@@ -18,6 +18,7 @@ if(length(new.packages)) install.packages(new.packages)
 devtools::load_all("../iml", export_all = FALSE)
 devtools::install_github("dandls/counterfactuals")
 
+library("counterfactuals")
 library("mlr")
 library("mlrCPO")
 
