@@ -21,8 +21,6 @@ Sys.setenv('TF_CPP_MIN_LOG_LEVEL' = 2)
 
 #--- Create tuning instances----
 instances = readRDS(read_dir)
-kc2id =  which(sapply(instances, function(inst) inst$task.id) %in% c("kc1", "nursery"))
-instances = instances[-kc2id] #FIXME: remove when fixed by Martin
 instances = flatten_instances(instances)
 instances = instances[sample.int(length(instances))]
 
@@ -56,6 +54,7 @@ targetRunnerParallel = function(experiment, exec.target.runner, scenario, target
     parallelMap::parallelStartSocket(cpus = min(cpus, length(experiment)),
       load.balancing = length(experiment) > cpus) # ParallelStartMulticore does not work for xgboost
     parallelMap::parallelSource("../helpers/libs_mlr.R", master = FALSE)
+    parallelMap::parallelSource("helpers.R", master = FALSE)
     parallelMap::parallelLibrary("pracma")
     parallelMap::parallelExport("evals", "data_dir", "inst")
   }
