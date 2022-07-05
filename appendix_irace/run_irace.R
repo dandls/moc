@@ -21,6 +21,8 @@ Sys.setenv('TF_CPP_MIN_LOG_LEVEL' = 2)
 
 #--- Create tuning instances----
 instances = readRDS(read_dir)
+rmid = unlist(lapply(instances, function(inst) inst$task.id %in% c("nursery", "kc1")))
+instances = instances[!rmid]
 instances = flatten_instances(instances)
 instances = instances[sample.int(length(instances))]
 
@@ -36,9 +38,7 @@ ps = pSS(
   p_rec : numeric[0.3, 1],
   p_mut_gen : numeric[0.05, 0.8],
   p_mut_use_orig : numeric[0.05, 0.5],
-  p_rec_gen : numeric[0.3, 1],
-  init_strategy : discrete[random, icecurve, traindata],
-  conditional : logical
+  p_rec_gen : numeric[0.3, 1]
 )
 
 targetRunnerParallel = function(experiment, exec.target.runner, scenario, target.runner) {
@@ -46,7 +46,7 @@ targetRunnerParallel = function(experiment, exec.target.runner, scenario, target
   # we are assuming here that we have the same instance in every experiment:
   stopifnot(length(unique(vapply(experiment, `[[`, numeric(1), "id.instance"))) == 1)
   inst = experiment[[1]]$instance
-  
+
   message(inst$learner.id)
   message(inst$task.id)
   gc()
@@ -61,7 +61,7 @@ targetRunnerParallel = function(experiment, exec.target.runner, scenario, target
   tryCatch({
     hv_auc = parallelMap::parallelMap(function(curexp) {
       gc()
-      
+
       inst = initialize_instance(inst, data_dir)
       
       pars = curexp$configuration
@@ -70,8 +70,8 @@ targetRunnerParallel = function(experiment, exec.target.runner, scenario, target
 
       set.seed(curexp$seed)
       moccf = MOCClassif$new(predictor = pred, epsilon = 0, mu = pars$mu, 
-        n_generations = ceiling(evals/pars$mu), init_strategy = pars$init_strategy,
-        use_conditional_mutator = as.logical(pars$conditional),
+        n_generations = ceiling(evals/pars$mu), init_strategy = "icecurve",
+        use_conditional_mutator = FALSE,
         p_rec = pars$p_rec, p_rec_gen = pars$p_rec_gen,
         p_mut = pars$p_mut, p_mut_gen = pars$p_mut_gen, p_mut_use_orig = pars$p_mut_use_orig, quiet = TRUE)
       cf = moccf$find_counterfactuals(x_interest = inst$x.interest, 
@@ -92,7 +92,7 @@ targetRunnerParallel = function(experiment, exec.target.runner, scenario, target
   lapply(hv_auc, function(y) list(cost = y * -1, time = NA_real_))
 }
 extra.args = list()
-extra.args$maxExperiments = 3000
+extra.args$maxExperiments = 2500
 extra.args$firstTest = 15
 
 tuner.config = c(list(targetRunnerParallel = targetRunnerParallel,
