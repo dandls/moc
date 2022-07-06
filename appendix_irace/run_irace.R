@@ -67,6 +67,12 @@ targetRunnerParallel = function(experiment, exec.target.runner, scenario, target
       pars = curexp$configuration
       
       pred = inst$predictor
+      
+      if (inst$task.id == "mammography") {
+        declass = pred$class
+      } else {
+        declass = make.names(pred$class)
+      }
 
       set.seed(curexp$seed)
       moccf = MOCClassif$new(predictor = pred, epsilon = 0, mu = pars$mu, 
@@ -75,7 +81,7 @@ targetRunnerParallel = function(experiment, exec.target.runner, scenario, target
         p_rec = pars$p_rec, p_rec_gen = pars$p_rec_gen,
         p_mut = pars$p_mut, p_mut_gen = pars$p_mut_gen, p_mut_use_orig = pars$p_mut_use_orig, quiet = TRUE)
       cf = moccf$find_counterfactuals(x_interest = inst$x.interest, 
-        desired_class = make.names(pred$class), desired_prob = inst$target)
+        desired_class = declass, desired_prob = inst$target)
       
       # compute integral under hv curve over evaluations
       hv = moccf$get_dominated_hv()
