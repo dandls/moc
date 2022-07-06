@@ -63,16 +63,16 @@ targetRunnerParallel = function(experiment, exec.target.runner, scenario, target
 
       inst = initialize_instance(inst, data_dir)
       
+      pars = curexp$configuration
+      
+      pred = inst$predictor
+      
       if (inst$task.id %in% c("breast-cancer-dropped-missing-attributes-values", 
         "mammography") & inst$learner.id %in% c("logreg", "neuralnet")) {
         desclass = pred$class
       } else {
         desclass =  make.names(pred$class)
       }
-      
-      pars = curexp$configuration
-      
-      pred = inst$predictor
 
       set.seed(curexp$seed)
       moccf = MOCClassif$new(predictor = pred, epsilon = 0, mu = pars$mu, 
