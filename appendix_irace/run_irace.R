@@ -60,8 +60,15 @@ targetRunnerParallel = function(experiment, exec.target.runner, scenario, target
   tryCatch({
     hv_auc = parallelMap::parallelMap(function(curexp) {
       gc()
-      browser()
+
       inst = initialize_instance(inst, data_dir)
+      
+      if (inst$task.id %in% c("breast-cancer-dropped-missing-attributes-values", 
+        "mammography") & inst$learner.id %in% c("logreg", "neuralnet")) {
+        desclass = pred$class
+      } else {
+        desclass =  make.names(pred$class)
+      }
       
       pars = curexp$configuration
       
@@ -74,7 +81,7 @@ targetRunnerParallel = function(experiment, exec.target.runner, scenario, target
         p_rec = pars$p_rec, p_rec_gen = pars$p_rec_gen,
         p_mut = pars$p_mut, p_mut_gen = pars$p_mut_gen, p_mut_use_orig = pars$p_mut_use_orig, quiet = TRUE)
       cf = moccf$find_counterfactuals(x_interest = inst$x.interest, 
-        desired_class = make.names(pred$class), desired_prob = inst$target)
+        desired_class = desclass, desired_prob = inst$target)
       
       # compute integral under hv curve over evaluations
       hv = moccf$get_dominated_hv()
