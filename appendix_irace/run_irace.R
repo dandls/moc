@@ -54,7 +54,6 @@ targetRunnerParallel = function(experiment, exec.target.runner, scenario, target
     parallelMap::parallelStartSocket(cpus = min(cpus, length(experiment)),
       load.balancing = length(experiment) > cpus) # ParallelStartMulticore does not work for xgboost
     parallelMap::parallelSource("../helpers/libs_mlr.R", master = FALSE)
-    parallelMap::parallelSource("helpers.R", master = FALSE)
     parallelMap::parallelLibrary("pracma")
     parallelMap::parallelExport("evals", "data_dir", "inst")
   }
