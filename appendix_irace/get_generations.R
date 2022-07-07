@@ -6,7 +6,7 @@
 source("../helpers/libs_mlr.R")
 source("helpers.R")
 args = commandArgs(trailingOnly=TRUE)
-models_irace = readRDS(args[[1]]) # models_irace = readRDS("../saved_objects/irace/models_irace.rds")
+instances = readRDS(args[[1]]) # models_irace = readRDS("../saved_objects/irace/models_irace.rds")
 data_dir = args[[2]] # data_dir = "../saved_objects/irace"
 irace_results = readRDS(args[[3]]) # irace_results = readRDS("../saved_objects/irace/irace_results.rds")
 savedir = args[[4]] # savedir = " ../saved_objects/best_configs.rds"
@@ -16,7 +16,9 @@ cpus = parallel::detectCores()
 PARALLEL = TRUE
 Sys.setenv('TF_CPP_MIN_LOG_LEVEL' = 2)
 
-models_irace.10 = flatten_instances(models_irace)
+rmid = unlist(lapply(instances, function(inst) inst$task.id %in% c("nursery", "kc1")))
+instances = instances[!rmid]
+models_irace.10 = flatten_instances(instances)
 
 n_generations = 300L
 
@@ -25,7 +27,7 @@ n_generations = 300L
 best_params = irace::removeConfigurationsMetaData(irace_results)[1,]
 num_id = sapply(best_params, is.numeric)
 best_params[num_id] = round(best_params[num_id], 3)
-best_params$conditional = as.logical(best_params$conditional)
+# best_params$conditional = as.logical(best_params$conditional)
 # names(best_params) = gsub('\\.', '_', names(best_params))
 # names(best_params)[names(best_params) == "initialization"] = "init_strategy"
 
@@ -35,8 +37,9 @@ best_params$conditional = as.logical(best_params$conditional)
 if (PARALLEL) {
   parallelMap::parallelStartSocket(cpus = 20, load.balancing = TRUE) # ParallelStartMulticore does not work for xgboost
   parallelMap::parallelSource("../helpers/libs_mlr.R", master = FALSE)
-  parallelMap::parallelExport("best_params", "data_dir")
-  
+  parallelMap::parallelExport("best_params", "data_dir", "n_generations")
+  parallelMap::parallelSource("helpers.R", master = FALSE)
+
 }
 tryCatch({
   set.seed(1234)
@@ -47,15 +50,23 @@ tryCatch({
     x.interest = inst$x.interest
     target = inst$target
     pred = inst$predictor$clone()
+
+    if (inst$task.id %in% c("breast-cancer-dropped-missing-attributes-values", 
+        "mammography") & inst$learner.id %in% c("logreg", "neuralnet")) {
+        desclass = pred$class
+    } else {
+        desclass =  make.names(pred$class)
+    }
+
     # Receive counterfactuals
     moccf = MOCClassif$new(predictor = pred, epsilon = 0, mu = best_params$mu, 
-      n_generations = n_generations, init_strategy = best_params$init_strategy,
-      use_conditional_mutator = best_params$conditional,
+      n_generations = n_generations, init_strategy = "icecurve",
+      use_conditional_mutator = FALSE,
       p_rec = best_params$p_rec, p_rec_gen = best_params$p_rec_gen,
       p_mut = best_params$p_mut, p_mut_gen = best_params$p_mut_gen, p_mut_use_orig = best_params$p_mut_use_orig,
       quiet = TRUE)
     cf = moccf$find_counterfactuals(x_interest = x.interest, 
-      desired_class = make.names(inst$predictor$class), desired_prob = target)
+      desired_class = desclass, desired_prob = target)
     hv = moccf$get_dominated_hv()$hv
     # Save number of generations
     cat(sprintf("finished: %s/%s\n", inst$learner.id, inst$task.id))
@@ -68,9 +79,12 @@ tryCatch({
 })
 #--- Extract median generations ----
 allgen = unlist(generations)
+print(allgen)
 generations = as.integer(max(allgen)) 
+print(generations)
 saveRDS(allgen, file.path(data_dir, "max_generations.rds"))
 
 # Save best parameter set 
 best_config = cbind(generations, best_params)
+print(best_config)
 saveRDS(best_config, savedir)
